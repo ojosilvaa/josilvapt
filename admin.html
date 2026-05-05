@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jo Silva PT · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#C8A96E;--gold2:#8a7449;--bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--border:#2a2a2a;--text:#e8e8e8;--muted:#888}
+html,body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh}
+input,select,textarea,button{font-family:'Barlow Condensed',sans-serif}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:24px}
+.login-box{background:var(--bg2);border:1px solid var(--border);padding:40px;width:340px}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:4px;text-align:center;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--muted);letter-spacing:3px;text-align:center;text-transform:uppercase;margin-bottom:28px}
+.inp{width:100%;background:#0d0d0d;border:1px solid var(--border);color:var(--text);padding:11px 14px;font-size:15px;outline:none;margin-bottom:12px;transition:border .2s}
+.inp:focus{border-color:var(--gold)}
+.btn-gold{width:100%;background:var(--gold);color:#0d0d0d;border:none;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;padding:13px;cursor:pointer;transition:opacity .2s}
+.btn-gold:hover{opacity:.85}
+.login-hint{font-size:11px;color:#555;text-align:center;margin-top:8px}
+
+/* APP */
+#app{display:none}
+.topbar{background:#0d0d0d;border-bottom:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;padding:13px 0}
+.brand span{color:var(--text);font-size:13px;letter-spacing:2px;margin-left:8px}
+.top-nav{display:flex}
+.tnav{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted);padding:15px 14px;cursor:pointer;border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none;transition:color .2s}
+.tnav.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tnav:hover:not(.active){color:#ccc}
+.logout-btn{font-size:12px;color:#555;cursor:pointer;letter-spacing:1px;padding:8px 12px;border:1px solid #333;background:none;color:#888;transition:color .2s}
+.logout-btn:hover{color:var(--gold)}
+
+.page{display:none;padding:24px;max-width:1000px;margin:0 auto}
+.page.active{display:block}
+
+/* CARDS */
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card{background:var(--bg2);border:1px solid var(--border);padding:18px;margin-bottom:14px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px}
+
+/* ALUNOS GRID */
+.alunos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:20px}
+.aluno-card{background:var(--bg2);border:1px solid var(--border);padding:16px;cursor:pointer;transition:border-color .2s}
+.aluno-card:hover{border-color:var(--gold)}
+.aluno-avatar{width:48px;height:48px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#0d0d0d;margin-bottom:10px}
+.aluno-nome{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:1px}
+.aluno-info{font-size:12px;color:var(--muted);margin-top:2px}
+.aluno-badge{display:inline-block;font-size:10px;padding:2px 8px;letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.badge-ativo{background:rgba(93,202,165,0.15);color:#5DCAA5;border:1px solid rgba(93,202,165,0.3)}
+.badge-inativo{background:rgba(200,100,100,0.1);color:#888;border:1px solid #333}
+.aluno-link{font-size:11px;color:var(--gold);margin-top:8px;word-break:break-all;opacity:.7}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.flabel{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.finp{background:#0d0d0d;border:1px solid var(--border);color:var(--text);padding:9px 12px;font-size:15px;outline:none;transition:border .2s;width:100%}
+.finp:focus{border-color:var(--gold)}
+.fsel{background:#0d0d0d;border:1px solid var(--border);color:var(--text);padding:9px 12px;font-size:15px;outline:none;width:100%}
+.ftxt{background:#0d0d0d;border:1px solid var(--border);color:var(--text);padding:9px 12px;font-size:15px;outline:none;resize:vertical;min-height:70px;width:100%}
+.ftxt:focus,.fsel:focus{border-color:var(--gold)}
+.btn-sm{background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:6px 14px;cursor:pointer;transition:all .2s}
+.btn-sm:hover{background:var(--gold);color:#0d0d0d}
+.btn-danger{border-color:#993C1D;color:#F09595}
+.btn-danger:hover{background:#993C1D;color:#fff}
+.btn-full{width:100%;background:var(--gold);color:#0d0d0d;border:none;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;padding:12px;cursor:pointer;margin-top:6px;transition:opacity .2s}
+.btn-full:hover{opacity:.85}
+
+/* TREINOS */
+.treino-item{background:#0d0d0d;border:1px solid var(--border);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.treino-nome{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);letter-spacing:1px}
+.treino-desc{font-size:12px;color:var(--muted);margin-top:2px}
+.ex-builder{background:#0d0d0d;border:1px solid var(--border);margin-top:10px}
+.ex-hdr{background:var(--bg3);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ex-hdr-title{font-size:12px;color:var(--gold);letter-spacing:2px;text-transform:uppercase}
+.ex-item{display:grid;grid-template-columns:30px 1fr 80px 80px 28px;gap:8px;align-items:center;padding:8px 14px;border-bottom:1px solid #1a1a1a}
+.ex-item:last-child{border-bottom:none}
+.ex-n{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)}
+.ex-inp{background:#141414;border:1px solid #333;color:var(--text);padding:5px 8px;font-size:13px;outline:none;width:100%}
+.ex-inp:focus{border-color:var(--gold)}
+.ex-del{background:none;border:none;color:#555;cursor:pointer;font-size:16px;padding:2px 6px;transition:color .2s}
+.ex-del:hover{color:#F09595}
+.add-ex-row{padding:8px 14px;display:flex;justify-content:flex-end;border-top:1px solid #1a1a1a}
+
+/* DASH */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:24px}
+.dash-box{background:var(--bg2);border:1px solid var(--border);padding:14px;text-align:center}
+.dash-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:1px}
+.dash-lbl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.atividade-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.atividade-row:last-child{border-bottom:none}
+.at-nome{color:#ccc;font-weight:600}
+.at-info{color:var(--muted);font-size:12px}
+.at-treino{font-family:'Bebas Neue',sans-serif;color:var(--gold);font-size:16px;letter-spacing:1px}
+
+/* DETALHE ALUNO */
+.back-btn{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--muted);cursor:pointer;letter-spacing:2px;margin-bottom:16px;display:inline-flex;align-items:center;gap:8px;background:none;border:none;padding:0;transition:color .2s}
+.back-btn:hover{color:var(--gold)}
+.aluno-header{display:flex;align-items:center;gap:18px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.aluno-av-big{width:64px;height:64px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:#0d0d0d;flex-shrink:0}
+.aluno-hdr-info{flex:1}
+.aluno-hdr-nome{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:2px}
+.aluno-hdr-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.aluno-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.atab{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted);padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none;transition:color .2s}
+.atab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.atab:hover:not(.active){color:#ccc}
+.sub-content{display:none}.sub-content.active{display:block}
+
+/* PERIMETRIA */
+.peri-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.peri-item{display:flex;flex-direction:column;gap:4px}
+.peri-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.peri-inp-row{display:flex;align-items:center;gap:5px}
+.peri-inp{background:#0d0d0d;border:1px solid var(--border);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:18px;width:72px;padding:5px 8px;text-align:center;outline:none}
+.peri-inp:focus{border-color:var(--gold)}
+.peri-unit{font-size:12px;color:#555}
+.peri-hist-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.peri-hist-row:last-child{border-bottom:none}
+.pchange{font-family:'Bebas Neue',sans-serif;font-size:15px}
+.pchange.pos{color:#5DCAA5}.pchange.neg{color:#F09595}.pchange.zero{color:#888}
+
+/* CHART */
+.chart-wrap{background:var(--bg2);border:1px solid var(--border);padding:16px;margin-bottom:16px}
+.chart-sel{background:var(--bg3);border:1px solid #444;color:var(--text);padding:7px 12px;font-size:14px;outline:none;width:100%;margin-bottom:12px}
+.chart-sel:focus{border-color:var(--gold)}
+
+/* LINK BOX */
+.link-box{background:#0d0d0d;border:1px solid var(--gold);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.link-url{font-size:13px;color:var(--gold);word-break:break-all;flex:1}
+.copy-btn{background:var(--gold);color:#0d0d0d;border:none;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;padding:6px 12px;cursor:pointer;flex-shrink:0}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0d0d0d;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;padding:10px 28px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
+.toast.show{opacity:1}
+
+/* CONFIG */
+.config-box{background:var(--bg2);border:1px solid var(--border);padding:20px;margin-bottom:16px}
+.config-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:14px}
+.config-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.config-key{font-size:13px;color:#aaa;flex:1}
+.config-val{font-size:11px;color:#555;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.empty{padding:24px;text-align:center;color:#555;font-size:13px}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+.tag-gold{font-size:10px;background:rgba(200,169,110,.15);color:var(--gold);border:1px solid rgba(200,169,110,.3);padding:2px 8px;letter-spacing:1px}
+
+@media(max-width:600px){
+  .tnav{font-size:12px;padding:14px 8px;letter-spacing:1px}
+  .topbar{padding:0 12px}
+  .page{padding:14px}
+  .ex-item{grid-template-columns:24px 1fr 64px 64px 24px;gap:5px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">JO SILVA</div>
+    <div class="login-sub">Painel Personal Trainer</div>
+    <input class="inp" type="password" id="login-senha" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-gold" onclick="doLogin()">ENTRAR</button>
+    <div class="login-hint" id="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="brand">JO SILVA <span>ADMIN</span></div>
+    <div class="top-nav">
+      <button class="tnav active" onclick="goPage('dash')">DASHBOARD</button>
+      <button class="tnav" onclick="goPage('alunos')">ALUNOS</button>
+      <button class="tnav" onclick="goPage('config')">CONFIG</button>
+    </div>
+    <button class="logout-btn" onclick="logout()">SAIR</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dash" class="page active">
+    <div class="dash-grid" id="dash-stats"></div>
+    <div class="sec-title">ATIVIDADE RECENTE</div>
+    <div class="card" style="padding:0">
+      <div id="atividade-list"><div class="empty">Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- ALUNOS -->
+  <div id="page-alunos" class="page">
+    <div id="lista-alunos-view">
+      <div class="sec-title">
+        ALUNOS
+        <button class="btn-sm" onclick="showNovoAluno()">+ NOVO ALUNO</button>
+      </div>
+      <div class="alunos-grid" id="alunos-grid"></div>
+    </div>
+
+    <!-- NOVO ALUNO FORM -->
+    <div id="novo-aluno-view" style="display:none">
+      <button class="back-btn" onclick="backToAlunos()">← VOLTAR</button>
+      <div class="sec-title">NOVO ALUNO</div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="fg"><label class="flabel">Nome completo *</label><input class="finp" id="na-nome" placeholder="Ex: Natacha Ferreira"></div>
+          <div class="fg"><label class="flabel">Email</label><input class="finp" id="na-email" type="email" placeholder="natacha@email.com"></div>
+          <div class="fg"><label class="flabel">Telefone / WhatsApp</label><input class="finp" id="na-tel" placeholder="+351 912 000 000"></div>
+          <div class="fg"><label class="flabel">Objetivo</label>
+            <select class="fsel" id="na-obj">
+              <option value="">Selecione...</option>
+              <option>Emagrecimento</option><option>Hipertrofia</option>
+              <option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option>
+            </select>
+          </div>
+          <div class="fg"><label class="flabel">Modalidade</label>
+            <select class="fsel" id="na-mod">
+              <option value="presencial">Presencial</option>
+              <option value="online">Online</option>
+              <option value="hibrido">Híbrido</option>
+            </select>
+          </div>
+          <div class="fg"><label class="flabel">Plano</label>
+            <select class="fsel" id="na-plano">
+              <option value="">Selecione...</option>
+              <option>Avaliação + Plano (€47)</option>
+              <option>Acompanhamento Mensal (€45/mês)</option>
+              <option>Transformação 6 Meses (€197)</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:14px"><label class="flabel">Observações iniciais</label><textarea class="ftxt" id="na-obs" placeholder="Lesões, restrições, pontos de atenção..."></textarea></div>
+        <button class="btn-full" onclick="criarAluno()">CRIAR ALUNO</button>
+      </div>
+    </div>
+
+    <!-- DETALHE ALUNO -->
+    <div id="detalhe-aluno-view" style="display:none">
+      <button class="back-btn" onclick="backToAlunos()">← TODOS OS ALUNOS</button>
+      <div class="aluno-header">
+        <div class="aluno-av-big" id="det-avatar"></div>
+        <div class="aluno-hdr-info">
+          <div class="aluno-hdr-nome" id="det-nome"></div>
+          <div class="aluno-hdr-sub" id="det-sub"></div>
+          <div style="margin-top:8px">
+            <div class="link-box" id="det-link-box">
+              <div class="link-url" id="det-link-url"></div>
+              <button class="copy-btn" onclick="copyLink()">COPIAR</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn-sm" onclick="toggleAtivo()">ATIVAR/INATIVAR</button>
+          <button class="btn-sm btn-danger" onclick="deletarAluno()">EXCLUIR</button>
+        </div>
+      </div>
+
+      <div class="aluno-tabs">
+        <button class="atab active" onclick="showAlunoTab('treinos')">TREINOS</button>
+        <button class="atab" onclick="showAlunoTab('evolucao')">EVOLUÇÃO</button>
+        <button class="atab" onclick="showAlunoTab('medidas')">MEDIDAS</button>
+        <button class="atab" onclick="showAlunoTab('perfil')">PERFIL</button>
+      </div>
+
+      <!-- TAB TREINOS -->
+      <div id="sub-treinos" class="sub-content active">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px">TREINOS DO ALUNO</div>
+          <button class="btn-sm" onclick="showNovoTreino()">+ NOVO TREINO</button>
+        </div>
+        <div id="treinos-list"></div>
+        <!-- Novo treino form (oculto) -->
+        <div id="novo-treino-form" style="display:none">
+          <hr class="divider">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:12px" id="form-treino-title">NOVO TREINO</div>
+          <div class="card">
+            <div class="form-grid" style="margin-bottom:12px">
+              <div class="fg"><label class="flabel">Nome do treino *</label><input class="finp" id="nt-nome" placeholder="Ex: Treino A — Inferiores"></div>
+              <div class="fg"><label class="flabel">Dia da semana</label><input class="finp" id="nt-desc" placeholder="Ex: Segunda-feira"></div>
+            </div>
+            <div class="ex-builder">
+              <div class="ex-hdr">
+                <div class="ex-hdr-title">EXERCÍCIOS</div>
+              </div>
+              <div id="ex-list"></div>
+              <div class="add-ex-row"><button class="btn-sm" onclick="addExercicio()">+ ADICIONAR EXERCÍCIO</button></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:14px">
+              <button class="btn-full" onclick="salvarTreino()">SALVAR TREINO</button>
+              <button class="btn-sm" style="flex-shrink:0;padding:12px 18px" onclick="cancelarTreino()">CANCELAR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB EVOLUÇÃO -->
+      <div id="sub-evolucao" class="sub-content">
+        <div class="dash-grid" id="det-stats"></div>
+        <div class="chart-wrap">
+          <select class="chart-sel" id="ev-select" onchange="renderEvoChart()">
+            <option value="">Selecione exercício para ver progressão...</option>
+          </select>
+          <div style="position:relative;width:100%;height:220px">
+            <canvas id="evoChart" role="img" aria-label="Gráfico de progressão de carga"></canvas>
+          </div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:10px">HISTÓRICO DE SESSÕES</div>
+        <div class="card" style="padding:0" id="sessoes-hist"></div>
+      </div>
+
+      <!-- TAB MEDIDAS -->
+      <div id="sub-medidas" class="sub-content">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">NOVA AVALIAÇÃO</div></div>
+          <div class="form-grid">
+            <div class="fg"><label class="flabel">Data *</label><input type="date" class="finp" id="pm-data"></div>
+            <div class="fg"><label class="flabel">Peso (kg)</label><input type="number" step="0.1" class="finp" id="pm-peso" placeholder="65.5"></div>
+            <div class="fg"><label class="flabel">% Gordura</label><input type="number" step="0.1" class="finp" id="pm-gord" placeholder="24.5"></div>
+            <div class="fg"><label class="flabel">Massa Magra (kg)</label><input type="number" step="0.1" class="finp" id="pm-massa" placeholder="49.0"></div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--gold);letter-spacing:2px;margin-bottom:10px">PERÍMETROS (cm)</div>
+          <div class="peri-grid" id="peri-inputs"></div>
+          <div class="fg" style="margin-bottom:14px"><label class="flabel">Observações</label><textarea class="ftxt" id="pm-obs" placeholder="Postura, assimetrias, evolução observada..."></textarea></div>
+          <button class="btn-full" onclick="salvarMedida()">SALVAR AVALIAÇÃO</button>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin:18px 0 10px">HISTÓRICO DE AVALIAÇÕES</div>
+        <div id="medidas-hist"></div>
+      </div>
+
+      <!-- TAB PERFIL -->
+      <div id="sub-perfil" class="sub-content">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">DADOS PESSOAIS</div></div>
+          <div class="form-grid">
+            <div class="fg"><label class="flabel">Nome completo</label><input class="finp" id="pf-nome" placeholder="Nome"></div>
+            <div class="fg"><label class="flabel">Data de Nascimento</label><input type="date" class="finp" id="pf-nasc"></div>
+            <div class="fg"><label class="flabel">Altura (cm)</label><input type="number" class="finp" id="pf-altura" placeholder="165"></div>
+            <div class="fg"><label class="flabel">Profissão</label><input class="finp" id="pf-prof" placeholder="Ex: Enfermeira"></div>
+            <div class="fg"><label class="flabel">Email</label><input type="email" class="finp" id="pf-email"></div>
+            <div class="fg"><label class="flabel">Telefone</label><input class="finp" id="pf-tel"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">SAÚDE E OBJETIVOS</div></div>
+          <div class="form-grid">
+            <div class="fg" style="grid-column:1/-1"><label class="flabel">Doenças / Condições</label><textarea class="ftxt" id="pf-doencas" placeholder="Hipertensão, diabetes..."></textarea></div>
+            <div class="fg" style="grid-column:1/-1"><label class="flabel">Medicamentos</label><textarea class="ftxt" id="pf-med" placeholder="Anticoncepcional, metformina..."></textarea></div>
+            <div class="fg" style="grid-column:1/-1"><label class="flabel">Lesões / Cirurgias</label><textarea class="ftxt" id="pf-lesoes" placeholder="Lesão no joelho direito..."></textarea></div>
+            <div class="fg" style="grid-column:1/-1"><label class="flabel">Dores frequentes</label><textarea class="ftxt" id="pf-dores" placeholder="Dor lombar..."></textarea></div>
+            <div class="fg"><label class="flabel">Objetivo principal</label>
+              <select class="fsel" id="pf-obj"><option value="">Selecione...</option><option>Emagrecimento</option><option>Hipertrofia</option><option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option></select>
+            </div>
+            <div class="fg"><label class="flabel">Nível</label>
+              <select class="fsel" id="pf-nivel"><option value="">Selecione...</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select>
+            </div>
+            <div class="fg"><label class="flabel">Horas de sono</label><input type="number" class="finp" id="pf-sono" placeholder="7"></div>
+            <div class="fg"><label class="flabel">Nível de estresse (1-10)</label><input type="number" min="1" max="10" class="finp" id="pf-stress" placeholder="6"></div>
+            <div class="fg" style="grid-column:1/-1"><label class="flabel">Alimentação</label><textarea class="ftxt" id="pf-alim" placeholder="Come bem de dia, peca à noite..."></textarea></div>
+            <div class="fg" style="grid-column:1/-1"><label class="flabel">Observações do personal</label><textarea class="ftxt" id="pf-obs" placeholder="Impressões, metas, pontos de atenção..."></textarea></div>
+          </div>
+          <button class="btn-full" onclick="salvarPerfil()">SALVAR FICHA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div id="page-config" class="page">
+    <div class="sec-title">CONFIGURAÇÕES</div>
+    <div class="config-box">
+      <div class="config-title">SUPABASE</div>
+      <div class="fg" style="margin-bottom:12px"><label class="flabel">URL do projeto</label><input class="finp" id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
+      <div class="fg" style="margin-bottom:12px"><label class="flabel">Anon Key (chave pública)</label><input class="finp" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></div>
+      <button class="btn-full" style="margin-top:4px" onclick="salvarConfig()">SALVAR CONFIGURAÇÕES</button>
+    </div>
+    <div class="config-box">
+      <div class="config-title">SEGURANÇA</div>
+      <div class="fg" style="margin-bottom:12px"><label class="flabel">Alterar senha de acesso</label><input class="finp" type="password" id="cfg-senha" placeholder="Nova senha"></div>
+      <div class="fg" style="margin-bottom:12px"><label class="flabel">Confirmar nova senha</label><input class="finp" type="password" id="cfg-senha2" placeholder="Repita a senha"></div>
+      <button class="btn-full" onclick="alterarSenha()">ALTERAR SENHA</button>
+    </div>
+    <div class="config-box">
+      <div class="config-title">LINK BASE DO SISTEMA</div>
+      <div style="font-size:13px;color:#aaa;margin-bottom:10px">Cole a URL onde você hospedou o arquivo <strong style="color:var(--gold)">aluno.html</strong>. Esse link será gerado automaticamente para cada aluno.</div>
+      <div class="fg"><label class="flabel">URL base (ex: https://josilvapt.github.io/aluno.html)</label><input class="finp" id="cfg-base-url" placeholder="https://seusite.github.io/aluno.html"></div>
+      <button class="btn-full" style="margin-top:12px" onclick="salvarBaseUrl()">SALVAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PERI_CAMPOS=[
+  {id:'pescoco',label:'Pescoço'},{id:'ombro',label:'Ombro'},{id:'torax',label:'Tórax'},
+  {id:'cintura',label:'Cintura'},{id:'abdomen',label:'Abdômen'},{id:'quadril',label:'Quadril'},
+  {id:'coxa_d',label:'Coxa D'},{id:'coxa_e',label:'Coxa E'},
+  {id:'joelho_d',label:'Joelho D'},{id:'joelho_e',label:'Joelho E'},
+  {id:'panturrilha_d',label:'Panturrilha D'},{id:'panturrilha_e',label:'Panturrilha E'},
+  {id:'braco_d',label:'Braço D'},{id:'braco_e',label:'Braço E'},
+  {id:'antebraco_d',label:'Antebraço D'},{id:'antebraco_e',label:'Antebraço E'}
+];
+
+let SB_URL='', SB_KEY='', ADMIN_PASS='josilva2024', BASE_URL='';
+let currentAlunoId=null, currentTreinoId=null, exerciciosList=[], evoChartInst=null;
+
+function lc(k,d){try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
+function sc(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+function loadConfig(){
+  SB_URL=lc('sb_url',''); SB_KEY=lc('sb_key','');
+  ADMIN_PASS=lc('admin_pass','josilva2024'); BASE_URL=lc('base_url','');
+  if(document.getElementById('cfg-url')) document.getElementById('cfg-url').value=SB_URL;
+  if(document.getElementById('cfg-key')) document.getElementById('cfg-key').value=SB_KEY;
+  if(document.getElementById('cfg-base-url')) document.getElementById('cfg-base-url').value=BASE_URL;
+}
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+async function sbFetch(path, opts={}){
+  if(!SB_URL||!SB_KEY){toast('CONFIGURE O SUPABASE PRIMEIRO!');return null;}
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/'+path,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+      ...opts
+    });
+    if(!r.ok){const e=await r.text();console.error(e);return null;}
+    const ct=r.headers.get('content-type');
+    return ct&&ct.includes('json')?await r.json():[];
+  }catch(e){console.error(e);toast('ERRO DE CONEXÃO');return null;}
+}
+
+function doLogin(){
+  const s=document.getElementById('login-senha').value;
+  if(s===ADMIN_PASS){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    sc('logged','1');
+    loadConfig();
+    renderDash();
+  } else {
+    document.getElementById('login-err').textContent='Senha incorreta.';
+    document.getElementById('login-err').style.color='#F09595';
+  }
+}
+
+function logout(){sc('logged','0');location.reload();}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  loadConfig();
+  if(lc('logged','0')==='1'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    renderDash();
+  }
+  document.getElementById('login-senha').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+});
+
+function goPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tnav').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelector(`[onclick="goPage('${p}')"]`).classList.add('active');
+  if(p==='dash') renderDash();
+  if(p==='alunos') renderAlunos();
+  if(p==='config') loadConfig();
+}
+
+function initials(nome){return nome.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');}
+
+// DASHBOARD
+async function renderDash(){
+  const alunos=await sbFetch('alunos?select=id,ativo&order=criado_em.desc')||[];
+  const sessoes=await sbFetch('sessoes?select=id,data,aluno_id,treino_id,alunos(nome),treinos(nome)&order=criado_em.desc&limit=20')||[];
+  const ativos=alunos.filter(a=>a.ativo).length;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="dash-box"><div class="dash-val">${alunos.length}</div><div class="dash-lbl">Total Alunos</div></div>
+    <div class="dash-box"><div class="dash-val">${ativos}</div><div class="dash-lbl">Ativos</div></div>
+    <div class="dash-box"><div class="dash-val">${sessoes.length}</div><div class="dash-lbl">Sessões (recent.)</div></div>
+    <div class="dash-box"><div class="dash-val">${alunos.length-ativos}</div><div class="dash-lbl">Inativos</div></div>`;
+  const el=document.getElementById('atividade-list');
+  if(!sessoes.length){el.innerHTML='<div class="empty">Nenhuma sessão registrada ainda.</div>';return;}
+  el.innerHTML=sessoes.slice(0,15).map(s=>`
+    <div class="atividade-row">
+      <div><div class="at-nome">${s.alunos?.nome||'—'}</div><div class="at-info">${formatDate(s.data)}</div></div>
+      <div class="at-treino">${s.treinos?.nome||s.treino_id||'—'}</div>
+    </div>`).join('');
+}
+
+// ALUNOS
+function backToAlunos(){
+  document.getElementById('lista-alunos-view').style.display='block';
+  document.getElementById('novo-aluno-view').style.display='none';
+  document.getElementById('detalhe-aluno-view').style.display='none';
+  currentAlunoId=null; evoChartInst=null;
+  renderAlunos();
+}
+
+function showNovoAluno(){
+  document.getElementById('lista-alunos-view').style.display='none';
+  document.getElementById('novo-aluno-view').style.display='block';
+}
+
+async function renderAlunos(){
+  document.getElementById('lista-alunos-view').style.display='block';
+  document.getElementById('novo-aluno-view').style.display='none';
+  document.getElementById('detalhe-aluno-view').style.display='none';
+  const alunos=await sbFetch('alunos?order=nome.asc')||[];
+  const g=document.getElementById('alunos-grid');
+  if(!alunos.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">Nenhum aluno cadastrado. Clique em + NOVO ALUNO.</div>';return;}
+  g.innerHTML=alunos.map(a=>`
+    <div class="aluno-card" onclick="openAluno('${a.id}')">
+      <div class="aluno-avatar">${initials(a.nome)}</div>
+      <div class="aluno-nome">${a.nome}</div>
+      <div class="aluno-info">${a.objetivo||''} ${a.modalidade?'· '+a.modalidade:''}</div>
+      <div class="aluno-info">${a.plano||''}</div>
+      <span class="aluno-badge ${a.ativo?'badge-ativo':'badge-inativo'}">${a.ativo?'ATIVO':'INATIVO'}</span>
+    </div>`).join('');
+}
+
+async function criarAluno(){
+  const nome=document.getElementById('na-nome').value.trim();
+  if(!nome){toast('NOME É OBRIGATÓRIO!');return;}
+  const data={nome,email:document.getElementById('na-email').value,telefone:document.getElementById('na-tel').value,objetivo:document.getElementById('na-obj').value,modalidade:document.getElementById('na-mod').value,plano:document.getElementById('na-plano').value,obs:document.getElementById('na-obs').value,ativo:true};
+  const res=await sbFetch('alunos',{method:'POST',body:JSON.stringify(data)});
+  if(res){toast('ALUNO CRIADO!');backToAlunos();}
+}
+
+async function openAluno(id){
+  currentAlunoId=id;
+  const alunos=await sbFetch(`alunos?id=eq.${id}`)||[];
+  const a=alunos[0]; if(!a) return;
+  document.getElementById('lista-alunos-view').style.display='none';
+  document.getElementById('detalhe-aluno-view').style.display='block';
+  document.getElementById('det-avatar').textContent=initials(a.nome);
+  document.getElementById('det-nome').textContent=a.nome;
+  document.getElementById('det-sub').textContent=[a.objetivo,a.modalidade,a.plano].filter(Boolean).join(' · ');
+  const alunoUrl=`${BASE_URL||'aluno.html'}?id=${id}`;
+  document.getElementById('det-link-url').textContent=alunoUrl;
+  showAlunoTab('treinos');
+}
+
+function copyLink(){
+  const url=document.getElementById('det-link-url').textContent;
+  navigator.clipboard.writeText(url).then(()=>toast('LINK COPIADO!'));
+}
+
+async function toggleAtivo(){
+  const alunos=await sbFetch(`alunos?id=eq.${currentAlunoId}`)||[];
+  const a=alunos[0]; if(!a) return;
+  await sbFetch(`alunos?id=eq.${currentAlunoId}`,{method:'PATCH',body:JSON.stringify({ativo:!a.ativo})});
+  toast(a.ativo?'ALUNO INATIVADO':'ALUNO ATIVADO');
+  openAluno(currentAlunoId);
+}
+
+async function deletarAluno(){
+  if(!confirm('Tem certeza? Todos os dados do aluno serão excluídos.')) return;
+  await sbFetch(`sessao_cargas?sessao_id=in.(select id from sessoes where aluno_id=eq.${currentAlunoId})`,{method:'DELETE'});
+  await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`exercicios?treino_id=in.(select id from treinos where aluno_id=eq.${currentAlunoId})`,{method:'DELETE'});
+  await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`alunos?id=eq.${currentAlunoId}`,{method:'DELETE'});
+  toast('ALUNO EXCLUÍDO'); backToAlunos();
+}
+
+// ABAS ALUNO
+function showAlunoTab(tab){
+  document.querySelectorAll('.sub-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.atab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('sub-'+tab).classList.add('active');
+  document.querySelector(`[onclick="showAlunoTab('${tab}')"]`).classList.add('active');
+  if(tab==='treinos') renderTreinos();
+  if(tab==='evolucao') renderEvolucao();
+  if(tab==='medidas') renderMedidas();
+  if(tab==='perfil') renderPerfil();
+}
+
+// TREINOS
+function showNovoTreino(){
+  document.getElementById('novo-treino-form').style.display='block';
+  document.getElementById('form-treino-title').textContent='NOVO TREINO';
+  document.getElementById('nt-nome').value='';
+  document.getElementById('nt-desc').value='';
+  exerciciosList=[];
+  renderExList();
+  currentTreinoId=null;
+}
+
+function cancelarTreino(){document.getElementById('novo-treino-form').style.display='none'; currentTreinoId=null;}
+
+function addExercicio(){
+  exerciciosList.push({nome:'',obs:'',series:'3',reps:'10-12'});
+  renderExList();
+}
+
+function renderExList(){
+  const el=document.getElementById('ex-list');
+  if(!exerciciosList.length){el.innerHTML='<div class="empty">Nenhum exercício adicionado.</div>';return;}
+  el.innerHTML=exerciciosList.map((ex,i)=>`
+    <div class="ex-item">
+      <div class="ex-n">${i+1}</div>
+      <input class="ex-inp" placeholder="Nome do exercício" value="${ex.nome||''}" onchange="exerciciosList[${i}].nome=this.value">
+      <input class="ex-inp" placeholder="Séries" value="${ex.series||'3'}" onchange="exerciciosList[${i}].series=this.value">
+      <input class="ex-inp" placeholder="Reps" value="${ex.reps||'10-12'}" onchange="exerciciosList[${i}].reps=this.value">
+      <button class="ex-del" onclick="exerciciosList.splice(${i},1);renderExList()">✕</button>
+    </div>
+    <div style="padding:0 14px 6px"><input class="ex-inp" style="width:100%" placeholder="Obs (opcional)" value="${ex.obs||''}" onchange="exerciciosList[${i}].obs=this.value"></div>`).join('');
+}
+
+async function salvarTreino(){
+  const nome=document.getElementById('nt-nome').value.trim();
+  if(!nome){toast('NOME DO TREINO É OBRIGATÓRIO!');return;}
+  const exValidos=exerciciosList.filter(e=>e.nome.trim());
+  if(!exValidos.length){toast('ADICIONE PELO MENOS 1 EXERCÍCIO!');return;}
+  let treinoId=currentTreinoId;
+  if(treinoId){
+    await sbFetch(`treinos?id=eq.${treinoId}`,{method:'PATCH',body:JSON.stringify({nome,descricao:document.getElementById('nt-desc').value})});
+    await sbFetch(`exercicios?treino_id=eq.${treinoId}`,{method:'DELETE'});
+  } else {
+    const res=await sbFetch('treinos',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,nome,descricao:document.getElementById('nt-desc').value})});
+    if(!res||!res[0]){toast('ERRO AO SALVAR');return;}
+    treinoId=res[0].id;
+  }
+  for(let i=0;i<exValidos.length;i++){
+    await sbFetch('exercicios',{method:'POST',body:JSON.stringify({treino_id:treinoId,ordem:i+1,nome:exValidos[i].nome.trim(),obs:exValidos[i].obs||'',series:exValidos[i].series,reps:exValidos[i].reps})});
+  }
+  toast('TREINO SALVO!'); cancelarTreino(); renderTreinos();
+}
+
+async function renderTreinos(){
+  const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&order=criado_em.asc`)||[];
+  const el=document.getElementById('treinos-list');
+  if(!treinos.length){el.innerHTML='<div class="empty">Nenhum treino criado. Clique em + NOVO TREINO.</div>';return;}
+  el.innerHTML=treinos.map(t=>`
+    <div class="treino-item">
+      <div><div class="treino-nome">${t.nome}</div><div class="treino-desc">${t.descricao||''}</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-sm" onclick="editarTreino('${t.id}')">EDITAR</button>
+        <button class="btn-sm btn-danger" onclick="deletarTreino('${t.id}')">X</button>
+      </div>
+    </div>`).join('');
+}
+
+async function editarTreino(id){
+  currentTreinoId=id;
+  const treinos=await sbFetch(`treinos?id=eq.${id}`)||[];
+  const t=treinos[0]; if(!t) return;
+  const exs=await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`)||[];
+  document.getElementById('novo-treino-form').style.display='block';
+  document.getElementById('form-treino-title').textContent='EDITAR TREINO';
+  document.getElementById('nt-nome').value=t.nome;
+  document.getElementById('nt-desc').value=t.descricao||'';
+  exerciciosList=exs.map(e=>({nome:e.nome,obs:e.obs||'',series:e.series||'3',reps:e.reps||'10-12'}));
+  renderExList();
+}
+
+async function deletarTreino(id){
+  if(!confirm('Excluir esse treino?')) return;
+  await sbFetch(`exercicios?treino_id=eq.${id}`,{method:'DELETE'});
+  await sbFetch(`treinos?id=eq.${id}`,{method:'DELETE'});
+  toast('TREINO EXCLUÍDO'); renderTreinos();
+}
+
+// EVOLUÇÃO
+async function renderEvolucao(){
+  const sessoes=await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
+  const todas_cargas=await sbFetch(`sessao_cargas?sessao_id=in.(${sessoes.map(s=>s.id).join(',')||'00000000-0000-0000-0000-000000000000'})&select=*,exercicios(nome,treinos(nome))`)||[];
+  document.getElementById('det-stats').innerHTML=`
+    <div class="dash-box"><div class="dash-val">${sessoes.length}</div><div class="dash-lbl">Sessões</div></div>
+    <div class="dash-box"><div class="dash-val">${Math.ceil(sessoes.length/3)||0}</div><div class="dash-lbl">Semanas</div></div>
+    <div class="dash-box"><div class="dash-val">${todas_cargas.length?Math.max(...todas_cargas.map(c=>c.carga_kg||0)).toFixed(1)+'kg':'—'}</div><div class="dash-lbl">Maior carga</div></div>`;
+  const sel=document.getElementById('ev-select');
+  sel.innerHTML='<option value="">Selecione exercício...</option>';
+  const exMap={};
+  todas_cargas.forEach(c=>{if(c.exercicios) exMap[c.exercicio_id]=c.exercicios.nome;});
+  Object.entries(exMap).forEach(([id,nome])=>{const o=document.createElement('option');o.value=id;o.textContent=nome;sel.appendChild(o);});
+  const hist=document.getElementById('sessoes-hist');
+  if(!sessoes.length){hist.innerHTML='<div class="empty">Nenhuma sessão registrada.</div>';return;}
+  hist.innerHTML=sessoes.slice(0,20).map(s=>{
+    const cargas=todas_cargas.filter(c=>c.sessao_id===s.id);
+    const max=cargas.length?Math.max(...cargas.map(c=>c.carga_kg||0)):0;
+    return `<div class="atividade-row"><div><div class="at-nome">${s.treino_nome||'Treino'}</div><div class="at-info">${formatDate(s.data)}</div></div><div class="at-treino">${max?max+'kg':'—'}</div></div>`;
+  }).join('');
+}
+
+async function renderEvoChart(){
+  const exId=document.getElementById('ev-select').value; if(!exId) return;
+  const sessoes=await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}&order=data.asc`)||[];
+  if(!sessoes.length) return;
+  const ids=sessoes.map(s=>s.id).join(',');
+  const cargas=await sbFetch(`sessao_cargas?exercicio_id=eq.${exId}&sessao_id=in.(${ids})&select=*,sessoes(data)&order=sessoes(data).asc`)||[];
+  if(evoChartInst){evoChartInst.destroy();evoChartInst=null;}
+  if(!cargas.length) return;
+  const ctx=document.getElementById('evoChart').getContext('2d');
+  evoChartInst=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:cargas.map(c=>formatDate(c.sessoes?.data||'')),
+      datasets:[{label:'Carga (kg)',data:cargas.map(c=>c.carga_kg),borderColor:'#C8A96E',backgroundColor:'rgba(200,169,110,0.1)',pointBackgroundColor:'#C8A96E',pointRadius:5,tension:0.3,fill:true}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11},callback:v=>v+'kg'},grid:{color:'#222'}}}}
+  });
+}
+
+// MEDIDAS
+async function renderMedidas(){
+  document.getElementById('peri-inputs').innerHTML=PERI_CAMPOS.map(c=>`
+    <div class="peri-item">
+      <div class="peri-lbl">${c.label}</div>
+      <div class="peri-inp-row"><input class="peri-inp" type="number" step="0.1" id="pm-${c.id}" placeholder="—"><span class="peri-unit">cm</span></div>
+    </div>`).join('');
+  document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+  const avs=await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
+  const el=document.getElementById('medidas-hist');
+  if(!avs.length){el.innerHTML='<div class="empty">Nenhuma avaliação registrada.</div>';return;}
+  el.innerHTML=avs.map((av,idx)=>{
+    const prev=avs[idx+1];
+    const med=av.medidas||{};
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px">${formatDate(av.data)}</div>
+        <button class="btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:10px">
+        ${av.peso?`<div class="dash-box" style="padding:8px"><div class="dash-val" style="font-size:20px">${av.peso}kg</div><div class="dash-lbl">Peso</div></div>`:''}
+        ${av.gordura?`<div class="dash-box" style="padding:8px"><div class="dash-val" style="font-size:20px">${av.gordura}%</div><div class="dash-lbl">Gordura</div></div>`:''}
+        ${av.massa_magra?`<div class="dash-box" style="padding:8px"><div class="dash-val" style="font-size:20px">${av.massa_magra}kg</div><div class="dash-lbl">Massa Magra</div></div>`:''}
+      </div>
+      <div style="background:#0d0d0d;border:1px solid var(--border)">
+        ${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{
+          const cur=med[c.id]; const prevV=prev?.medidas?.[c.id];
+          let delta='',cls='zero';
+          if(prevV!==undefined){const d=(cur-prevV).toFixed(1);delta=(d>0?'+':'')+d+'cm';cls=d<0?'pos':(d>0?'neg':'zero');}
+          return `<div class="peri-hist-row"><span style="color:#ccc">${c.label}</span><span style="display:flex;gap:10px;align-items:center">${delta?`<span class="pchange ${cls}">${delta}</span>`:''}<span style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold)">${cur}cm</span></span></div>`;
+        }).join('')}
+      </div>
+      ${av.obs?`<div style="margin-top:8px;font-size:13px;color:#aaa;padding:8px;border-left:3px solid var(--gold)">${av.obs}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function salvarMedida(){
+  const data=document.getElementById('pm-data').value;
+  if(!data){toast('DATA É OBRIGATÓRIA!');return;}
+  const medidas={};
+  PERI_CAMPOS.forEach(c=>{const v=document.getElementById('pm-'+c.id)?.value;if(v) medidas[c.id]=parseFloat(v);});
+  const payload={aluno_id:currentAlunoId,data,peso:document.getElementById('pm-peso').value||null,gordura:document.getElementById('pm-gord').value||null,massa_magra:document.getElementById('pm-massa').value||null,obs:document.getElementById('pm-obs').value,medidas};
+  const res=await sbFetch('perimetria',{method:'POST',body:JSON.stringify(payload)});
+  if(res){toast('AVALIAÇÃO SALVA!');renderMedidas();}
+}
+
+async function deletarMedida(id){
+  if(!confirm('Excluir esta avaliação?')) return;
+  await sbFetch(`perimetria?id=eq.${id}`,{method:'DELETE'});
+  toast('EXCLUÍDO'); renderMedidas();
+}
+
+// PERFIL
+async function renderPerfil(){
+  const res=await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`)||[];
+  const dados=res[0]?.dados||{};
+  const campos=['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'];
+  campos.forEach(f=>{const el=document.getElementById('pf-'+f);if(el&&dados[f]) el.value=dados[f];});
+}
+
+async function salvarPerfil(){
+  const campos=['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'];
+  const dados={};
+  campos.forEach(f=>{const el=document.getElementById('pf-'+f);if(el) dados[f]=el.value;});
+  const existe=await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`)||[];
+  if(existe.length){
+    await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`,{method:'PATCH',body:JSON.stringify({dados,atualizado_em:new Date().toISOString()})});
+  } else {
+    await sbFetch('anamnese',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,dados,atualizado_em:new Date().toISOString()})});
+  }
+  toast('FICHA SALVA!');
+}
+
+// CONFIG
+function salvarConfig(){
+  SB_URL=document.getElementById('cfg-url').value.trim().replace(/\/$/,'');
+  SB_KEY=document.getElementById('cfg-key').value.trim();
+  sc('sb_url',SB_URL); sc('sb_key',SB_KEY);
+  toast('CONFIGURAÇÕES SALVAS!');
+}
+
+function salvarBaseUrl(){
+  BASE_URL=document.getElementById('cfg-base-url').value.trim();
+  sc('base_url',BASE_URL); toast('URL SALVA!');
+}
+
+function alterarSenha(){
+  const s1=document.getElementById('cfg-senha').value;
+  const s2=document.getElementById('cfg-senha2').value;
+  if(!s1){toast('INSIRA A NOVA SENHA!');return;}
+  if(s1!==s2){toast('SENHAS NÃO CONFEREM!');return;}
+  ADMIN_PASS=s1; sc('admin_pass',s1);
+  document.getElementById('cfg-senha').value=''; document.getElementById('cfg-senha2').value='';
+  toast('SENHA ALTERADA!');
+}
+
+function formatDate(d){
+  if(!d) return '—';
+  const p=d.split('T')[0].split('-');
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;
+}
+</script>
+</body>
+</html>
