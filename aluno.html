@@ -175,8 +175,8 @@ input,select,textarea,button{font-family:'Barlow Condensed',sans-serif}
 <script>
 const PARAMS = new URLSearchParams(location.search);
 const ALUNO_ID = PARAMS.get('id');
-const SB_URL = (localStorage.getItem('sb_url')||'').replace(/\/$/, '');
-const SB_KEY = localStorage.getItem('sb_key')||'';
+const SB_URL = 'https://oelbocimyfwwzkzbyswg.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 
 let treinos=[], exerciciosPorTreino={}, currentTreinoId=null, cargas={}, sessoes=[], chartInst=null;
 
