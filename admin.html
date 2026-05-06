@@ -406,15 +406,15 @@ const PERI_CAMPOS=[
   {id:'antebraco_d',label:'Antebraço D'},{id:'antebraco_e',label:'Antebraço E'}
 ];
 
-let SB_URL='', SB_KEY='', ADMIN_PASS='josilva2024', BASE_URL='';
+let SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E', ADMIN_PASS='josilva2024', BASE_URL='https://ojosilvaa.github.io/josilvapt/aluno.html';
 let currentAlunoId=null, currentTreinoId=null, exerciciosList=[], evoChartInst=null;
 
 function lc(k,d){try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
 function sc(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
 function loadConfig(){
-  SB_URL=lc('sb_url',''); SB_KEY=lc('sb_key','');
-  ADMIN_PASS=lc('admin_pass','josilva2024'); BASE_URL=lc('base_url','');
+  SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co'; SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
+  ADMIN_PASS=lc('admin_pass','josilva2024'); BASE_URL=lc('base_url','https://ojosilvaa.github.io/josilvapt/aluno.html');
   if(document.getElementById('cfg-url')) document.getElementById('cfg-url').value=SB_URL;
   if(document.getElementById('cfg-key')) document.getElementById('cfg-key').value=SB_KEY;
   if(document.getElementById('cfg-base-url')) document.getElementById('cfg-base-url').value=BASE_URL;
