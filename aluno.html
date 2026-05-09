@@ -7,6 +7,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Meu Treino · Jo Silva PT</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#C8A96E">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Jo Silva PT">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -148,6 +152,18 @@ button{cursor:pointer;border:none;background:none}
 
 /* ── SEC TITLE ── */
 .sec-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
+
+/* ── PWA INSTALL BANNER ── */
+.install-banner{position:fixed;bottom:calc(72px + var(--safe-bottom));left:12px;right:12px;z-index:300;background:var(--bg2);border:1.5px solid var(--gold);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:slideUp .4s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.install-banner-icon{font-size:28px;flex-shrink:0}
+.install-banner-text{flex:1}
+.install-banner-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:1px}
+.install-banner-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.install-banner-btns{display:flex;gap:8px;flex-shrink:0}
+.install-btn{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:8px;cursor:pointer}
+.install-btn-yes{background:var(--gold);color:#0a0a0a;border:none}
+.install-btn-no{background:none;border:1px solid var(--border2);color:var(--muted)}
 </style>
 </head>
 <body>
@@ -276,6 +292,20 @@ button{cursor:pointer;border:none;background:none}
     <span class="bnav-icon">◎</span>Dicas
   </button>
 </nav>
+
+
+<!-- PWA INSTALL BANNER -->
+<div class="install-banner" id="install-banner" style="display:none">
+  <div class="install-banner-icon">📲</div>
+  <div class="install-banner-text">
+    <div class="install-banner-title">Instalar como App</div>
+    <div class="install-banner-sub">Acede direto do ecrã inicial</div>
+  </div>
+  <div class="install-banner-btns">
+    <button class="install-btn install-btn-no" onclick="dismissInstall()">Agora não</button>
+    <button class="install-btn install-btn-yes" id="install-btn" onclick="installPWA()">INSTALAR</button>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -602,6 +632,52 @@ async function renderChart() {
 }
 
 init();
+
+// ── PWA / SERVICE WORKER ──
+let deferredPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+  });
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show banner only if not already installed and not dismissed
+  if (!localStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => {
+      document.getElementById('install-banner').style.display = 'flex';
+    }, 3000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').style.display = 'none';
+  deferredPrompt = null;
+  toast('APP INSTALADO! 🎉');
+});
+
+function installPWA() {
+  if (!deferredPrompt) {
+    // iOS fallback — show instructions
+    toast('No iOS: partilha → "Adicionar ao ecrã inicial"');
+    dismissInstall();
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(choice => {
+    deferredPrompt = null;
+    document.getElementById('install-banner').style.display = 'none';
+  });
+}
+
+function dismissInstall() {
+  document.getElementById('install-banner').style.display = 'none';
+  localStorage.setItem('pwa-dismissed', '1');
+}
+
 </script>
 </body>
 </html>
