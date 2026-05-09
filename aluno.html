@@ -2,173 +2,280 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Meu Treino · Jo Silva PT</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--gold:#C8A96E;--gold2:#8a7449;--bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--border:#2a2a2a;--text:#e8e8e8;--muted:#888}
-html,body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh}
-input,select,textarea,button{font-family:'Barlow Condensed',sans-serif}
-
-.topbar{background:#0d0d0d;border-bottom:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:100}
-.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:3px;padding:12px 0}
-.aluna-name{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:12px 0}
-
-.nav-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto}
-.ntab{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted);padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;transition:color .2s}
-.ntab.active{color:var(--gold);border-bottom-color:var(--gold)}
-.ntab:hover:not(.active){color:#ccc}
-
-.page{display:none;padding:18px;max-width:700px;margin:0 auto}
-.page.active{display:block}
-
-.sec-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
-
-/* TREINO */
-.treino-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.ttab{background:transparent;border:1px solid #444;color:#888;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:7px 14px;cursor:pointer;transition:all .2s}
-.ttab.active{border-color:var(--gold);color:var(--gold)}
-.ttab:hover:not(.active){color:#ccc;border-color:#666}
-
-.treino-card{background:var(--bg2);border:1px solid var(--border);margin-bottom:16px}
-.t-hdr{background:var(--gold);padding:12px 16px}
-.t-dia{font-size:10px;color:#0d0d0d;letter-spacing:4px;text-transform:uppercase;font-weight:700}
-.t-nome{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#0d0d0d;letter-spacing:1px;line-height:1.1}
-.t-foco{background:var(--bg3);padding:8px 16px;border-left:3px solid var(--gold);font-size:13px;color:#aaa}
-.t-foco strong{color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase}
-
-.ex-row{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid #222;gap:10px;flex-wrap:wrap}
-.ex-row:last-child{border-bottom:none}
-.ex-num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);width:30px;flex-shrink:0}
-.ex-info{flex:1;min-width:130px}
-.ex-nome{font-size:15px;font-weight:600;color:#fff;line-height:1.2}
-.ex-obs{font-size:11px;color:#666;font-style:italic;margin-top:2px}
-.ex-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.series-pill{background:#0d0d0d;border:1px solid #444;padding:5px 10px;text-align:center}
-.series-num{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#ccc;letter-spacing:1px}
-.series-lbl{font-size:9px;color:#555;text-transform:uppercase}
-.carga-wrap{display:flex;flex-direction:column;align-items:center;gap:3px}
-.carga-lbl{font-size:9px;color:#777;letter-spacing:2px;text-transform:uppercase}
-.carga-row{display:flex;align-items:center;gap:4px}
-.carga-input{background:#0d0d0d;border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:20px;width:64px;padding:4px 6px;text-align:center;outline:none}
-.carga-input:focus{border-color:#fff}
-.carga-unit{font-size:11px;color:#666}
-
-.btn-gold{width:100%;background:var(--gold);color:#0d0d0d;border:none;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;padding:12px;cursor:pointer;margin-top:14px;transition:opacity .2s}
-.btn-gold:hover{opacity:.85}
-.btn-gold:active{opacity:.6}
-
-/* EVOLUÇÃO */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:18px}
-.stat-box{background:var(--bg2);border:1px solid var(--border);padding:12px;text-align:center}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);letter-spacing:1px}
-.stat-lbl{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px;margin-top:2px}
-.chart-card{background:var(--bg2);border:1px solid var(--border);padding:14px;margin-bottom:16px}
-.chart-sel{background:var(--bg3);border:1px solid #444;color:var(--text);padding:7px 12px;font-size:14px;outline:none;width:100%;margin-bottom:12px}
-.hist-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid #222;font-size:13px}
-.hist-row:last-child{border-bottom:none}
-.hist-treino{color:#ccc;font-weight:600;font-size:14px}
-.hist-data{color:var(--muted);font-size:12px}
-.hist-val{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--gold);letter-spacing:1px}
-
-/* ORIENTAÇÕES */
-.orient-card{background:var(--bg2);border:1px solid var(--border);border-left:4px solid var(--gold);padding:16px;margin-bottom:12px}
-.orient-titulo{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
-.orient-texto{font-size:14px;color:#ccc;line-height:1.6}
-.orient-texto strong{color:#fff;font-weight:600}
-
-.personal-card{background:var(--bg2);border:1px solid var(--border);padding:18px;margin-bottom:16px;text-align:center}
-.personal-av{width:56px;height:56px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#0d0d0d;margin:0 auto 10px}
-.personal-nome{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:2px}
-.personal-cargo{font-size:12px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
-.personal-contato{margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.contato-btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:7px 16px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
-.contato-btn:hover{background:var(--gold);color:#0d0d0d}
-
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0d0d0d;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;padding:10px 28px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
-.toast.show{opacity:1}
-.empty{padding:24px;text-align:center;color:#555;font-size:13px}
-.loading{padding:24px;text-align:center;color:var(--muted);font-size:14px;letter-spacing:2px;font-family:'Bebas Neue',sans-serif}
-
-@media(max-width:480px){
-  .ntab{font-size:12px;padding:12px 10px;letter-spacing:1px}
-  .ex-right{gap:6px}
-  .carga-input{width:56px;font-size:18px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --gold:#C8A96E;--gold2:#8a7449;--gold3:rgba(200,169,110,.1);
+  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1c;--bg4:#222;
+  --border:#2a2a2a;--border2:#333;
+  --text:#f0f0f0;--muted:#777;--dim:#444;
+  --green:#5DCA9A;--red:#e05555;
+  --radius:14px;--radius-sm:10px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+button{cursor:pointer;border:none;background:none}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:3px}
+.aluno-nome{font-size:13px;color:var(--muted);font-weight:500}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(12,12,12,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-bottom)}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;color:var(--dim);font-size:10px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.bnav-item.active{color:var(--gold)}
+.bnav-icon{font-size:20px;line-height:1}
+
+/* ── SCREENS ── */
+.screen{display:none;padding-bottom:calc(72px + var(--safe-bottom))}
+.screen.active{display:block}
+
+/* ── PAGE CONTENT ── */
+.page-content{padding:16px;max-width:600px;margin:0 auto}
+
+/* ── HERO GREETING ── */
+.hero{padding:24px 18px 16px;background:linear-gradient(180deg,rgba(200,169,110,.06) 0%,transparent 100%);border-bottom:1px solid var(--border)}
+.hero-greeting{font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#fff;letter-spacing:2px;line-height:1}
+.hero-sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* ── TREINO SELECTOR ── */
+.treino-selector{display:flex;gap:8px;padding:14px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid var(--border)}
+.treino-selector::-webkit-scrollbar{display:none}
+.ttab{background:var(--bg3);border:1.5px solid var(--border);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:8px 16px;border-radius:30px;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.ttab.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
+
+/* ── TREINO HEADER ── */
+.treino-header{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.treino-dia{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.treino-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;letter-spacing:1px;line-height:1.1}
+.treino-count{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* ── EXERCICIO CARD ── */
+.ex-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.ex-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.ex-card.done{border-color:var(--green)}
+.ex-card-top{display:flex;align-items:flex-start;gap:12px;padding:14px}
+.ex-number{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;min-width:36px}
+.ex-card.done .ex-number{color:var(--green)}
+.ex-body{flex:1}
+.ex-name{font-size:16px;font-weight:600;color:var(--text);line-height:1.2}
+.ex-obs{font-size:12px;color:var(--muted);margin-top:3px;font-style:italic}
+.ex-pills{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.pill{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--muted)}
+.pill strong{color:var(--text);font-weight:600}
+.ex-check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;flex-shrink:0;transition:all .2s}
+.ex-card.done .ex-check{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ── CARGA INPUT ── */
+.ex-carga{display:flex;align-items:center;gap:0;background:var(--bg3);border-top:1px solid var(--border);padding:10px 14px}
+.carga-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;flex:1}
+.carga-ctrl{display:flex;align-items:center;gap:10px}
+.carga-btn{width:36px;height:36px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.carga-btn:active{background:var(--gold);color:#0a0a0a;border-color:var(--gold)}
+.carga-value{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);min-width:70px;text-align:center;line-height:1}
+.carga-kg{font-size:12px;color:var(--muted)}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{padding:0 16px 14px}
+.progress-bar{height:3px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .4s}
+.progress-text{font-size:11px;color:var(--muted);margin-top:6px;text-align:right}
+
+/* ── REGISTER BTN ── */
+.register-wrap{padding:16px}
+.btn-register{width:100%;background:var(--gold);color:#0a0a0a;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;padding:16px;border-radius:var(--radius);transition:opacity .2s}
+.btn-register:active{opacity:.8}
+.btn-register:disabled{opacity:.4}
+
+/* ── SUCCESS BANNER ── */
+.success-banner{background:rgba(93,202,154,.1);border:1.5px solid var(--green);border-radius:var(--radius);padding:16px;margin:16px;display:flex;align-items:center;gap:12px;display:none}
+.success-icon{font-size:28px}
+.success-text{font-size:14px;color:var(--green);font-weight:500}
+.success-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+
+/* ── CHART ── */
+.chart-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.chart-sel{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:12px 14px;border-radius:var(--radius-sm);font-size:14px;outline:none;margin-bottom:14px;-webkit-appearance:none}
+.chart-sel:focus{border-color:var(--gold)}
+
+/* ── HIST ITEMS ── */
+.hist-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.hist-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+.hist-item:last-child{border-bottom:none}
+.hist-nome{font-size:14px;font-weight:500;color:var(--text)}
+.hist-data{font-size:12px;color:var(--muted);margin-top:2px}
+.hist-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)}
+.hist-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-right:4px}
+
+/* ── ORIENTAÇÕES ── */
+.personal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;text-align:center}
+.personal-av{width:60px;height:60px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#0a0a0a;margin:0 auto 12px}
+.personal-nome{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:2px}
+.personal-cargo{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+.personal-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.contact-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:10px 18px;border-radius:var(--radius-sm);text-decoration:none;transition:all .2s}
+.contact-btn:active{background:var(--gold);color:#0a0a0a}
+
+.orient-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;border-left:3px solid var(--gold)}
+.orient-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
+.orient-text{font-size:14px;color:#bbb;line-height:1.65}
+.orient-text strong{color:#fff;font-weight:600}
+
+/* ── EMPTY / LOADING ── */
+.empty{padding:48px 20px;text-align:center;color:var(--muted);font-size:14px}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.loading{padding:48px 20px;text-align:center;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(80px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:12px 24px;border-radius:30px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── SEC TITLE ── */
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="brand">JO SILVA</div>
-  <div class="aluna-name" id="aluna-name-top">carregando...</div>
+  <div class="brand">JO SILVA PT</div>
+  <div class="aluno-nome" id="aluno-nome-top">A carregar...</div>
 </div>
 
-<div class="nav-tabs">
-  <button class="ntab active" onclick="goPage('treino')">TREINO</button>
-  <button class="ntab" onclick="goPage('evolucao')">EVOLUÇÃO</button>
-  <button class="ntab" onclick="goPage('orientacoes')">ORIENTAÇÕES</button>
-</div>
+<!-- ═══ TREINO ═══ -->
+<div id="screen-treino" class="screen active">
+  <div id="treino-hero" class="hero" style="display:none">
+    <div class="hero-greeting">Bom treino,</div>
+    <div class="hero-name" id="hero-name"></div>
+    <div class="hero-sub" id="hero-sub"></div>
+  </div>
 
-<!-- TREINO -->
-<div id="page-treino" class="page active">
-  <div class="treino-tabs" id="treino-tabs"></div>
-  <div id="treino-content"><div class="loading">CARREGANDO TREINOS...</div></div>
-</div>
+  <!-- Seletor de treinos -->
+  <div class="treino-selector" id="treino-selector" style="display:none"></div>
 
-<!-- EVOLUÇÃO -->
-<div id="page-evolucao" class="page">
-  <div class="stat-grid" id="evo-stats"></div>
-  <div class="chart-card">
-    <select class="chart-sel" id="evo-select" onchange="renderChart()">
-      <option value="">Selecione um exercício para ver sua progressão...</option>
-    </select>
-    <div style="position:relative;width:100%;height:200px">
-      <canvas id="myChart" role="img" aria-label="Gráfico de progressão de carga"></canvas>
+  <!-- Header do treino ativo -->
+  <div id="treino-header" style="display:none">
+    <div class="treino-header">
+      <div class="treino-dia" id="t-dia"></div>
+      <div class="treino-title" id="t-title"></div>
+      <div class="treino-count" id="t-count"></div>
+    </div>
+    <div class="progress-wrap" style="padding-top:12px">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="progress-text">0 de 0 exercícios concluídos</div>
     </div>
   </div>
-  <div class="sec-title">HISTÓRICO</div>
-  <div style="background:var(--bg2);border:1px solid var(--border)" id="evo-hist"></div>
-</div>
 
-<!-- ORIENTAÇÕES -->
-<div id="page-orientacoes" class="page">
-  <div class="personal-card">
-    <div class="personal-av">JS</div>
-    <div class="personal-nome">JO SILVA</div>
-    <div class="personal-cargo">Personal Trainer</div>
-    <div class="personal-contato">
-      <a class="contato-btn" href="https://instagram.com/ojo.silva" target="_blank">INSTAGRAM</a>
-      <a class="contato-btn" href="https://ojosilva.com" target="_blank">WEBSITE</a>
+  <!-- Lista de exercícios -->
+  <div id="ex-list" class="ex-list"></div>
+
+  <!-- Banner de sucesso -->
+  <div class="success-banner" id="success-banner">
+    <div class="success-icon">🏆</div>
+    <div>
+      <div class="success-text">Sessão registada!</div>
+      <div class="success-sub">Excelente trabalho. Até ao próximo treino!</div>
     </div>
   </div>
-  <div class="orient-card">
-    <div class="orient-titulo">AQUECIMENTO</div>
-    <div class="orient-texto">Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve de adaptação com carga reduzida.</div>
+
+  <!-- Botão registar -->
+  <div class="register-wrap" id="register-wrap" style="display:none">
+    <button class="btn-register" id="btn-register" onclick="registrar()">REGISTAR SESSÃO</button>
   </div>
-  <div class="orient-card">
-    <div class="orient-titulo">DESCANSO ENTRE SÉRIES</div>
-    <div class="orient-texto"><strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 segundos.<br><strong>Isoladores e máquinas</strong>: 45–60 segundos.<br>Mantenha o foco — descanso longo esfria o estímulo.</div>
-  </div>
-  <div class="orient-card">
-    <div class="orient-titulo">EXECUÇÃO</div>
-    <div class="orient-texto">Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição precisa ser difícil — se saiu fácil, sobe a carga no próximo treino.</div>
-  </div>
-  <div class="orient-card">
-    <div class="orient-titulo">PROGRESSÃO DE CARGA</div>
-    <div class="orient-texto">Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.</div>
-  </div>
-  <div class="orient-card">
-    <div class="orient-titulo">REGISTRE SUAS CARGAS</div>
-    <div class="orient-texto">Sempre preencha as cargas aqui no app antes de sair do ginásio. Sem registro, não tem progressão — é simples assim.</div>
-  </div>
-  <div class="orient-card">
-    <div class="orient-titulo">DÚVIDAS</div>
-    <div class="orient-texto">Qualquer dúvida sobre execução, carga ou desconforto — me chama no direct do <strong>Instagram @ojo.silva</strong>. Estou aqui pra isso.</div>
+
+  <!-- Loading / empty -->
+  <div id="treino-loading" class="loading">A CARREGAR...</div>
+</div>
+
+<!-- ═══ EVOLUÇÃO ═══ -->
+<div id="screen-evolucao" class="screen" style="display:none">
+  <div class="page-content">
+    <div class="stats-row" id="evo-stats">
+      <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Sessões</div></div>
+      <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Semanas</div></div>
+      <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Dias</div></div>
+    </div>
+    <div class="chart-wrap">
+      <select class="chart-sel" id="evo-select" onchange="renderChart()">
+        <option value="">Selecione um exercício...</option>
+      </select>
+      <div style="position:relative;height:200px">
+        <canvas id="myChart" role="img" aria-label="Progressão de carga"></canvas>
+      </div>
+    </div>
+    <div class="sec-title">HISTÓRICO DE TREINOS</div>
+    <div id="evo-hist"><div class="empty">Nenhuma sessão registada ainda.</div></div>
   </div>
 </div>
+
+<!-- ═══ ORIENTAÇÕES ═══ -->
+<div id="screen-orientacoes" class="screen" style="display:none">
+  <div class="page-content">
+    <div class="personal-card">
+      <div class="personal-av">JS</div>
+      <div class="personal-nome">JO SILVA</div>
+      <div class="personal-cargo">Personal Trainer</div>
+      <div class="personal-btns">
+        <a class="contact-btn" href="https://instagram.com/ojo.silva" target="_blank">📷 INSTAGRAM</a>
+        <a class="contact-btn" href="https://ojosilva.com" target="_blank">🌐 WEBSITE</a>
+      </div>
+    </div>
+
+    <div class="orient-card">
+      <div class="orient-title">AQUECIMENTO</div>
+      <div class="orient-text">Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve com carga reduzida.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title">DESCANSO ENTRE SÉRIES</div>
+      <div class="orient-text"><strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 seg.<br><strong>Isoladores e máquinas</strong>: 45–60 seg. Descanso longo esfria o estímulo.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title">EXECUÇÃO</div>
+      <div class="orient-text">Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição deve ser difícil — se saiu fácil, sobe a carga.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title">PROGRESSÃO DE CARGA</div>
+      <div class="orient-text">Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title">REGISTA AS CARGAS</div>
+      <div class="orient-text">Sempre preenche as cargas no app antes de sair do ginásio. Sem registo, não há progressão — é simples assim.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title">DÚVIDAS</div>
+      <div class="orient-text">Qualquer dúvida sobre execução, carga ou desconforto — chama no direct do <strong>Instagram @ojo.silva</strong>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" onclick="goScreen('treino')" id="nav-treino">
+    <span class="bnav-icon">◉</span>Treino
+  </button>
+  <button class="bnav-item" onclick="goScreen('evolucao')" id="nav-evolucao">
+    <span class="bnav-icon">↗</span>Evolução
+  </button>
+  <button class="bnav-item" onclick="goScreen('orientacoes')" id="nav-orientacoes">
+    <span class="bnav-icon">◎</span>Dicas
+  </button>
+</nav>
 
 <div class="toast" id="toast"></div>
 
@@ -178,182 +285,320 @@ const ALUNO_ID = PARAMS.get('id');
 const SB_URL = 'https://oelbocimyfwwzkzbyswg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 
-let treinos=[], exerciciosPorTreino={}, currentTreinoId=null, cargas={}, sessoes=[], chartInst=null;
+let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
+let cargas = {}, doneSet = new Set(), sessoes = [], chartInst = null;
 
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+// ── UTILS ──
+const toast = msg => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+};
 
-async function sbFetch(path, opts={}){
-  if(!SB_URL||!SB_KEY) return null;
-  try{
-    const r=await fetch(SB_URL+'/rest/v1/'+path,{
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+const lc = (k, d = null) => {
+  try { const v = localStorage.getItem('aluno_' + ALUNO_ID + '_' + k); return v ? JSON.parse(v) : d; } catch(e) { return d; }
+};
+const sc = (k, v) => {
+  try { localStorage.setItem('aluno_' + ALUNO_ID + '_' + k, JSON.stringify(v)); } catch(e) {}
+};
+
+const formatDate = d => {
+  if (!d) return '—';
+  const p = d.split('T')[0].split('-');
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+};
+
+// ── SUPABASE ──
+async function sbFetch(path, opts = {}) {
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/' + path, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(opts.headers || {}) },
       ...opts
     });
-    if(!r.ok) return null;
-    const ct=r.headers.get('content-type');
-    return ct&&ct.includes('json')?await r.json():[];
-  }catch(e){return null;}
+    if (!r.ok) return null;
+    const ct = r.headers.get('content-type');
+    return ct && ct.includes('json') ? await r.json() : [];
+  } catch(e) { return null; }
 }
 
-function lc(k,d=null){try{const v=localStorage.getItem('aluno_'+ALUNO_ID+'_'+k);return v?JSON.parse(v):d;}catch(e){return d;}}
-function sc(k,v){try{localStorage.setItem('aluno_'+ALUNO_ID+'_'+k,JSON.stringify(v));}catch(e){}}
+// ── NAVIGATION ──
+function goScreen(screen) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('screen-' + screen);
+  s.style.display = 'block'; s.classList.add('active');
+  document.getElementById('nav-' + screen).classList.add('active');
+  if (screen === 'evolucao') renderEvolucao();
+}
 
-async function init(){
-  if(!ALUNO_ID){document.getElementById('treino-content').innerHTML='<div class="empty">Link inválido. Peça o link correto ao seu personal.</div>';return;}
-  cargas=lc('cargas',{});
-  const alunos=await sbFetch(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo`)||[];
-  const aluno=alunos[0];
-  if(!aluno||!aluno.ativo){document.getElementById('treino-content').innerHTML='<div class="empty">Acesso não encontrado. Fale com o seu personal.</div>';return;}
-  document.getElementById('aluna-name-top').textContent=aluno.nome.split(' ')[0].toUpperCase();
-  document.title=aluno.nome.split(' ')[0]+' · Jo Silva PT';
+// ── INIT ──
+async function init() {
+  if (!ALUNO_ID) {
+    document.getElementById('treino-loading').innerHTML = '<div class="empty"><div class="empty-icon">🔗</div>Link inválido.<br>Peça o link correto ao seu personal.</div>';
+    return;
+  }
+
+  cargas = lc('cargas', {});
+  doneSet = new Set(lc('done', []));
+
+  const alunos = await sbFetch(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo`) || [];
+  const aluno = alunos[0];
+
+  if (!aluno || !aluno.ativo) {
+    document.getElementById('treino-loading').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>Acesso não encontrado.<br>Fala com o teu personal.</div>';
+    return;
+  }
+
+  const firstName = aluno.nome.split(' ')[0];
+  document.getElementById('aluno-nome-top').textContent = firstName;
+  document.getElementById('hero-name').textContent = firstName.toUpperCase();
+  document.getElementById('hero-sub').textContent = aluno.objetivo ? `Objetivo: ${aluno.objetivo}` : 'Bora treinar 💪';
+  document.title = firstName + ' · Jo Silva PT';
+
   await loadTreinos();
-  await loadSessoes();
-  renderEvolucao();
+  sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
 }
 
-async function loadTreinos(){
-  treinos=await sbFetch(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`)||[];
-  const tabs=document.getElementById('treino-tabs');
-  if(!treinos.length){document.getElementById('treino-content').innerHTML='<div class="empty">Nenhum treino cadastrado ainda. Aguarde seu personal montar seu plano.</div>';tabs.innerHTML='';return;}
-  tabs.innerHTML=treinos.map((t,i)=>`<button class="ttab${i===0?' active':''}" onclick="selectTreino('${t.id}',this)">${t.nome}</button>`).join('');
+// ── TREINOS ──
+async function loadTreinos() {
+  treinos = await sbFetch(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`) || [];
+  document.getElementById('treino-loading').style.display = 'none';
+
+  if (!treinos.length) {
+    document.getElementById('treino-loading').innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Nenhum treino disponível ainda.<br>O teu personal está a preparar o teu plano.</div>';
+    document.getElementById('treino-loading').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('treino-hero').style.display = 'block';
+  document.getElementById('treino-header').style.display = 'block';
+  document.getElementById('register-wrap').style.display = 'block';
+
+  // Build selector
+  const sel = document.getElementById('treino-selector');
+  sel.style.display = 'flex';
+  sel.innerHTML = treinos.map((t, i) =>
+    `<button class="ttab${i === 0 ? ' active' : ''}" onclick="selectTreino('${t.id}', this)">${t.nome}</button>`
+  ).join('');
+
   await selectTreinoById(treinos[0].id);
 }
 
-async function selectTreino(id, btn){
-  document.querySelectorAll('.ttab').forEach(b=>b.classList.remove('active'));
+async function selectTreino(id, btn) {
+  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   await selectTreinoById(id);
 }
 
-async function selectTreinoById(id){
-  currentTreinoId=id;
-  if(!exerciciosPorTreino[id]){
-    exerciciosPorTreino[id]=await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`)||[];
+async function selectTreinoById(id) {
+  currentTreinoId = id;
+  if (!exerciciosPorTreino[id]) {
+    exerciciosPorTreino[id] = await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
   }
+  doneSet = new Set(lc('done_' + id, []));
   renderTreino();
 }
 
-function renderTreino(){
-  const t=treinos.find(x=>x.id===currentTreinoId);
-  const exs=exerciciosPorTreino[currentTreinoId]||[];
-  if(!t){return;}
-  let html=`<div class="treino-card">
-    <div class="t-hdr"><div class="t-dia">${t.descricao||''}</div><div class="t-nome">${t.nome}</div></div>`;
-  if(!exs.length){html+='<div class="empty">Nenhum exercício neste treino.</div>';}
-  else {
-    exs.forEach((ex,i)=>{
-      const v=cargas[ex.id]||'';
-      html+=`<div class="ex-row">
-        <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
-        <div class="ex-info"><div class="ex-nome">${ex.nome}</div>${ex.obs?`<div class="ex-obs">${ex.obs}</div>`:''}</div>
-        <div class="ex-right">
-          <div class="series-pill"><div class="series-num">${ex.series||'3'} × ${ex.reps||'10-12'}</div><div class="series-lbl">séries</div></div>
-          <div class="carga-wrap">
-            <div class="carga-lbl">Carga</div>
-            <div class="carga-row">
-              <input class="carga-input" type="number" min="0" step="0.5" placeholder="—" value="${v}"
-                onchange="setCarga('${ex.id}',this.value)" oninput="setCarga('${ex.id}',this.value)">
-              <span class="carga-unit">kg</span>
-            </div>
+function renderTreino() {
+  const t = treinos.find(x => x.id === currentTreinoId);
+  const exs = exerciciosPorTreino[currentTreinoId] || [];
+  if (!t) return;
+
+  document.getElementById('t-dia').textContent = t.descricao || '';
+  document.getElementById('t-title').textContent = t.nome;
+  document.getElementById('t-count').textContent = `${exs.length} exercício${exs.length !== 1 ? 's' : ''}`;
+
+  updateProgress(exs);
+
+  const container = document.getElementById('ex-list');
+  if (!exs.length) {
+    container.innerHTML = '<div class="empty">Sem exercícios neste treino.</div>';
+    return;
+  }
+
+  container.innerHTML = exs.map((ex, i) => {
+    const isDone = doneSet.has(ex.id);
+    const carga = cargas[ex.id] || 0;
+    return `
+    <div class="ex-card${isDone ? ' done' : ''}" id="ex-${ex.id}">
+      <div class="ex-card-top" onclick="toggleDone('${ex.id}')">
+        <div class="ex-number">${String(i + 1).padStart(2, '0')}</div>
+        <div class="ex-body">
+          <div class="ex-name">${ex.nome}</div>
+          ${ex.obs ? `<div class="ex-obs">${ex.obs}</div>` : ''}
+          <div class="ex-pills">
+            <div class="pill"><strong>${ex.series || '3'}</strong> séries</div>
+            <div class="pill"><strong>${ex.reps || '10-12'}</strong> reps</div>
+            ${isDone ? '<div class="pill" style="border-color:var(--green);color:var(--green)">✓ Feito</div>' : ''}
           </div>
         </div>
-      </div>`;
-    });
-  }
-  html+=`</div><button class="btn-gold" onclick="registrar()">REGISTRAR SESSÃO DE HOJE</button>`;
-  document.getElementById('treino-content').innerHTML=html;
+        <div class="ex-check">${isDone ? '✓' : ''}</div>
+      </div>
+      <div class="ex-carga">
+        <div class="carga-label">Carga usada</div>
+        <div class="carga-ctrl">
+          <button class="carga-btn" onclick="ajustarCarga('${ex.id}', -2.5)">−</button>
+          <div>
+            <div class="carga-value" id="carga-val-${ex.id}">${carga || '—'}</div>
+            <div class="carga-kg">${carga ? 'kg' : ''}</div>
+          </div>
+          <button class="carga-btn" onclick="ajustarCarga('${ex.id}', 2.5)">＋</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function setCarga(id, v){
-  if(v!=='') cargas[id]=parseFloat(v); else delete cargas[id];
-  sc('cargas',cargas);
-}
-
-async function registrar(){
-  const t=treinos.find(x=>x.id===currentTreinoId);
-  const exs=exerciciosPorTreino[currentTreinoId]||[];
-  const now=new Date();
-  const sessaoData={aluno_id:ALUNO_ID,treino_id:currentTreinoId,treino_nome:t?.nome||'',data:now.toISOString().split('T')[0]};
-  const sesRes=await sbFetch('sessoes',{method:'POST',body:JSON.stringify(sessaoData)});
-  if(!sesRes||!sesRes[0]){
-    const offlineSessoes=lc('offline_sessoes',[])||[];
-    offlineSessoes.push({...sessaoData,ts:now.getTime(),cargas:Object.fromEntries(exs.filter(e=>cargas[e.id]).map(e=>[e.id,{nome:e.nome,carga:cargas[e.id]}]))});
-    sc('offline_sessoes',offlineSessoes);
-    toast('SESSÃO SALVA (OFFLINE)'); return;
-  }
-  const sessaoId=sesRes[0].id;
-  const cargasPayload=exs.filter(e=>cargas[e.id]).map(e=>({sessao_id:sessaoId,exercicio_id:e.id,carga_kg:cargas[e.id]}));
-  if(cargasPayload.length) await sbFetch('sessao_cargas',{method:'POST',body:JSON.stringify(cargasPayload)});
-  sessoes.unshift({...sesRes[0],treino_nome:t?.nome});
-  renderEvolucaoStats();
-  toast('SESSÃO REGISTRADA!');
-}
-
-async function loadSessoes(){
-  sessoes=await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=50`)||[];
-}
-
-function goPage(p){
-  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.ntab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
-  document.querySelector(`[onclick="goPage('${p}')"]`).classList.add('active');
-  if(p==='evolucao') renderEvolucao();
-}
-
-async function renderEvolucao(){
-  renderEvolucaoStats();
-  const sel=document.getElementById('evo-select');
-  if(sel.options.length===1){
-    const todos=Object.values(exerciciosPorTreino).flat();
-    if(!todos.length){
-      for(const t of treinos){
-        if(!exerciciosPorTreino[t.id])
-          exerciciosPorTreino[t.id]=await sbFetch(`exercicios?treino_id=eq.${t.id}&order=ordem.asc`)||[];
+function toggleDone(exId) {
+  if (doneSet.has(exId)) { doneSet.delete(exId); } else { doneSet.add(exId); }
+  sc('done_' + currentTreinoId, [...doneSet]);
+  const card = document.getElementById('ex-' + exId);
+  const exs = exerciciosPorTreino[currentTreinoId] || [];
+  if (card) {
+    card.classList.toggle('done', doneSet.has(exId));
+    const check = card.querySelector('.ex-check');
+    if (check) check.textContent = doneSet.has(exId) ? '✓' : '';
+    const num = card.querySelector('.ex-number');
+    if (num) num.style.color = doneSet.has(exId) ? 'var(--green)' : 'var(--gold)';
+    const pills = card.querySelector('.ex-pills');
+    if (pills) {
+      const ex = exs.find(e => e.id === exId);
+      if (ex) {
+        const isDone = doneSet.has(exId);
+        pills.innerHTML = `
+          <div class="pill"><strong>${ex.series || '3'}</strong> séries</div>
+          <div class="pill"><strong>${ex.reps || '10-12'}</strong> reps</div>
+          ${isDone ? '<div class="pill" style="border-color:var(--green);color:var(--green)">✓ Feito</div>' : ''}`;
       }
     }
-    Object.values(exerciciosPorTreino).flat().forEach(ex=>{
-      const o=document.createElement('option');o.value=ex.id;o.textContent=ex.nome;sel.appendChild(o);
+  }
+  updateProgress(exs);
+}
+
+function ajustarCarga(exId, delta) {
+  const atual = cargas[exId] || 0;
+  const novo = Math.max(0, Math.round((atual + delta) * 10) / 10);
+  cargas[exId] = novo;
+  sc('cargas', cargas);
+  const el = document.getElementById('carga-val-' + exId);
+  if (el) el.textContent = novo || '—';
+  const kgEl = el?.nextElementSibling;
+  if (kgEl) kgEl.textContent = novo ? 'kg' : '';
+}
+
+function updateProgress(exs) {
+  const done = exs.filter(e => doneSet.has(e.id)).length;
+  const total = exs.length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const fill = document.getElementById('progress-fill');
+  const text = document.getElementById('progress-text');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = `${done} de ${total} exercícios concluídos`;
+  const btn = document.getElementById('btn-register');
+  if (btn) btn.disabled = done === 0;
+}
+
+// ── REGISTAR SESSÃO ──
+async function registrar() {
+  const t = treinos.find(x => x.id === currentTreinoId);
+  const exs = exerciciosPorTreino[currentTreinoId] || [];
+  const btn = document.getElementById('btn-register');
+  btn.textContent = 'A GUARDAR...'; btn.disabled = true;
+
+  const sessaoData = {
+    aluno_id: ALUNO_ID, treino_id: currentTreinoId,
+    treino_nome: t?.nome || '', data: new Date().toISOString().split('T')[0]
+  };
+
+  const sesRes = await sbFetch('sessoes', { method: 'POST', body: JSON.stringify(sessaoData) });
+
+  if (sesRes && sesRes[0]) {
+    const sessaoId = sesRes[0].id;
+    const payload = exs
+      .filter(e => cargas[e.id])
+      .map(e => ({ sessao_id: sessaoId, exercicio_id: e.id, carga_kg: cargas[e.id] }));
+    if (payload.length) await sbFetch('sessao_cargas', { method: 'POST', body: JSON.stringify(payload) });
+    sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
+    toast('SESSÃO REGISTADA! 🏆');
+  } else {
+    // Offline fallback
+    const off = lc('offline', []) || [];
+    off.push({ ...sessaoData, ts: Date.now() });
+    sc('offline', off);
+    toast('GUARDADO OFFLINE ✓');
+  }
+
+  // Reset done
+  doneSet.clear(); sc('done_' + currentTreinoId, []);
+
+  // Show success
+  const banner = document.getElementById('success-banner');
+  banner.style.display = 'flex';
+  setTimeout(() => banner.style.display = 'none', 4000);
+
+  btn.textContent = 'REGISTAR SESSÃO';
+  updateProgress(exs);
+  renderTreino();
+}
+
+// ── EVOLUÇÃO ──
+async function renderEvolucao() {
+  if (!sessoes.length) {
+    sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
+  }
+
+  const semanas = Math.ceil(sessoes.length / 3) || 0;
+  const dias = sessoes.length > 0
+    ? Math.ceil((new Date() - new Date(sessoes[sessoes.length - 1].data)) / 86400000)
+    : 0;
+
+  document.getElementById('evo-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
+    <div class="stat-card"><div class="stat-val">${semanas}</div><div class="stat-lbl">Semanas</div></div>
+    <div class="stat-card"><div class="stat-val">${dias || '—'}</div><div class="stat-lbl">Dias</div></div>`;
+
+  // Populate exercise selector
+  const sel = document.getElementById('evo-select');
+  if (sel.options.length === 1) {
+    for (const t of treinos) {
+      if (!exerciciosPorTreino[t.id]) {
+        exerciciosPorTreino[t.id] = await sbFetch(`exercicios?treino_id=eq.${t.id}&order=ordem.asc`) || [];
+      }
+    }
+    Object.values(exerciciosPorTreino).flat().forEach(ex => {
+      const o = document.createElement('option'); o.value = ex.id; o.textContent = ex.nome; sel.appendChild(o);
     });
   }
-  const hist=document.getElementById('evo-hist');
-  if(!sessoes.length){hist.innerHTML='<div class="empty">Nenhuma sessão registrada ainda.</div>';return;}
-  hist.innerHTML=sessoes.slice(0,20).map(s=>`
-    <div class="hist-row">
-      <div><div class="hist-treino">${s.treino_nome||'Treino'}</div><div class="hist-data">${formatDate(s.data)}</div></div>
-    </div>`).join('');
+
+  // History
+  const hist = document.getElementById('evo-hist');
+  if (!sessoes.length) { hist.innerHTML = '<div class="empty">Nenhuma sessão registada ainda.</div>'; return; }
+  hist.innerHTML = `<div class="hist-card">` + sessoes.slice(0, 20).map(s => `
+    <div class="hist-item">
+      <div>
+        <div class="hist-nome">${s.treino_nome || 'Treino'}</div>
+        <div class="hist-data">${formatDate(s.data)}</div>
+      </div>
+      <div class="hist-val">✓</div>
+    </div>`).join('') + `</div>`;
 }
 
-function renderEvolucaoStats(){
-  const semanas=Math.ceil(sessoes.length/3)||0;
-  document.getElementById('evo-stats').innerHTML=`
-    <div class="stat-box"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
-    <div class="stat-box"><div class="stat-val">${semanas}</div><div class="stat-lbl">Semanas</div></div>
-    <div class="stat-box"><div class="stat-val">${sessoes.length>0?sessoes[0].treino_nome||'—':'—'}</div><div class="stat-lbl">Último treino</div></div>`;
-}
-
-async function renderChart(){
-  const exId=document.getElementById('evo-select').value; if(!exId) return;
-  const ids=sessoes.map(s=>s.id);
-  if(!ids.length) return;
-  const cargas_hist=await sbFetch(`sessao_cargas?exercicio_id=eq.${exId}&sessao_id=in.(${ids.join(',')})&select=*,sessoes(data)&order=sessoes(data).asc`)||[];
-  if(chartInst){chartInst.destroy();chartInst=null;}
-  if(!cargas_hist.length) return;
-  const ctx=document.getElementById('myChart').getContext('2d');
-  chartInst=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:cargas_hist.map(c=>formatDate(c.sessoes?.data||'')),
-      datasets:[{label:'Carga (kg)',data:cargas_hist.map(c=>c.carga_kg),borderColor:'#C8A96E',backgroundColor:'rgba(200,169,110,0.1)',pointBackgroundColor:'#C8A96E',pointRadius:5,tension:0.3,fill:true}]
+async function renderChart() {
+  const exId = document.getElementById('evo-select').value; if (!exId) return;
+  const ids = sessoes.map(s => s.id);
+  if (!ids.length) return;
+  const data = await sbFetch(`sessao_cargas?exercicio_id=eq.${exId}&sessao_id=in.(${ids.join(',')})&select=*,sessoes(data)&order=sessoes(data).asc`) || [];
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  if (!data.length) return;
+  const ctx = document.getElementById('myChart').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(c => formatDate(c.sessoes?.data || '')),
+      datasets: [{ label: 'Carga (kg)', data: data.map(c => c.carga_kg), borderColor: '#C8A96E', backgroundColor: 'rgba(200,169,110,0.08)', pointBackgroundColor: '#C8A96E', pointRadius: 5, tension: 0.35, fill: true }]
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11},callback:v=>v+'kg'},grid:{color:'#222'}}}}
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: '#1c1c1c' } }, y: { ticks: { color: '#666', font: { size: 10 }, callback: v => v + 'kg' }, grid: { color: '#1c1c1c' } } } }
   });
-}
-
-function formatDate(d){
-  if(!d) return '—';
-  const p=(d||'').split('T')[0].split('-');
-  return p.length===3?`${p[2]}/${p[1]}`:d;
 }
 
 init();
