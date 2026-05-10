@@ -219,6 +219,51 @@ button{cursor:pointer;border:none;background:none}
 .refei-descr{font-size:14px;color:var(--text);font-weight:500;line-height:1.3}
 .refei-macros-mini{font-size:11px;color:var(--muted);margin-top:4px}
 .refei-kcal{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);flex-shrink:0;align-self:center}
+.refei-tipo{font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--gold);letter-spacing:1.5px;margin-bottom:2px}
+.btn-add-refei{width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--gold);background:none;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.btn-add-refei:active{background:var(--gold);color:#080808}
+
+/* ── REGISTO MANUAL REFEIÇÃO ── */
+.add-refei-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center}
+.add-refei-sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:20px 18px;padding-bottom:calc(20px + var(--safe-bottom));max-height:93vh;overflow-y:auto}
+.add-refei-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:14px}
+.meal-tipos{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;margin-bottom:16px}
+.meal-tipos::-webkit-scrollbar{display:none}
+.meal-tipo-btn{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;padding:9px 14px;border-radius:30px;border:1.5px solid var(--border2);background:var(--bg3);color:var(--muted);white-space:nowrap;flex-shrink:0;transition:all .2s}
+.meal-tipo-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
+.draft-section{background:var(--bg3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px}
+.draft-section-hdr{font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.draft-item{padding:8px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px}
+.draft-item:last-child{border-bottom:none}
+.draft-item-nome{font-size:13px;color:var(--text);font-weight:600;line-height:1.2}
+.draft-item-ctrl{display:flex;align-items:center;gap:7px}
+.gram-btn{width:28px;height:28px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background .15s}
+.gram-btn:active{background:var(--gold);color:#080808;border-color:var(--gold)}
+.gram-inp{width:58px;background:var(--bg);border:1.5px solid var(--border);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:22px;text-align:center;border-radius:8px;padding:3px 0;outline:none;-webkit-appearance:none;-moz-appearance:textfield}
+.gram-inp:focus{border-color:var(--gold)}
+.gram-inp::-webkit-inner-spin-button,.gram-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.draft-item-kcal{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--muted);margin-left:auto}
+.draft-del{color:var(--dim);font-size:16px;padding:4px;line-height:1;flex-shrink:0}
+.draft-del:active{color:var(--red)}
+.meal-totals-bar{background:rgba(93,202,154,.06);border:1.5px solid rgba(93,202,154,.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;display:none}
+.totals-kcal{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--green);line-height:1}
+.totals-macros{display:flex;gap:16px;margin-top:5px;font-size:13px;color:var(--muted)}
+.totals-macros strong{color:var(--text)}
+.food-search-wrap{position:relative;margin-bottom:12px}
+.food-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+.food-search-inp{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:11px 14px 11px 36px;font-size:14px;border-radius:var(--radius-sm);outline:none;-webkit-appearance:none}
+.food-search-inp:focus{border-color:var(--gold)}
+.food-section-hdr{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px}
+.food-list-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(30,30,30,.7);cursor:pointer}
+.food-list-item:last-child{border-bottom:none}
+.food-item-info{flex:1;min-width:0}
+.food-item-nome{font-size:14px;color:var(--text);font-weight:500}
+.food-item-hint{font-size:11px;color:var(--dim);margin-top:2px}
+.food-add-btn{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);color:var(--gold);font-size:19px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;line-height:1}
+.food-add-btn.added{background:rgba(93,202,154,.1);border-color:var(--green);color:var(--green);font-size:13px}
+.btn-guardar-refei{width:100%;padding:16px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;margin-top:10px;transition:opacity .2s}
+.btn-guardar-refei:active{opacity:.8}
+
 /* ── SUGESTÃO DE REFEIÇÃO ── */
 .sug-meta-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .sug-meta-obj{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
@@ -427,6 +472,7 @@ button{cursor:pointer;border:none;background:none}
     </div>
 
     <div id="nutri-hoje-wrap">
+      <button class="btn-add-refei" onclick="openAddRefeiModal()">＋ REGISTAR REFEIÇÃO</button>
       <div id="refeicoes-hoje"></div>
     </div>
     <div id="nutri-hist-wrap" style="display:none">
@@ -436,6 +482,33 @@ button{cursor:pointer;border:none;background:none}
       <div id="sug-inventario"><div class="loading">A CARREGAR...</div></div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══ MODAL REGISTO MANUAL REFEIÇÃO ═══ -->
+<div class="add-refei-modal" id="add-refei-modal">
+  <div class="add-refei-sheet">
+    <div class="add-refei-title">REGISTAR REFEIÇÃO</div>
+
+    <!-- Tipo de refeição -->
+    <div class="meal-tipos" id="meal-tipos"></div>
+
+    <!-- Itens da refeição atual -->
+    <div class="draft-section" id="draft-section">
+      <div class="draft-section-hdr">REFEIÇÃO ACTUAL</div>
+      <div id="meal-draft"></div>
+    </div>
+    <div class="meal-totals-bar" id="meal-totals-bar"></div>
+
+    <!-- Pesquisa + lista de alimentos -->
+    <div class="food-search-wrap">
+      <span class="food-search-icon">🔍</span>
+      <input class="food-search-inp" id="food-search" type="search" placeholder="Pesquisar alimento..." oninput="renderFoodBrowser(this.value)" autocomplete="off">
+    </div>
+    <div id="food-browser"></div>
+
+    <button class="btn-guardar-refei" onclick="guardarRefeicaoManual()">GUARDAR REFEIÇÃO</button>
+    <button onclick="closeAddRefeiModal()" style="width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;margin-top:8px">Cancelar</button>
   </div>
 </div>
 
@@ -887,11 +960,13 @@ async function submitFeedback() {
 
 // ── NUTRIÇÃO ──
 const NUTRI_DASHARRAY = 264;
+let mealDraft = [], mealTipo = 'Almoço';
 
 async function renderNutricao() {
+  await loadPeso();
   const hoje = new Date().toISOString().split('T')[0];
   const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&data=eq.${hoje}&order=criado_em.asc`) || [];
-  const meta = parseInt(lc('meta_kcal', 2000) || 2000);
+  const meta = pesoCached > 0 ? calcDailyKcal(pesoCached, alunoObjetivo) : 2000;
 
   const kcal = refs.reduce((s,r) => s+(r.calorias||0), 0);
   const prot = refs.reduce((s,r) => s+(parseFloat(r.proteina)||0), 0);
@@ -923,12 +998,16 @@ async function renderNutricao() {
     return;
   }
   el.innerHTML = refs.map((r, i) => {
-    const hora = new Date(r.criado_em).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'});
+    const hora = r.criado_em ? new Date(r.criado_em).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'}) : '';
+    const tipo = r.tipo_refeicao || '';
     return `<div class="refei-card" style="animation:fadeUp .3s ease ${i*0.07}s both">
-      <div class="refei-hora">${hora}</div>
+      <div style="flex-shrink:0;padding-top:2px">
+        ${tipo ? `<div class="refei-tipo">${tipo}</div>` : ''}
+        <div class="refei-hora">${hora}</div>
+      </div>
       <div class="refei-info">
-        <div class="refei-descr">${r.descricao_ia || r.descricao_usuario || '—'}</div>
-        <div class="refei-macros-mini">P: ${r.proteina||0}g · C: ${r.carboidratos||0}g · G: ${r.gordura||0}g</div>
+        <div class="refei-descr">${r.descricao_usuario || '—'}</div>
+        <div class="refei-macros-mini">P: ${(+r.proteina||0).toFixed(0)}g · C: ${(+r.carboidratos||0).toFixed(0)}g · G: ${(+r.gordura||0).toFixed(0)}g</div>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <div class="refei-kcal">${r.calorias||'—'}</div>
@@ -939,22 +1018,29 @@ async function renderNutricao() {
 }
 
 async function renderNutriHist() {
-  const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&order=data.desc,criado_em.desc&limit=60`) || [];
+  const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&order=data.desc,criado_em.desc&limit=90`) || [];
   const el = document.getElementById('refeicoes-hist');
   if (!refs.length) { el.innerHTML = '<div class="empty">Sem histórico ainda.</div>'; return; }
   const byDay = {};
   refs.forEach(r => { if (!byDay[r.data]) byDay[r.data] = []; byDay[r.data].push(r); });
   el.innerHTML = Object.entries(byDay).map(([data, rs]) => {
-    const total = rs.reduce((s,r) => s+(r.calorias||0), 0);
-    return `<div style="margin-bottom:16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    const totalKcal = rs.reduce((s,r) => s+(+r.calorias||0), 0);
+    const totalProt = rs.reduce((s,r) => s+(+r.proteina||0), 0);
+    const totalCarb = rs.reduce((s,r) => s+(+r.carboidratos||0), 0);
+    const totalGord = rs.reduce((s,r) => s+(+r.gordura||0), 0);
+    return `<div style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--muted);letter-spacing:1px">${formatDate(data)}</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${total} kcal</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green)">${totalKcal} kcal</div>
       </div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:8px">P: ${totalProt.toFixed(0)}g · C: ${totalCarb.toFixed(0)}g · G: ${totalGord.toFixed(0)}g</div>
       ${rs.map(r=>`<div class="refei-card">
+        <div style="flex-shrink:0">
+          ${r.tipo_refeicao?`<div class="refei-tipo">${r.tipo_refeicao}</div>`:''}
+        </div>
         <div class="refei-info">
-          <div class="refei-descr">${r.descricao_ia||r.descricao_usuario||'—'}</div>
-          <div class="refei-macros-mini">P: ${r.proteina||0}g · C: ${r.carboidratos||0}g · G: ${r.gordura||0}g</div>
+          <div class="refei-descr">${r.descricao_usuario||'—'}</div>
+          <div class="refei-macros-mini">P: ${(+r.proteina||0).toFixed(0)}g · C: ${(+r.carboidratos||0).toFixed(0)}g · G: ${(+r.gordura||0).toFixed(0)}g</div>
         </div>
         <div class="refei-kcal">${r.calorias||'—'}</div>
       </div>`).join('')}
@@ -974,7 +1060,180 @@ function nutriTab(tab) {
 }
 
 async function deletarRefei(id) {
+  await sbFetch(`refeicao_itens?refeicao_id=eq.${id}`, {method:'DELETE'});
   await sbFetch(`refeicoes?id=eq.${id}`, {method:'DELETE'});
+  renderNutricao();
+}
+
+// ── REGISTO MANUAL REFEIÇÃO ──
+const MEAL_TIPOS = ['Pequeno-almoço','Almoço','Lanche','Jantar','Ceia'];
+const GRAM_DEFAULTS = {proteína:150, carbo:120, fibra:80, gordura:15};
+
+async function openAddRefeiModal() {
+  await loadAlimentos();
+  mealDraft = [];
+  mealTipo = 'Almoço';
+  document.getElementById('food-search').value = '';
+  renderMealTipos();
+  renderMealDraft();
+  renderFoodBrowser('');
+  document.getElementById('add-refei-modal').style.display = 'flex';
+}
+
+function closeAddRefeiModal() {
+  document.getElementById('add-refei-modal').style.display = 'none';
+}
+
+function setMealTipo(tipo) {
+  mealTipo = tipo;
+  renderMealTipos();
+}
+
+function renderMealTipos() {
+  document.getElementById('meal-tipos').innerHTML = MEAL_TIPOS.map(t =>
+    `<button class="meal-tipo-btn${t===mealTipo?' active':''}" onclick="setMealTipo('${t}')">${t}</button>`
+  ).join('');
+}
+
+function addToMeal(alimId) {
+  if (mealDraft.find(d => d.alimento_id === alimId)) return;
+  const a = alimentosList.find(x => x.id === alimId);
+  if (!a) return;
+  const gramas = GRAM_DEFAULTS[a.categoria] || 100;
+  mealDraft.push({
+    alimento_id: a.id, nome: a.nome, gramas,
+    cal100: +a.calorias_100g, prot100: +a.proteina_100g,
+    carb100: +a.carbo_100g, gord100: +a.gordura_100g
+  });
+  renderMealDraft();
+  renderFoodBrowser(document.getElementById('food-search').value);
+}
+
+function removeFromMeal(idx) {
+  mealDraft.splice(idx, 1);
+  renderMealDraft();
+  renderFoodBrowser(document.getElementById('food-search').value);
+}
+
+function updateGramas(idx, delta) {
+  mealDraft[idx].gramas = Math.max(10, Math.round((mealDraft[idx].gramas + delta) * 10) / 10);
+  renderMealDraft();
+}
+
+function setGramas(idx, val) {
+  const g = parseFloat(val);
+  if (!isNaN(g) && g >= 5) { mealDraft[idx].gramas = g; renderMealDraft(); }
+}
+
+function calcMealTotals() {
+  return mealDraft.reduce((acc, item) => {
+    const k = item.gramas / 100;
+    acc.kcal += item.cal100 * k;
+    acc.prot += item.prot100 * k;
+    acc.carb += item.carb100 * k;
+    acc.gord += item.gord100 * k;
+    return acc;
+  }, {kcal:0, prot:0, carb:0, gord:0});
+}
+
+function renderMealDraft() {
+  const draftEl = document.getElementById('meal-draft');
+  const totBar  = document.getElementById('meal-totals-bar');
+  const draftSec = document.getElementById('draft-section');
+  if (!mealDraft.length) {
+    draftEl.innerHTML = '<div style="padding:4px 0 6px;font-size:13px;color:var(--dim);text-align:center">Nenhum alimento adicionado ainda</div>';
+    totBar.style.display = 'none';
+    draftSec.style.borderColor = 'transparent';
+    return;
+  }
+  draftSec.style.borderColor = '';
+  draftEl.innerHTML = mealDraft.map((item, i) => {
+    const kcal = Math.round(item.cal100 * item.gramas / 100);
+    return `<div class="draft-item">
+      <div class="draft-item-nome">${item.nome}</div>
+      <div class="draft-item-ctrl">
+        <button class="gram-btn" onclick="updateGramas(${i},-10)">−</button>
+        <input class="gram-inp" type="number" value="${item.gramas}" min="5" step="5"
+               onchange="setGramas(${i},this.value)">
+        <span style="font-size:11px;color:var(--muted)">g</span>
+        <button class="gram-btn" onclick="updateGramas(${i},10)">＋</button>
+        <div class="draft-item-kcal">${kcal} kcal</div>
+        <button class="draft-del" onclick="removeFromMeal(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  const t = calcMealTotals();
+  totBar.style.display = 'block';
+  totBar.innerHTML = `
+    <div class="totals-kcal">${Math.round(t.kcal)} <span style="font-size:13px;color:var(--muted)">kcal</span></div>
+    <div class="totals-macros">
+      <span>P: <strong>${t.prot.toFixed(0)}g</strong></span>
+      <span>C: <strong>${t.carb.toFixed(0)}g</strong></span>
+      <span>G: <strong>${t.gord.toFixed(0)}g</strong></span>
+    </div>`;
+}
+
+function renderFoodBrowser(filter) {
+  const q = filter.trim().toLowerCase();
+  const visible = q ? alimentosList.filter(a => a.nome.toLowerCase().includes(q)) : alimentosList;
+  const el = document.getElementById('food-browser');
+  if (!visible.length) {
+    el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px">Sem resultados</div>';
+    return;
+  }
+  const grupos = ['proteína','carbo','fibra','gordura'].map(cat => ({
+    label: catLabel(cat),
+    items: visible.filter(a => a.categoria === cat)
+  })).filter(g => g.items.length);
+  const inDraftIds = new Set(mealDraft.map(d => d.alimento_id));
+  el.innerHTML = grupos.map(g => `
+    <div style="margin-bottom:14px">
+      <div class="food-section-hdr">${g.label}</div>
+      ${g.items.map(a => {
+        const added = inDraftIds.has(a.id);
+        return `<div class="food-list-item" onclick="${added ? '' : `addToMeal('${a.id}')`}">
+          <div class="food-item-info">
+            <div class="food-item-nome">${a.nome}</div>
+            <div class="food-item-hint">${a.proteina_100g}g prot · ${a.carbo_100g}g carbo · ${a.calorias_100g} kcal/100g</div>
+          </div>
+          <div class="food-add-btn${added?' added':''}">
+            ${added ? '✓' : '＋'}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+async function guardarRefeicaoManual() {
+  if (!mealDraft.length) { toast('ADICIONA PELO MENOS 1 ALIMENTO'); return; }
+  const t = calcMealTotals();
+  const hoje = new Date().toISOString().split('T')[0];
+  const descricao = mealDraft.map(i => `${i.nome} ${i.gramas}g`).join(', ');
+  const res = await sbFetch('refeicoes', {
+    method: 'POST',
+    body: JSON.stringify({
+      aluno_id: ALUNO_ID, data: hoje,
+      tipo_refeicao: mealTipo, descricao_usuario: descricao,
+      calorias: Math.round(t.kcal),
+      proteina: +t.prot.toFixed(1),
+      carboidratos: +t.carb.toFixed(1),
+      gordura: +t.gord.toFixed(1)
+    })
+  });
+  if (!res || !res[0]) { toast('ERRO AO GUARDAR'); return; }
+  const refeiId = res[0].id;
+  const itens = mealDraft.map(item => ({
+    refeicao_id: refeiId, alimento_id: item.alimento_id, nome: item.nome,
+    gramas: item.gramas,
+    calorias: +(item.cal100  * item.gramas / 100).toFixed(1),
+    proteina: +(item.prot100 * item.gramas / 100).toFixed(1),
+    carbo:    +(item.carb100 * item.gramas / 100).toFixed(1),
+    gordura:  +(item.gord100 * item.gramas / 100).toFixed(1)
+  }));
+  await sbFetch('refeicao_itens', { method: 'POST', body: JSON.stringify(itens) });
+  toast('REFEIÇÃO GUARDADA! 🥗');
+  closeAddRefeiModal();
   renderNutricao();
 }
 
