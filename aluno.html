@@ -481,8 +481,16 @@ button{cursor:pointer;border:none;background:none}
     <!-- Resultado IA -->
     <div id="refei-resultado" style="display:none"></div>
 
+    <!-- Configurar chave (aparece se não estiver guardada) -->
+    <div id="key-cfg-wrap" style="display:none;margin-top:16px">
+      <div style="font-size:11px;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px">CHAVE ANTHROPIC API</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Cola a tua chave de <strong style="color:var(--text)">console.anthropic.com</strong></div>
+      <input id="key-cfg-inp" type="password" placeholder="sk-ant-api03-..." style="width:100%;background:var(--bg3);border:1.5px solid var(--gold);color:var(--text);padding:12px 14px;font-size:13px;border-radius:10px;outline:none;box-sizing:border-box;margin-bottom:10px">
+      <button onclick="salvarKeyMobile()" style="width:100%;padding:14px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px">GUARDAR E ANALISAR</button>
+    </div>
+
     <!-- Ações -->
-    <div style="display:flex;gap:10px;margin-top:16px">
+    <div id="refei-acoes" style="display:flex;gap:10px;margin-top:16px">
       <button id="btn-analisar" onclick="analisarRefei()" style="flex:2;padding:15px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px">ANALISAR</button>
       <button onclick="closeRefeicaoModal()" style="flex:1;padding:15px;border-radius:var(--radius);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px">Cancelar</button>
     </div>
@@ -1101,9 +1109,23 @@ function toggleMic() {
   document.getElementById('mic-status').textContent = 'A GRAVAR...';
 }
 
+function salvarKeyMobile() {
+  const k = document.getElementById('key-cfg-inp').value.trim();
+  if (!k) { toast('COLA A CHAVE PRIMEIRO'); return; }
+  localStorage.setItem('anthropic_key', JSON.stringify(k));
+  ANTHROPIC_KEY = k;
+  document.getElementById('key-cfg-wrap').style.display = 'none';
+  document.getElementById('refei-acoes').style.display = 'flex';
+  analisarRefei();
+}
+
 async function analisarRefei() {
   if (refeiResultado) { confirmarRefei(); return; }
-  if (!ANTHROPIC_KEY) { toast('CHAVE IA NÃO CONFIGURADA'); return; }
+  if (!ANTHROPIC_KEY) {
+    document.getElementById('key-cfg-wrap').style.display = 'block';
+    document.getElementById('refei-acoes').style.display = 'none';
+    return;
+  }
   if (refeiTipo === 'foto' && !fotoBase64) { toast('TIRA UMA FOTO PRIMEIRO'); return; }
   if (refeiTipo === 'audio' && !document.getElementById('mic-transcricao').textContent.replace('A aguardar gravação...','').trim()) { toast('GRAVA A DESCRIÇÃO PRIMEIRO'); return; }
   if (refeiTipo === 'texto' && !document.getElementById('refei-texto-inp').value.trim()) { toast('DESCREVE A REFEIÇÃO'); return; }
