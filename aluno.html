@@ -199,10 +199,6 @@ button{cursor:pointer;border:none;background:none}
 .esforco-chip.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
 .fb-actions{display:flex;gap:10px;margin-top:6px}
 
-/* ── FAB ── */
-.fab{position:fixed;right:20px;bottom:calc(80px + var(--safe-bottom) + 16px);width:56px;height:56px;background:var(--gold);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#080808;box-shadow:0 4px 20px rgba(200,169,110,.35);z-index:150;transition:transform .15s}
-.fab:active{transform:scale(.93)}
-
 /* ── NUTRIÇÃO ── */
 .nutri-day{display:flex;align-items:center;gap:16px;background:#111;border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px}
 .nutri-ring-track{fill:none;stroke:#1e1e1e;stroke-width:8}
@@ -223,30 +219,6 @@ button{cursor:pointer;border:none;background:none}
 .refei-descr{font-size:14px;color:var(--text);font-weight:500;line-height:1.3}
 .refei-macros-mini{font-size:11px;color:var(--muted);margin-top:4px}
 .refei-kcal{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);flex-shrink:0;align-self:center}
-.refei-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center}
-.refei-sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:24px 20px;padding-bottom:calc(24px + var(--safe-bottom));max-height:92vh;overflow-y:auto}
-.refei-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:4px}
-.refei-sub{font-size:12px;color:var(--muted);margin-bottom:18px}
-.rtipo-wrap{display:flex;gap:8px;margin-bottom:20px}
-.rtipo{flex:1;padding:11px 6px;border-radius:12px;border:1.5px solid var(--border2);background:var(--bg3);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;transition:all .2s}
-.rtipo.active{border-color:var(--gold);color:var(--gold);background:rgba(200,169,110,.08)}
-.foto-area{background:var(--bg3);border:2px dashed var(--border2);border-radius:14px;height:190px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;overflow:hidden;transition:border-color .2s}
-.foto-area:active{border-color:var(--gold)}
-.foto-area-hint{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--muted);letter-spacing:2px}
-.foto-area-hint2{font-size:11px;color:var(--dim)}
-.mic-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
-.mic-btn{width:76px;height:76px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);color:var(--muted);font-size:30px;display:flex;align-items:center;justify-content:center;transition:all .3s}
-.mic-btn.recording{background:rgba(224,85,85,.1);border-color:var(--red);color:var(--red);animation:pulse .8s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.mic-transcricao{width:100%;min-height:52px;padding:12px 14px;background:var(--bg3);border-radius:10px;font-size:14px;color:var(--text);line-height:1.5;text-align:center}
-.ia-analyzing{display:flex;align-items:center;gap:10px;padding:14px;background:var(--bg3);border-radius:10px;font-size:14px;color:var(--muted);margin:14px 0}
-.ia-result{background:rgba(93,202,154,.05);border:1.5px solid rgba(93,202,154,.2);border-radius:14px;padding:16px;margin:14px 0}
-.ia-result-kcal{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);line-height:1}
-.ia-result-macros{display:flex;gap:16px;margin-top:8px}
-.ia-result-macro{font-size:13px;color:var(--muted)}
-.ia-result-macro strong{color:var(--text)}
-.ia-result-descr{font-size:13px;color:#aaa;margin-top:10px;line-height:1.5;border-left:3px solid rgba(93,202,154,.3);padding-left:10px}
-
 /* ── SUGESTÃO DE REFEIÇÃO ── */
 .sug-meta-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .sug-meta-obj{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
@@ -467,68 +439,6 @@ button{cursor:pointer;border:none;background:none}
   </div>
 </div>
 
-<!-- FAB fora do screen para não ser afetado pela animação transform -->
-<button class="fab" id="fab-nutricao" style="display:none" onclick="openRefeicaoModal()">＋</button>
-
-<!-- ═══ MODAL REFEIÇÃO ═══ -->
-<div class="refei-modal" id="refei-modal">
-  <div class="refei-sheet">
-    <div class="refei-title">REGISTAR REFEIÇÃO</div>
-    <div class="refei-sub">Foto, voz ou texto — a IA calcula tudo</div>
-
-    <!-- Seletor de tipo -->
-    <div class="rtipo-wrap">
-      <button class="rtipo active" id="rtipo-foto" onclick="setRefeiTipo('foto')">📷 FOTO</button>
-      <button class="rtipo" id="rtipo-audio" onclick="setRefeiTipo('audio')">🎙 VOZ</button>
-      <button class="rtipo" id="rtipo-texto" onclick="setRefeiTipo('texto')">✏ TEXTO</button>
-    </div>
-
-    <!-- Foto -->
-    <div id="refei-foto-wrap">
-      <input type="file" accept="image/*" capture="environment" id="refei-foto-input" style="display:none" onchange="onFotoSelected(this)">
-      <div class="foto-area" onclick="document.getElementById('refei-foto-input').click()" id="foto-area">
-        <img id="refei-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover">
-        <div id="foto-area-content">
-          <div style="font-size:36px">📷</div>
-          <div class="foto-area-hint">TIRAR FOTO</div>
-          <div class="foto-area-hint2">toca para abrir a câmara</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Áudio -->
-    <div id="refei-audio-wrap" style="display:none">
-      <div class="mic-wrap">
-        <button class="mic-btn" id="btn-mic" onclick="toggleMic()">🎙</button>
-        <div style="font-size:12px;color:var(--muted);letter-spacing:1px" id="mic-status">TOCA PARA GRAVAR</div>
-        <div class="mic-transcricao" id="mic-transcricao">A aguardar gravação...</div>
-      </div>
-    </div>
-
-    <!-- Texto -->
-    <div id="refei-texto-wrap" style="display:none">
-      <textarea id="refei-texto-inp" style="width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:14px 16px;font-size:15px;border-radius:var(--radius-sm);outline:none;resize:none;min-height:96px" placeholder="Ex: frango grelhado 150g, arroz 80g, salada verde..."></textarea>
-    </div>
-
-    <!-- Resultado IA -->
-    <div id="refei-resultado" style="display:none"></div>
-
-    <!-- Configurar chave (aparece se não estiver guardada) -->
-    <div id="key-cfg-wrap" style="display:none;margin-top:16px">
-      <div style="font-size:11px;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px">CHAVE ANTHROPIC API</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Cola a tua chave de <strong style="color:var(--text)">console.anthropic.com</strong></div>
-      <input id="key-cfg-inp" type="password" placeholder="sk-ant-api03-..." style="width:100%;background:var(--bg3);border:1.5px solid var(--gold);color:var(--text);padding:12px 14px;font-size:13px;border-radius:10px;outline:none;box-sizing:border-box;margin-bottom:10px">
-      <button onclick="salvarKeyMobile()" style="width:100%;padding:14px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px">GUARDAR E ANALISAR</button>
-    </div>
-
-    <!-- Ações -->
-    <div id="refei-acoes" style="display:flex;gap:10px;margin-top:16px">
-      <button id="btn-analisar" onclick="analisarRefei()" style="flex:2;padding:15px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px">ANALISAR</button>
-      <button onclick="closeRefeicaoModal()" style="flex:1;padding:15px;border-radius:var(--radius);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px">Cancelar</button>
-    </div>
-  </div>
-</div>
-
 <!-- PWA INSTALL BANNER -->
 <div class="install-banner" id="install-banner" style="display:none">
   <div class="install-banner-icon">📲</div>
@@ -643,7 +553,6 @@ function goScreen(screen) {
   const s = document.getElementById('screen-' + screen);
   s.style.display = 'block'; s.classList.add('active');
   document.getElementById('nav-' + screen).classList.add('active');
-  document.getElementById('fab-nutricao').style.display = screen === 'nutricao' ? 'flex' : 'none';
   if (screen === 'evolucao') renderEvolucao();
   if (screen === 'nutricao') renderNutricao();
 }
@@ -675,7 +584,6 @@ async function init() {
 
   await loadTreinos();
   sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
-  loadAnthropicKey();
 }
 
 // ── TREINOS ──
@@ -978,17 +886,6 @@ async function submitFeedback() {
 }
 
 // ── NUTRIÇÃO ──
-let ANTHROPIC_KEY = '';
-let refeiTipo = 'foto', fotoBase64 = null, fotoMime = null;
-let refeiResultado = null, micAtivo = false, recognition = null;
-
-async function loadAnthropicKey() {
-  const local = localStorage.getItem('anthropic_key');
-  if (local) { ANTHROPIC_KEY = local.replace(/^"|"$/g, ''); return; }
-  const res = await sbFetch('configuracoes?chave=eq.anthropic_key') || [];
-  if (res[0]) ANTHROPIC_KEY = res[0].valor;
-}
-
 const NUTRI_DASHARRAY = 264;
 
 async function renderNutricao() {
@@ -1022,7 +919,7 @@ async function renderNutricao() {
 
   const el = document.getElementById('refeicoes-hoje');
   if (!refs.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:36px;opacity:.3">🥗</div>Sem refeições registadas hoje.<br><span style="font-size:12px">Toca no ＋ para adicionar</span></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:36px;opacity:.3">🥗</div>Sem refeições registadas hoje.</div>';
     return;
   }
   el.innerHTML = refs.map((r, i) => {
@@ -1074,165 +971,6 @@ function nutriTab(tab) {
   document.getElementById('nutri-sug-wrap').style.display = tab === 'sug' ? 'block' : 'none';
   if (tab === 'hist') renderNutriHist();
   if (tab === 'sug') renderSugestaoPanel();
-}
-
-function openRefeicaoModal() {
-  refeiTipo = 'foto'; fotoBase64 = null; fotoMime = null; refeiResultado = null;
-  document.getElementById('refei-resultado').style.display = 'none';
-  document.getElementById('refei-foto-input').value = '';
-  document.getElementById('refei-foto-preview').style.display = 'none';
-  document.getElementById('foto-area-content').style.display = 'flex';
-  document.getElementById('mic-transcricao').textContent = 'A aguardar gravação...';
-  document.getElementById('mic-status').textContent = 'TOCA PARA GRAVAR';
-  document.getElementById('btn-mic').classList.remove('recording');
-  document.getElementById('btn-mic').textContent = '🎙';
-  document.getElementById('refei-texto-inp').value = '';
-  document.getElementById('btn-analisar').textContent = 'ANALISAR';
-  setRefeiTipo('foto');
-  document.getElementById('refei-modal').style.display = 'flex';
-}
-
-function closeRefeicaoModal() {
-  document.getElementById('refei-modal').style.display = 'none';
-  if (recognition && micAtivo) { recognition.stop(); micAtivo = false; }
-}
-
-function setRefeiTipo(tipo) {
-  refeiTipo = tipo;
-  ['foto','audio','texto'].forEach(t => {
-    document.getElementById('rtipo-'+t).classList.toggle('active', t === tipo);
-    document.getElementById('refei-'+t+'-wrap').style.display = t === tipo ? 'block' : 'none';
-  });
-}
-
-function onFotoSelected(inp) {
-  const file = inp.files[0]; if (!file) return;
-  fotoMime = file.type;
-  const reader = new FileReader();
-  reader.onload = e => {
-    fotoBase64 = e.target.result.split(',')[1];
-    const prev = document.getElementById('refei-foto-preview');
-    prev.src = e.target.result; prev.style.display = 'block';
-    document.getElementById('foto-area-content').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function toggleMic() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { toast('VOZ NÃO SUPORTADA — USA TEXTO'); setRefeiTipo('texto'); return; }
-  if (micAtivo) {
-    recognition.stop(); micAtivo = false;
-    document.getElementById('btn-mic').classList.remove('recording');
-    document.getElementById('btn-mic').textContent = '🎙';
-    document.getElementById('mic-status').textContent = 'GRAVAÇÃO PARADA';
-    return;
-  }
-  recognition = new SR();
-  recognition.lang = 'pt-PT'; recognition.continuous = false; recognition.interimResults = true;
-  recognition.onresult = e => {
-    let t = ''; for (const r of e.results) t += r[0].transcript;
-    document.getElementById('mic-transcricao').textContent = t;
-  };
-  recognition.onend = () => {
-    micAtivo = false;
-    document.getElementById('btn-mic').classList.remove('recording');
-    document.getElementById('btn-mic').textContent = '🎙';
-    document.getElementById('mic-status').textContent = 'GRAVAÇÃO CONCLUÍDA';
-  };
-  recognition.start(); micAtivo = true;
-  document.getElementById('btn-mic').classList.add('recording');
-  document.getElementById('btn-mic').textContent = '■';
-  document.getElementById('mic-status').textContent = 'A GRAVAR...';
-}
-
-function salvarKeyMobile() {
-  const k = document.getElementById('key-cfg-inp').value.trim();
-  if (!k) { toast('COLA A CHAVE PRIMEIRO'); return; }
-  localStorage.setItem('anthropic_key', JSON.stringify(k));
-  ANTHROPIC_KEY = k;
-  document.getElementById('key-cfg-wrap').style.display = 'none';
-  document.getElementById('refei-acoes').style.display = 'flex';
-  analisarRefei();
-}
-
-async function analisarRefei() {
-  if (refeiResultado) { confirmarRefei(); return; }
-  if (!ANTHROPIC_KEY) {
-    document.getElementById('key-cfg-wrap').style.display = 'block';
-    document.getElementById('refei-acoes').style.display = 'none';
-    return;
-  }
-  if (refeiTipo === 'foto' && !fotoBase64) { toast('TIRA UMA FOTO PRIMEIRO'); return; }
-  if (refeiTipo === 'audio' && !document.getElementById('mic-transcricao').textContent.replace('A aguardar gravação...','').trim()) { toast('GRAVA A DESCRIÇÃO PRIMEIRO'); return; }
-  if (refeiTipo === 'texto' && !document.getElementById('refei-texto-inp').value.trim()) { toast('DESCREVE A REFEIÇÃO'); return; }
-
-  const resultEl = document.getElementById('refei-resultado');
-  resultEl.style.display = 'block';
-  resultEl.innerHTML = '<div class="ia-analyzing"><div style="font-size:20px;animation:pulse .8s infinite">✦</div>A analisar com IA...</div>';
-  document.getElementById('btn-analisar').textContent = 'A PROCESSAR...';
-
-  try {
-    const content = [];
-    let descUsuario = '';
-    if (refeiTipo === 'foto') {
-      content.push({type:'image',source:{type:'base64',media_type:fotoMime,data:fotoBase64}});
-      content.push({type:'text',text:'Analisa esta refeição na foto e estima calorias e macros.'});
-      descUsuario = 'foto';
-    } else if (refeiTipo === 'audio') {
-      descUsuario = document.getElementById('mic-transcricao').textContent.trim();
-      content.push({type:'text',text:'Refeição descrita por voz: '+descUsuario});
-    } else {
-      descUsuario = document.getElementById('refei-texto-inp').value.trim();
-      content.push({type:'text',text:'Refeição: '+descUsuario});
-    }
-
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','content-type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:300,
-        system:'Analisa refeições e responde APENAS com JSON válido, sem markdown:\n{"calorias":350,"proteina":25.5,"carboidratos":30.0,"gordura":12.0,"descricao":"descrição curta em português"}\nEstima porções típicas quando não especificado. Sem texto fora do JSON.',
-        messages:[{role:'user',content}]
-      })
-    });
-    if (!res.ok) throw new Error('api');
-    const data = await res.json();
-    refeiResultado = JSON.parse(data.content[0].text.trim());
-    refeiResultado._desc = descUsuario;
-    refeiResultado._tipo = refeiTipo;
-
-    resultEl.innerHTML = `<div class="ia-result">
-      <div class="ia-result-kcal">${refeiResultado.calorias} <span style="font-size:16px;color:var(--muted)">kcal</span></div>
-      <div class="ia-result-macros">
-        <div class="ia-result-macro">Proteína: <strong>${refeiResultado.proteina}g</strong></div>
-        <div class="ia-result-macro">Carbo: <strong>${refeiResultado.carboidratos}g</strong></div>
-        <div class="ia-result-macro">Gordura: <strong>${refeiResultado.gordura}g</strong></div>
-      </div>
-      <div class="ia-result-descr">${refeiResultado.descricao}</div>
-    </div>`;
-    document.getElementById('btn-analisar').textContent = 'GUARDAR ✓';
-  } catch(e) {
-    resultEl.innerHTML = '<div style="color:var(--red);font-size:13px;padding:12px;background:rgba(224,85,85,.06);border-radius:10px">Erro ao analisar. Verifica a chave IA nas configurações do admin.</div>';
-    document.getElementById('btn-analisar').textContent = 'ANALISAR';
-  }
-}
-
-async function confirmarRefei() {
-  if (!refeiResultado) return;
-  const res = await sbFetch('refeicoes', {method:'POST', body:JSON.stringify({
-    aluno_id:ALUNO_ID,
-    data:new Date().toISOString().split('T')[0],
-    tipo:refeiResultado._tipo,
-    descricao_usuario:refeiResultado._desc,
-    calorias:refeiResultado.calorias,
-    proteina:refeiResultado.proteina,
-    carboidratos:refeiResultado.carboidratos,
-    gordura:refeiResultado.gordura,
-    descricao_ia:refeiResultado.descricao
-  })});
-  if (res) { toast('REFEIÇÃO GUARDADA! 🥗'); closeRefeicaoModal(); renderNutricao(); }
 }
 
 async function deletarRefei(id) {
