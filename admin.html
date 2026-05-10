@@ -233,14 +233,14 @@ textarea.form-inp{resize:vertical;min-height:80px}
 <div id="login-screen">
   <div class="login-wrap">
     <div class="login-logo">JO SILVA</div>
-    <div class="login-sub">Painel Personal Trainer</div>
+    <div class="login-sub" data-i18n="login_sub">Painel Personal Trainer</div>
     <div class="login-field">
-      <input type="email" id="login-email" placeholder="Email" autocomplete="email">
+      <input type="email" id="login-email" placeholder="Email" autocomplete="email" data-i18n-ph="login_email_ph">
     </div>
     <div class="login-field">
-      <input type="password" id="login-senha" placeholder="Senha" autocomplete="current-password">
+      <input type="password" id="login-senha" placeholder="Senha" autocomplete="current-password" data-i18n-ph="login_senha_ph">
     </div>
-    <button class="btn-login" onclick="doLogin()">ENTRAR</button>
+    <button class="btn-login" onclick="doLogin()" data-i18n="login_btn">ENTRAR</button>
     <div class="login-err" id="login-err"></div>
   </div>
 </div>
@@ -251,17 +251,17 @@ textarea.form-inp{resize:vertical;min-height:80px}
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="bnav-item active" onclick="goTab('dash')" id="nav-dash">
-      <span class="icon">⊞</span>Dashboard
+      <span class="icon">⊞</span><span data-i18n="nav_dash">Dashboard</span>
     </button>
     <button class="bnav-item" onclick="goTab('alunos')" id="nav-alunos">
-      <span class="icon">◉</span>Alunos
+      <span class="icon">◉</span><span data-i18n="nav_alunos">Alunos</span>
     </button>
     <button class="bnav-item" onclick="goTab('feedbacks')" id="nav-feedbacks" style="position:relative">
-      <span class="icon">★</span>Feedbacks
+      <span class="icon">★</span><span data-i18n="nav_feedbacks">Feedbacks</span>
       <span class="bnav-badge" id="feedback-badge" style="display:none">0</span>
     </button>
     <button class="bnav-item" onclick="goTab('config')" id="nav-config">
-      <span class="icon">⚙</span>Config
+      <span class="icon">⚙</span><span data-i18n="nav_config">Config</span>
     </button>
   </nav>
 
@@ -270,7 +270,7 @@ textarea.form-inp{resize:vertical;min-height:80px}
     <div class="topbar">
       <div>
         <div class="topbar-title">JO SILVA PT</div>
-        <div class="topbar-sub">PAINEL ADMIN</div>
+        <div class="topbar-sub" data-i18n="dash_topbar_sub">PAINEL ADMIN</div>
       </div>
       <div class="topbar-right">
         <button class="icon-btn" onclick="logout()" title="Sair">↪</button>
@@ -296,10 +296,10 @@ textarea.form-inp{resize:vertical;min-height:80px}
           <circle class="ring-glow" cx="60" cy="60" r="52"/>
           <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"/>
           <text class="ring-text" x="60" y="55" id="ring-pct">0%</text>
-          <text class="ring-sub-text" x="60" y="70">ativos</text>
+          <text class="ring-sub-text" x="60" y="70" data-i18n="ring_ativos">ativos</text>
         </svg>
         <div class="ring-info">
-          <div class="ring-title">TAXA DE ACTIVIDADE</div>
+          <div class="ring-title" data-i18n="ring_title">TAXA DE ACTIVIDADE</div>
           <div class="ring-desc" id="ring-desc">Carregando...</div>
         </div>
       </div>
@@ -307,12 +307,12 @@ textarea.form-inp{resize:vertical;min-height:80px}
       <div style="background:var(--bg2);border:1.5px solid rgba(200,169,110,.3);border-radius:var(--radius);padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
         <div style="width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✦</div>
         <div style="flex:1">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);letter-spacing:2px;margin-bottom:3px">IA · GERAR TREINO</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4">Preenche o perfil e a IA monta o plano completo em segundos.</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);letter-spacing:2px;margin-bottom:3px" data-i18n="dash_ia_title">IA · GERAR TREINO</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4" data-i18n="dash_ia_sub">Preenche o perfil e a IA monta o plano completo em segundos.</div>
         </div>
-        <button class="btn btn-gold btn-sm" onclick="window.location.href='ia-treino.html'">ABRIR</button>
+        <button class="btn btn-gold btn-sm" onclick="window.location.href='ia-treino.html'" data-i18n="dash_ia_btn">ABRIR</button>
       </div>
-      <div class="sec-hdr"><div class="sec-title">ATIVIDADE RECENTE</div></div>
+      <div class="sec-hdr"><div class="sec-title" data-i18n="dash_ativ_recente">ATIVIDADE RECENTE</div></div>
       <div class="card" id="atividade-list" style="padding:0 16px">
         <div class="empty">A carregar...</div>
       </div>
@@ -325,7 +325,7 @@ textarea.form-inp{resize:vertical;min-height:80px}
     <!-- Lista -->
     <div id="view-lista">
       <div class="topbar">
-        <div class="topbar-title">ALUNOS</div>
+        <div class="topbar-title" data-i18n="alunos_title">ALUNOS</div>
       </div>
       <div class="page-content">
         <div id="alunos-list"><div class="empty">A carregar...</div></div>
@@ -336,50 +336,50 @@ textarea.form-inp{resize:vertical;min-height:80px}
     <!-- Novo Aluno -->
     <div id="view-novo" style="display:none">
       <div class="topbar">
-        <button class="back-btn" style="margin:0" onclick="openView('lista')">← VOLTAR</button>
-        <div class="topbar-title">NOVO ALUNO</div>
+        <button class="back-btn" style="margin:0" onclick="openView('lista')" data-i18n="btn_voltar">← VOLTAR</button>
+        <div class="topbar-title" data-i18n="novo_aluno_title">NOVO ALUNO</div>
       </div>
       <div class="page-content">
-        <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-inp" id="na-nome" placeholder="Ex: Maria Clara"></div>
+        <div class="form-group"><label class="form-label" data-i18n="lbl_nome_comp">Nome completo *</label><input class="form-inp" id="na-nome" placeholder="Ex: Maria Clara" data-i18n-ph="ph_nome"></div>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">Email</label><input class="form-inp" id="na-email" type="email" placeholder="email@exemplo.com"></div>
-          <div class="form-group"><label class="form-label">Telefone</label><input class="form-inp" id="na-tel" type="tel" placeholder="+351 912 000 000"></div>
+          <div class="form-group"><label class="form-label" data-i18n="lbl_email">Email</label><input class="form-inp" id="na-email" type="email" placeholder="email@exemplo.com"></div>
+          <div class="form-group"><label class="form-label" data-i18n="lbl_tel">Telefone</label><input class="form-inp" id="na-tel" type="tel" placeholder="+351 912 000 000"></div>
         </div>
-        <div class="form-group"><label class="form-label">Objetivo</label>
+        <div class="form-group"><label class="form-label" data-i18n="lbl_obj">Objetivo</label>
           <select class="form-inp" id="na-obj">
-            <option value="">Selecione...</option>
-            <option>Emagrecimento</option><option>Hipertrofia</option>
-            <option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option>
+            <option value="" data-i18n="opt_selecione">Selecione...</option>
+            <option data-i18n="opt_emagrecimento">Emagrecimento</option><option data-i18n="opt_hipertrofia">Hipertrofia</option>
+            <option data-i18n="opt_emagr_hip">Emagrecimento + Hipertrofia</option><option data-i18n="opt_condicionamento">Condicionamento</option><option data-i18n="opt_reabilitacao">Reabilitação</option>
           </select>
         </div>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">Modalidade</label>
+          <div class="form-group"><label class="form-label" data-i18n="lbl_mod">Modalidade</label>
             <select class="form-inp" id="na-mod">
-              <option value="presencial">Presencial</option>
-              <option value="online">Online</option>
-              <option value="hibrido">Híbrido</option>
+              <option value="presencial" data-i18n="opt_presencial">Presencial</option>
+              <option value="online" data-i18n="opt_online">Online</option>
+              <option value="hibrido" data-i18n="opt_hibrido">Híbrido</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Plano</label>
+          <div class="form-group"><label class="form-label" data-i18n="lbl_plano">Plano</label>
             <select class="form-inp" id="na-plano">
-              <option value="">Selecione...</option>
-              <option>Avaliação + Plano (€47)</option>
-              <option>Mensal (€45/mês)</option>
-              <option>6 Meses (€197)</option>
+              <option value="" data-i18n="opt_selecione">Selecione...</option>
+              <option data-i18n="opt_aval_plano">Avaliação + Plano (€47)</option>
+              <option data-i18n="opt_mensal">Mensal (€45/mês)</option>
+              <option data-i18n="opt_6meses">6 Meses (€197)</option>
             </select>
           </div>
         </div>
-        <div class="form-group"><label class="form-label">Observações</label><textarea class="form-inp" id="na-obs" placeholder="Lesões, restrições..."></textarea></div>
-        <button class="btn btn-gold btn-full" onclick="criarAluno()">CRIAR ALUNO</button>
+        <div class="form-group"><label class="form-label" data-i18n="lbl_obs">Observações</label><textarea class="form-inp" id="na-obs" placeholder="Lesões, restrições..." data-i18n-ph="ph_obs_aluno"></textarea></div>
+        <button class="btn btn-gold btn-full" onclick="criarAluno()" data-i18n="btn_criar_aluno">CRIAR ALUNO</button>
       </div>
     </div>
 
     <!-- Detalhe Aluno -->
     <div id="view-detalhe" style="display:none">
       <div class="topbar">
-        <button class="back-btn" style="margin:0" onclick="openView('lista')">← ALUNOS</button>
+        <button class="back-btn" style="margin:0" onclick="openView('lista')" data-i18n="btn_alunos_back">← ALUNOS</button>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-sm btn-outline-gold" onclick="toggleAtivo()">ATIVAR/INATIVAR</button>
+          <button class="btn btn-sm btn-outline-gold" onclick="toggleAtivo()" data-i18n="btn_ativar_inativar">ATIVAR/INATIVAR</button>
           <button class="btn btn-sm btn-danger" onclick="deletarAluno()">✕</button>
         </div>
       </div>
@@ -389,14 +389,14 @@ textarea.form-inp{resize:vertical;min-height:80px}
         <div class="det-sub" id="det-sub"></div>
         <div class="link-box">
           <div class="link-url" id="det-link-url"></div>
-          <button class="copy-btn" onclick="copyLink()">COPIAR</button>
+          <button class="copy-btn" onclick="copyLink()" data-i18n="btn_copiar">COPIAR</button>
         </div>
       </div>
       <div class="tabs">
-        <button class="tab active" onclick="showTab('treinos')">TREINOS</button>
-        <button class="tab" onclick="showTab('evolucao')">EVOLUÇÃO</button>
-        <button class="tab" onclick="showTab('medidas')">MEDIDAS</button>
-        <button class="tab" onclick="showTab('perfil')">PERFIL</button>
+        <button class="tab active" onclick="showTab('treinos')" data-i18n="tab_treinos">TREINOS</button>
+        <button class="tab" onclick="showTab('evolucao')" data-i18n="tab_evolucao">EVOLUÇÃO</button>
+        <button class="tab" onclick="showTab('medidas')" data-i18n="tab_medidas">MEDIDAS</button>
+        <button class="tab" onclick="showTab('perfil')" data-i18n="tab_perfil">PERFIL</button>
       </div>
 
       <!-- TAB: TREINOS -->
@@ -406,16 +406,16 @@ textarea.form-inp{resize:vertical;min-height:80px}
           <div id="novo-treino-form" style="display:none">
             <hr class="divider">
             <div class="sec-title" id="form-treino-title" style="margin-bottom:14px">NOVO TREINO</div>
-            <div class="form-group"><label class="form-label">Nome do treino *</label><input class="form-inp" id="nt-nome" placeholder="Ex: Treino A — Inferiores"></div>
-            <div class="form-group"><label class="form-label">Dia da semana</label><input class="form-inp" id="nt-desc" placeholder="Ex: Segunda-feira"></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_treino_nome">Nome do treino *</label><input class="form-inp" id="nt-nome" placeholder="Ex: Treino A — Inferiores" data-i18n-ph="ph_treino_nome"></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_treino_dia">Dia da semana</label><input class="form-inp" id="nt-desc" placeholder="Ex: Segunda-feira" data-i18n-ph="ph_treino_dia"></div>
             <div class="sec-hdr" style="margin-top:4px">
-              <div style="font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">EXERCÍCIOS</div>
-              <button class="btn btn-sm btn-outline-gold" onclick="addExercicio()">＋ Adicionar</button>
+              <div style="font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase" data-i18n="lbl_exercicios">EXERCÍCIOS</div>
+              <button class="btn btn-sm btn-outline-gold" onclick="addExercicio()" data-i18n="btn_add_ex">＋ Adicionar</button>
             </div>
             <div id="ex-list"></div>
             <div style="display:flex;gap:10px;margin-top:16px">
-              <button class="btn btn-gold" style="flex:1" onclick="salvarTreino()">SALVAR</button>
-              <button class="btn" onclick="cancelarTreino()">CANCELAR</button>
+              <button class="btn btn-gold" style="flex:1" onclick="salvarTreino()" data-i18n="btn_salvar">SALVAR</button>
+              <button class="btn" onclick="cancelarTreino()" data-i18n="btn_cancelar">CANCELAR</button>
             </div>
           </div>
         </div>
@@ -428,13 +428,13 @@ textarea.form-inp{resize:vertical;min-height:80px}
           <div class="stats-row" id="det-stats" style="margin-bottom:16px"></div>
           <div class="chart-wrap">
             <select id="ev-select" onchange="renderEvoChart()">
-              <option value="">Selecione exercício para ver progressão...</option>
+              <option value="" data-i18n="ev_sel_ex">Selecione exercício...</option>
             </select>
             <div style="position:relative;height:200px">
               <canvas id="evoChart" role="img" aria-label="Gráfico de progressão de carga"></canvas>
             </div>
           </div>
-          <div class="sec-title" style="margin-bottom:12px">HISTÓRICO DE SESSÕES</div>
+          <div class="sec-title" style="margin-bottom:12px" data-i18n="ev_hist_sessoes">HISTÓRICO DE SESSÕES</div>
           <div class="card" style="padding:0 16px" id="sessoes-hist"></div>
         </div>
       </div>
@@ -443,19 +443,19 @@ textarea.form-inp{resize:vertical;min-height:80px}
       <div id="tab-medidas" class="tab-content">
         <div class="page-content">
           <div class="card">
-            <div class="card-title">NOVA AVALIAÇÃO</div>
-            <div class="form-group"><label class="form-label">Data *</label><input type="date" class="form-inp" id="pm-data"></div>
+            <div class="card-title" data-i18n="med_nova_aval">NOVA AVALIAÇÃO</div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_data">Data *</label><input type="date" class="form-inp" id="pm-data"></div>
             <div class="form-grid">
-              <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-peso" placeholder="65.5"></div>
-              <div class="form-group"><label class="form-label">% Gordura</label><input type="number" step="0.1" class="form-inp" id="pm-gord" placeholder="24.5"></div>
-              <div class="form-group"><label class="form-label">Massa Magra (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-massa" placeholder="49.0"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_peso">Peso (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-peso" placeholder="65.5"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_gord">% Gordura</label><input type="number" step="0.1" class="form-inp" id="pm-gord" placeholder="24.5"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_massa">Massa Magra (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-massa" placeholder="49.0"></div>
             </div>
-            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">PERÍMETROS (cm)</div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px" data-i18n="lbl_perimetros">PERÍMETROS (cm)</div>
             <div class="peri-grid" id="peri-inputs"></div>
-            <div class="form-group"><label class="form-label">Observações</label><textarea class="form-inp" id="pm-obs" placeholder="Postura, evolução observada..."></textarea></div>
-            <button class="btn btn-gold btn-full" onclick="salvarMedida()">SALVAR AVALIAÇÃO</button>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_obs">Observações</label><textarea class="form-inp" id="pm-obs" placeholder="Postura, evolução observada..." data-i18n-ph="ph_pm_obs"></textarea></div>
+            <button class="btn btn-gold btn-full" onclick="salvarMedida()" data-i18n="btn_salvar_aval">SALVAR AVALIAÇÃO</button>
           </div>
-          <div class="sec-title" style="margin:20px 0 12px">HISTÓRICO</div>
+          <div class="sec-title" style="margin:20px 0 12px" data-i18n="med_historico">HISTÓRICO</div>
           <div id="medidas-hist"></div>
         </div>
       </div>
@@ -464,39 +464,39 @@ textarea.form-inp{resize:vertical;min-height:80px}
       <div id="tab-perfil" class="tab-content">
         <div class="page-content">
           <div class="card">
-            <div class="card-title">DADOS PESSOAIS</div>
-            <div class="form-group"><label class="form-label">Nome completo</label><input class="form-inp" id="pf-nome"></div>
+            <div class="card-title" data-i18n="pf_dados_pessoais">DADOS PESSOAIS</div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_pf_nome">Nome completo</label><input class="form-inp" id="pf-nome"></div>
             <div class="form-grid">
-              <div class="form-group"><label class="form-label">Data de Nasc.</label><input type="date" class="form-inp" id="pf-nasc"></div>
-              <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-inp" id="pf-altura" placeholder="165"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_pf_nasc">Data de Nasc.</label><input type="date" class="form-inp" id="pf-nasc"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_pf_altura">Altura (cm)</label><input type="number" class="form-inp" id="pf-altura" placeholder="165"></div>
             </div>
             <div class="form-grid">
-              <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-inp" id="pf-email"></div>
-              <div class="form-group"><label class="form-label">Telefone</label><input class="form-inp" id="pf-tel"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_email">Email</label><input type="email" class="form-inp" id="pf-email"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_tel">Telefone</label><input class="form-inp" id="pf-tel"></div>
             </div>
-            <div class="form-group"><label class="form-label">Profissão</label><input class="form-inp" id="pf-prof" placeholder="Ex: Enfermeira"></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_pf_prof">Profissão</label><input class="form-inp" id="pf-prof" placeholder="Ex: Enfermeira" data-i18n-ph="ph_pf_prof"></div>
           </div>
           <div class="card">
-            <div class="card-title">SAÚDE E OBJETIVOS</div>
-            <div class="form-group"><label class="form-label">Doenças / Condições</label><textarea class="form-inp" id="pf-doencas" placeholder="Hipertensão, diabetes..."></textarea></div>
-            <div class="form-group"><label class="form-label">Medicamentos</label><textarea class="form-inp" id="pf-med" placeholder="Anticoncepcional..."></textarea></div>
-            <div class="form-group"><label class="form-label">Lesões / Cirurgias</label><textarea class="form-inp" id="pf-lesoes" placeholder="Lesão no joelho..."></textarea></div>
-            <div class="form-group"><label class="form-label">Dores frequentes</label><textarea class="form-inp" id="pf-dores" placeholder="Dor lombar..."></textarea></div>
+            <div class="card-title" data-i18n="pf_saude">SAÚDE E OBJETIVOS</div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_doencas">Doenças / Condições</label><textarea class="form-inp" id="pf-doencas" placeholder="Hipertensão, diabetes..." data-i18n-ph="ph_doencas"></textarea></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_med">Medicamentos</label><textarea class="form-inp" id="pf-med" placeholder="Anticoncepcional..." data-i18n-ph="ph_med"></textarea></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_lesoes">Lesões / Cirurgias</label><textarea class="form-inp" id="pf-lesoes" placeholder="Lesão no joelho..." data-i18n-ph="ph_lesoes"></textarea></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_dores">Dores frequentes</label><textarea class="form-inp" id="pf-dores" placeholder="Dor lombar..." data-i18n-ph="ph_dores"></textarea></div>
             <div class="form-grid">
-              <div class="form-group"><label class="form-label">Objetivo</label>
-                <select class="form-inp" id="pf-obj"><option value="">Selecione...</option><option>Emagrecimento</option><option>Hipertrofia</option><option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option></select>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_obj">Objetivo</label>
+                <select class="form-inp" id="pf-obj"><option value="" data-i18n="opt_selecione">Selecione...</option><option data-i18n="opt_emagrecimento">Emagrecimento</option><option data-i18n="opt_hipertrofia">Hipertrofia</option><option data-i18n="opt_emagr_hip">Emagrecimento + Hipertrofia</option><option data-i18n="opt_condicionamento">Condicionamento</option><option data-i18n="opt_reabilitacao">Reabilitação</option></select>
               </div>
-              <div class="form-group"><label class="form-label">Nível</label>
-                <select class="form-inp" id="pf-nivel"><option value="">Selecione...</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_nivel">Nível</label>
+                <select class="form-inp" id="pf-nivel"><option value="" data-i18n="opt_selecione">Selecione...</option><option data-i18n="opt_ini">Iniciante</option><option data-i18n="opt_inter">Intermediário</option><option data-i18n="opt_avan">Avançado</option></select>
               </div>
             </div>
             <div class="form-grid">
-              <div class="form-group"><label class="form-label">Horas de sono</label><input type="number" class="form-inp" id="pf-sono" placeholder="7"></div>
-              <div class="form-group"><label class="form-label">Estresse (1-10)</label><input type="number" min="1" max="10" class="form-inp" id="pf-stress" placeholder="6"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_sono">Horas de sono</label><input type="number" class="form-inp" id="pf-sono" placeholder="7"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_stress">Estresse (1-10)</label><input type="number" min="1" max="10" class="form-inp" id="pf-stress" placeholder="6"></div>
             </div>
-            <div class="form-group"><label class="form-label">Alimentação</label><textarea class="form-inp" id="pf-alim" placeholder="Come bem de dia, peca à noite..."></textarea></div>
-            <div class="form-group"><label class="form-label">Obs. do personal</label><textarea class="form-inp" id="pf-obs" placeholder="Impressões, metas..."></textarea></div>
-            <button class="btn btn-gold btn-full" onclick="salvarPerfil()">SALVAR FICHA</button>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_alim">Alimentação</label><textarea class="form-inp" id="pf-alim" placeholder="Come bem de dia, peca à noite..." data-i18n-ph="ph_alim"></textarea></div>
+            <div class="form-group"><label class="form-label" data-i18n="lbl_pf_obs">Obs. do personal</label><textarea class="form-inp" id="pf-obs" placeholder="Impressões, metas..." data-i18n-ph="ph_pf_obs"></textarea></div>
+            <button class="btn btn-gold btn-full" onclick="salvarPerfil()" data-i18n="btn_salvar_ficha">SALVAR FICHA</button>
           </div>
         </div>
       </div>
@@ -508,9 +508,9 @@ textarea.form-inp{resize:vertical;min-height:80px}
     <div class="topbar">
       <div>
         <div class="topbar-title">FEEDBACKS</div>
-        <div class="topbar-sub">RESPOSTAS DOS ALUNOS</div>
+        <div class="topbar-sub" data-i18n="fb_topbar_sub">RESPOSTAS DOS ALUNOS</div>
       </div>
-      <button class="icon-btn" onclick="marcarTodosLidos()" title="Marcar todos como lidos" style="font-size:13px;width:auto;border-radius:8px;padding:0 10px">✓ TODOS</button>
+      <button class="icon-btn" onclick="marcarTodosLidos()" title="Marcar todos como lidos" style="font-size:13px;width:auto;border-radius:8px;padding:0 10px" data-i18n="fb_todos">✓ TODOS</button>
     </div>
     <div class="page-content" id="feedbacks-list">
       <div class="empty">A carregar...</div>
@@ -520,27 +520,35 @@ textarea.form-inp{resize:vertical;min-height:80px}
   <!-- ── CONFIG ── -->
   <div id="screen-config" class="screen" style="display:none">
     <div class="topbar">
-      <div class="topbar-title">CONFIGURAÇÕES</div>
+      <div class="topbar-title" data-i18n="cfg_title">CONFIGURAÇÕES</div>
       <button class="icon-btn" onclick="logout()">↪</button>
     </div>
     <div class="page-content">
       <div class="config-section">
-        <div class="config-title">SUPABASE</div>
-        <div class="form-group"><label class="form-label">URL do projeto</label><input class="form-inp" id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
-        <div class="form-group"><label class="form-label">Anon Key</label><input class="form-inp" id="cfg-key" placeholder="eyJhbGci..."></div>
-        <button class="btn btn-gold btn-full" onclick="salvarConfig()">SALVAR</button>
+        <div class="config-title" data-i18n="cfg_idioma_title">IDIOMA</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;display:flex;align-items:center;gap:5px">
+          <span id="lang-pt" onclick="setLang('pt')" style="cursor:pointer;color:var(--gold);font-weight:600">PT</span>
+          <span style="color:var(--dim)">|</span>
+          <span id="lang-en" onclick="setLang('en')" style="cursor:pointer;color:var(--muted)">EN</span>
+        </div>
       </div>
       <div class="config-section">
-        <div class="config-title">URL BASE DO SISTEMA</div>
+        <div class="config-title" data-i18n="cfg_sb_title">SUPABASE</div>
+        <div class="form-group"><label class="form-label" data-i18n="cfg_url_lbl">URL do projeto</label><input class="form-inp" id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
+        <div class="form-group"><label class="form-label" data-i18n="cfg_key_lbl">Anon Key</label><input class="form-inp" id="cfg-key" placeholder="eyJhbGci..."></div>
+        <button class="btn btn-gold btn-full" onclick="salvarConfig()" data-i18n="btn_salvar_cfg">SALVAR</button>
+      </div>
+      <div class="config-section">
+        <div class="config-title" data-i18n="cfg_base_title">URL BASE DO SISTEMA</div>
         <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">URL do arquivo <strong style="color:var(--gold)">aluno.html</strong> — será usada para gerar os links dos alunos.</div>
-        <div class="form-group"><label class="form-label">URL base</label><input class="form-inp" id="cfg-base-url" placeholder="https://seusite.github.io/aluno.html"></div>
-        <button class="btn btn-gold btn-full" onclick="salvarBaseUrl()">SALVAR</button>
+        <div class="form-group"><label class="form-label" data-i18n="cfg_base_lbl">URL base</label><input class="form-inp" id="cfg-base-url" placeholder="https://seusite.github.io/aluno.html"></div>
+        <button class="btn btn-gold btn-full" onclick="salvarBaseUrl()" data-i18n="btn_salvar_cfg">SALVAR</button>
       </div>
       <div class="config-section">
-        <div class="config-title">IA · ANTHROPIC</div>
+        <div class="config-title" data-i18n="cfg_ia_title">IA · ANTHROPIC</div>
         <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">Chave da API Anthropic para geração de treinos com IA. Começa com <strong style="color:var(--gold)">sk-ant-</strong></div>
-        <div class="form-group"><label class="form-label">Anthropic API Key</label><input class="form-inp" id="cfg-anthropic-key" type="password" placeholder="sk-ant-api03-..."></div>
-        <button class="btn btn-gold btn-full" onclick="salvarAnthropicKey()">GUARDAR CHAVE</button>
+        <div class="form-group"><label class="form-label" data-i18n="cfg_ia_key_lbl">Anthropic API Key</label><input class="form-inp" id="cfg-anthropic-key" type="password" placeholder="sk-ant-api03-..."></div>
+        <button class="btn btn-gold btn-full" onclick="salvarAnthropicKey()" data-i18n="btn_guardar_chave">GUARDAR CHAVE</button>
       </div>
     </div>
   </div>
@@ -566,6 +574,163 @@ let SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 let BASE_URL='https://ojosilvaa.github.io/josilvapt/aluno.html';
 let ANTHROPIC_KEY='';
 let currentAlunoId=null, currentTreinoId=null, exerciciosList=[], evoChartInst=null;
+
+// ── i18n ──
+let currentLang=localStorage.getItem('lang')||'pt';
+const LANG={
+  pt:{
+    login_sub:'Painel Personal Trainer',login_email_ph:'Email',login_senha_ph:'Senha',
+    login_btn:'ENTRAR',login_err_fill:'Preenche email e senha.',login_err_inv:'Credenciais inválidas.',
+    login_err_conn:'Erro de conexão.',
+    nav_dash:'Dashboard',nav_alunos:'Alunos',nav_feedbacks:'Feedbacks',nav_config:'Config',
+    dash_topbar_sub:'PAINEL ADMIN',dash_ia_title:'IA · GERAR TREINO',
+    dash_ia_sub:'Preenche o perfil e a IA monta o plano completo em segundos.',
+    dash_ia_btn:'ABRIR',dash_ativ_recente:'ATIVIDADE RECENTE',
+    ring_title:'TAXA DE ACTIVIDADE',ring_ativos:'ativos',
+    ring_desc:(a,t)=>`${a} de ${t} alunos com treino activo`,
+    stat_total:'Total Alunos',stat_ativos:'Ativos',stat_sessoes:'Sessões',stat_inativos:'Inativos',
+    stat_maior_carga:'Maior carga',stat_semanas:'Semanas',
+    alunos_title:'ALUNOS',alunos_empty:'Nenhum aluno. Toque no ＋ para adicionar.',
+    novo_aluno_title:'NOVO ALUNO',btn_voltar:'← VOLTAR',btn_alunos_back:'← ALUNOS',
+    lbl_nome_comp:'Nome completo *',lbl_email:'Email',lbl_tel:'Telefone',lbl_obj:'Objetivo',
+    lbl_mod:'Modalidade',lbl_plano:'Plano',lbl_obs:'Observações',
+    ph_nome:'Ex: Maria Clara',ph_obs_aluno:'Lesões, restrições...',
+    opt_selecione:'Selecione...',opt_emagrecimento:'Emagrecimento',opt_hipertrofia:'Hipertrofia',
+    opt_emagr_hip:'Emagrecimento + Hipertrofia',opt_condicionamento:'Condicionamento',
+    opt_reabilitacao:'Reabilitação',opt_presencial:'Presencial',opt_online:'Online',
+    opt_hibrido:'Híbrido',opt_aval_plano:'Avaliação + Plano (€47)',
+    opt_mensal:'Mensal (€45/mês)',opt_6meses:'6 Meses (€197)',
+    btn_criar_aluno:'CRIAR ALUNO',btn_ativar_inativar:'ATIVAR/INATIVAR',btn_copiar:'COPIAR',
+    badge_ativo:'ATIVO',badge_inativo:'INATIVO',
+    tab_treinos:'TREINOS',tab_evolucao:'EVOLUÇÃO',tab_medidas:'MEDIDAS',tab_perfil:'PERFIL',
+    treinos_empty:'Nenhum treino criado. Toque no ＋.',novo_treino:'NOVO TREINO',
+    editar_treino:'EDITAR TREINO',lbl_treino_nome:'Nome do treino *',lbl_treino_dia:'Dia da semana',
+    ph_treino_nome:'Ex: Treino A — Inferiores',ph_treino_dia:'Ex: Segunda-feira',
+    lbl_exercicios:'EXERCÍCIOS',btn_add_ex:'＋ Adicionar',
+    btn_salvar:'SALVAR',btn_cancelar:'CANCELAR',btn_editar:'EDITAR',btn_excluir:'EXCLUIR',
+    ex_nenhum:'Nenhum exercício adicionado ainda.',
+    ph_ex_nome:'Nome do exercício',ph_ex_obs:'Observações (opcional)',
+    lbl_series:'Séries',lbl_reps:'Reps',ev_sel_ex:'Selecione exercício...',
+    ev_maior_carga:'Maior carga',ev_hist_sessoes:'HISTÓRICO DE SESSÕES',
+    ev_nenhuma:'Nenhuma sessão registrada.',ev_sem_sessoes:'Nenhuma sessão registrada ainda.',
+    med_nova_aval:'NOVA AVALIAÇÃO',lbl_data:'Data *',lbl_peso:'Peso (kg)',
+    lbl_gord:'% Gordura',lbl_massa:'Massa Magra (kg)',lbl_perimetros:'PERÍMETROS (cm)',
+    ph_pm_obs:'Postura, evolução observada...',btn_salvar_aval:'SALVAR AVALIAÇÃO',
+    med_historico:'HISTÓRICO',med_nenhuma:'Nenhuma avaliação registrada.',
+    pf_dados_pessoais:'DADOS PESSOAIS',lbl_pf_nome:'Nome completo',lbl_pf_nasc:'Data de Nasc.',
+    lbl_pf_altura:'Altura (cm)',lbl_pf_prof:'Profissão',ph_pf_prof:'Ex: Enfermeira',
+    pf_saude:'SAÚDE E OBJETIVOS',
+    lbl_doencas:'Doenças / Condições',ph_doencas:'Hipertensão, diabetes...',
+    lbl_med:'Medicamentos',ph_med:'Anticoncepcional...',
+    lbl_lesoes:'Lesões / Cirurgias',ph_lesoes:'Lesão no joelho...',
+    lbl_dores:'Dores frequentes',ph_dores:'Dor lombar...',
+    lbl_nivel:'Nível',opt_ini:'Iniciante',opt_inter:'Intermediário',opt_avan:'Avançado',
+    lbl_sono:'Horas de sono',lbl_stress:'Estresse (1-10)',
+    lbl_alim:'Alimentação',ph_alim:'Come bem de dia, peca à noite...',
+    lbl_pf_obs:'Obs. do personal',ph_pf_obs:'Impressões, metas...',
+    btn_salvar_ficha:'SALVAR FICHA',
+    fb_topbar_sub:'RESPOSTAS DOS ALUNOS',fb_todos:'✓ TODOS',
+    fb_nenhum:'Nenhum feedback dos alunos ainda.',fb_novo:'NOVO',fb_lido:'LIDO',fb_esforco:'Esforço: ',
+    cfg_title:'CONFIGURAÇÕES',cfg_sb_title:'SUPABASE',
+    cfg_url_lbl:'URL do projeto',cfg_key_lbl:'Anon Key',
+    cfg_base_title:'URL BASE DO SISTEMA',cfg_base_lbl:'URL base',btn_salvar_cfg:'SALVAR',
+    cfg_ia_title:'IA · ANTHROPIC',cfg_ia_key_lbl:'Anthropic API Key',
+    btn_guardar_chave:'GUARDAR CHAVE',cfg_idioma_title:'IDIOMA',
+    loading_carregar:'A carregar...',
+    t_sb_config:'CONFIGURE O SUPABASE!',t_conn_err:'ERRO DE CONEXÃO',
+    t_nome_obrig:'NOME É OBRIGATÓRIO!',t_aluno_criado:'ALUNO CRIADO!',
+    t_inativado:'ALUNO INATIVADO',t_ativado:'ALUNO ATIVADO',t_excluido_aluno:'ALUNO EXCLUÍDO',
+    t_link_copiado:'LINK COPIADO!',t_treino_nome_obrig:'NOME DO TREINO É OBRIGATÓRIO!',
+    t_treino_ex_obrig:'ADICIONE PELO MENOS 1 EXERCÍCIO!',t_treino_err:'ERRO AO SALVAR',
+    t_treino_salvo:'TREINO SALVO!',t_treino_excluido:'TREINO EXCLUÍDO',
+    t_data_obrig:'DATA É OBRIGATÓRIA!',t_aval_salva:'AVALIAÇÃO SALVA!',t_excluido:'EXCLUÍDO',
+    t_ficha_salva:'FICHA SALVA!',t_todos_lidos:'TODOS MARCADOS COMO LIDOS',
+    t_cfg_salvo:'CONFIGURAÇÕES SALVAS!',t_url_salva:'URL SALVA!',t_chave_salva:'CHAVE IA GUARDADA!',
+    confirm_excluir_aluno:'Tem certeza? Todos os dados serão excluídos.',
+    confirm_excluir_treino:'Excluir este treino?',confirm_excluir_medida:'Excluir esta avaliação?',
+  },
+  en:{
+    login_sub:'Personal Trainer Panel',login_email_ph:'Email',login_senha_ph:'Password',
+    login_btn:'LOG IN',login_err_fill:'Enter email and password.',login_err_inv:'Invalid credentials.',
+    login_err_conn:'Connection error.',
+    nav_dash:'Dashboard',nav_alunos:'Students',nav_feedbacks:'Feedbacks',nav_config:'Settings',
+    dash_topbar_sub:'ADMIN PANEL',dash_ia_title:'AI · GENERATE WORKOUT',
+    dash_ia_sub:'Fill in the profile and AI builds the complete plan in seconds.',
+    dash_ia_btn:'OPEN',dash_ativ_recente:'RECENT ACTIVITY',
+    ring_title:'ACTIVITY RATE',ring_ativos:'active',
+    ring_desc:(a,t)=>`${a} of ${t} students with active workout`,
+    stat_total:'Total Students',stat_ativos:'Active',stat_sessoes:'Sessions',stat_inativos:'Inactive',
+    stat_maior_carga:'Top load',stat_semanas:'Weeks',
+    alunos_title:'STUDENTS',alunos_empty:'No students. Tap ＋ to add one.',
+    novo_aluno_title:'NEW STUDENT',btn_voltar:'← BACK',btn_alunos_back:'← STUDENTS',
+    lbl_nome_comp:'Full name *',lbl_email:'Email',lbl_tel:'Phone',lbl_obj:'Goal',
+    lbl_mod:'Modality',lbl_plano:'Plan',lbl_obs:'Notes',
+    ph_nome:'E.g.: Maria Clara',ph_obs_aluno:'Injuries, restrictions...',
+    opt_selecione:'Select...',opt_emagrecimento:'Weight Loss',opt_hipertrofia:'Muscle Gain',
+    opt_emagr_hip:'Weight Loss + Muscle Gain',opt_condicionamento:'Conditioning',
+    opt_reabilitacao:'Rehabilitation',opt_presencial:'In-person',opt_online:'Online',
+    opt_hibrido:'Hybrid',opt_aval_plano:'Assessment + Plan (€47)',
+    opt_mensal:'Monthly (€45/mo)',opt_6meses:'6 Months (€197)',
+    btn_criar_aluno:'CREATE STUDENT',btn_ativar_inativar:'ACTIVATE/DEACTIVATE',btn_copiar:'COPY',
+    badge_ativo:'ACTIVE',badge_inativo:'INACTIVE',
+    tab_treinos:'WORKOUTS',tab_evolucao:'PROGRESS',tab_medidas:'MEASUREMENTS',tab_perfil:'PROFILE',
+    treinos_empty:'No workouts. Tap ＋.',novo_treino:'NEW WORKOUT',
+    editar_treino:'EDIT WORKOUT',lbl_treino_nome:'Workout name *',lbl_treino_dia:'Day of week',
+    ph_treino_nome:'E.g.: Workout A — Lower body',ph_treino_dia:'E.g.: Monday',
+    lbl_exercicios:'EXERCISES',btn_add_ex:'＋ Add',
+    btn_salvar:'SAVE',btn_cancelar:'CANCEL',btn_editar:'EDIT',btn_excluir:'DELETE',
+    ex_nenhum:'No exercises added yet.',
+    ph_ex_nome:'Exercise name',ph_ex_obs:'Notes (optional)',
+    lbl_series:'Sets',lbl_reps:'Reps',ev_sel_ex:'Select exercise...',
+    ev_maior_carga:'Top load',ev_hist_sessoes:'SESSION HISTORY',
+    ev_nenhuma:'No sessions logged.',ev_sem_sessoes:'No sessions logged yet.',
+    med_nova_aval:'NEW ASSESSMENT',lbl_data:'Date *',lbl_peso:'Weight (kg)',
+    lbl_gord:'% Fat',lbl_massa:'Lean Mass (kg)',lbl_perimetros:'MEASUREMENTS (cm)',
+    ph_pm_obs:'Posture, observed changes...',btn_salvar_aval:'SAVE ASSESSMENT',
+    med_historico:'HISTORY',med_nenhuma:'No assessments recorded.',
+    pf_dados_pessoais:'PERSONAL DATA',lbl_pf_nome:'Full name',lbl_pf_nasc:'Date of Birth',
+    lbl_pf_altura:'Height (cm)',lbl_pf_prof:'Profession',ph_pf_prof:'E.g.: Nurse',
+    pf_saude:'HEALTH & GOALS',
+    lbl_doencas:'Diseases / Conditions',ph_doencas:'Hypertension, diabetes...',
+    lbl_med:'Medications',ph_med:'Contraceptive...',
+    lbl_lesoes:'Injuries / Surgeries',ph_lesoes:'Knee injury...',
+    lbl_dores:'Frequent pain',ph_dores:'Lower back pain...',
+    lbl_nivel:'Level',opt_ini:'Beginner',opt_inter:'Intermediate',opt_avan:'Advanced',
+    lbl_sono:'Sleep hours',lbl_stress:'Stress (1-10)',
+    lbl_alim:'Diet',ph_alim:'Eats well during the day, snacks at night...',
+    lbl_pf_obs:'Trainer notes',ph_pf_obs:'Impressions, goals...',
+    btn_salvar_ficha:'SAVE PROFILE',
+    fb_topbar_sub:'STUDENT RESPONSES',fb_todos:'✓ ALL',
+    fb_nenhum:'No student feedback yet.',fb_novo:'NEW',fb_lido:'READ',fb_esforco:'Effort: ',
+    cfg_title:'SETTINGS',cfg_sb_title:'SUPABASE',
+    cfg_url_lbl:'Project URL',cfg_key_lbl:'Anon Key',
+    cfg_base_title:'SYSTEM BASE URL',cfg_base_lbl:'Base URL',btn_salvar_cfg:'SAVE',
+    cfg_ia_title:'AI · ANTHROPIC',cfg_ia_key_lbl:'Anthropic API Key',
+    btn_guardar_chave:'SAVE KEY',cfg_idioma_title:'LANGUAGE',
+    loading_carregar:'Loading...',
+    t_sb_config:'CONFIGURE SUPABASE!',t_conn_err:'CONNECTION ERROR',
+    t_nome_obrig:'NAME IS REQUIRED!',t_aluno_criado:'STUDENT CREATED!',
+    t_inativado:'STUDENT DEACTIVATED',t_ativado:'STUDENT ACTIVATED',t_excluido_aluno:'STUDENT DELETED',
+    t_link_copiado:'LINK COPIED!',t_treino_nome_obrig:'WORKOUT NAME IS REQUIRED!',
+    t_treino_ex_obrig:'ADD AT LEAST 1 EXERCISE!',t_treino_err:'ERROR SAVING',
+    t_treino_salvo:'WORKOUT SAVED!',t_treino_excluido:'WORKOUT DELETED',
+    t_data_obrig:'DATE IS REQUIRED!',t_aval_salva:'ASSESSMENT SAVED!',t_excluido:'DELETED',
+    t_ficha_salva:'PROFILE SAVED!',t_todos_lidos:'ALL MARKED AS READ',
+    t_cfg_salvo:'SETTINGS SAVED!',t_url_salva:'URL SAVED!',t_chave_salva:'AI KEY SAVED!',
+    confirm_excluir_aluno:'Are you sure? All data will be deleted.',
+    confirm_excluir_treino:'Delete this workout?',confirm_excluir_medida:'Delete this assessment?',
+  }
+};
+const T=(key,...args)=>{const v=(LANG[currentLang]||LANG.pt)[key]??LANG.pt[key]??key;return typeof v==='function'?v(...args):v;};
+function setLang(l){
+  currentLang=l;localStorage.setItem('lang',l);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const v=T(el.dataset.i18n);if(v!==el.dataset.i18n)el.textContent=v;});
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{const v=T(el.dataset.i18nHtml);if(v!==el.dataset.i18nHtml)el.innerHTML=v;});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const v=T(el.dataset.i18nPh);if(v!==el.dataset.i18nPh)el.placeholder=v;});
+  const pt=document.getElementById('lang-pt'),en=document.getElementById('lang-en');
+  if(pt){pt.style.color=l==='pt'?'var(--gold)':'var(--muted)';pt.style.fontWeight=l==='pt'?'600':'400';}
+  if(en){en.style.color=l==='en'?'var(--gold)':'var(--muted)';en.style.fontWeight=l==='en'?'600':'400';}
+}
 
 // ── LOCAL STORAGE ──
 const lc=(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch(e){return d;}};
@@ -617,7 +782,7 @@ async function refreshSession(){
 
 // ── SUPABASE ──
 async function sbFetch(path,opts={}){
-  if(!SB_URL||!SB_KEY){toast('CONFIGURE O SUPABASE!');return null;}
+  if(!SB_URL||!SB_KEY){toast(T('t_sb_config'));return null;}
   const doReq=async(token)=>fetch(SB_URL+'/rest/v1/'+path,{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(token||SB_KEY),'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
     ...opts
@@ -632,7 +797,7 @@ async function sbFetch(path,opts={}){
     if(!r.ok){console.error(await r.text());return null;}
     const ct=r.headers.get('content-type');
     return ct&&ct.includes('json')?await r.json():[];
-  }catch(e){console.error(e);toast('ERRO DE CONEXÃO');return null;}
+  }catch(e){console.error(e);toast(T('t_conn_err'));return null;}
 }
 
 // ── AUTH ──
@@ -641,7 +806,7 @@ async function doLogin(){
   const senha=document.getElementById('login-senha').value;
   const err=document.getElementById('login-err');
   err.textContent='';
-  if(!email||!senha){err.textContent='Preenche email e senha.';return;}
+  if(!email||!senha){err.textContent=T('login_err_fill');return;}
   try{
     const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
       method:'POST',
@@ -649,13 +814,13 @@ async function doLogin(){
       body:JSON.stringify({email,password:senha})
     });
     const d=await r.json();
-    if(!r.ok||d.error){err.textContent=d.error_description||'Credenciais inválidas.';return;}
+    if(!r.ok||d.error){err.textContent=d.error_description||T('login_err_inv');return;}
     sessionStorage.setItem('sb_access_token',d.access_token);
     localStorage.setItem('sb_refresh_token',d.refresh_token);
     document.getElementById('login-screen').style.display='none';
     document.getElementById('app').style.display='block';
     loadConfig(); renderDash();
-  }catch(e){err.textContent='Erro de conexão.';}
+  }catch(e){err.textContent=T('login_err_conn');}
 }
 
 async function logout(){
@@ -709,14 +874,14 @@ async function renderDash(){
   const sesDelta=sesSem>0?`<div class="stat-delta delta-up">↑ +${sesSem>sesPrev?sesSem-sesPrev:sesSem}</div>`:'';
 
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">Total Alunos</div>${alunosDelta}</div>
-    <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">Ativos</div></div>
-    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div>${sesDelta}</div>
-    <div class="stat-card"><div class="stat-val">${alunos.length-ativos}</div><div class="stat-lbl">Inativos</div></div>`;
+    <div class="stat-card"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">${T('stat_total')}</div>${alunosDelta}</div>
+    <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">${T('stat_ativos')}</div></div>
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">${T('stat_sessoes')}</div>${sesDelta}</div>
+    <div class="stat-card"><div class="stat-val">${alunos.length-ativos}</div><div class="stat-lbl">${T('stat_inativos')}</div></div>`;
   animateRing(ativos, alunos.length);
 
   const el=document.getElementById('atividade-list');
-  if(!sessoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">◌</div>Nenhuma sessão registrada ainda.</div>';return;}
+  if(!sessoes.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◌</div>${T('ev_sem_sessoes')}</div>`;return;}
   el.innerHTML=sessoes.slice(0,15).map(s=>`
     <div class="atividade-item">
       <div class="at-dot"></div>
@@ -733,7 +898,7 @@ async function renderAlunos(){
   const alunos=await sbFetch('alunos?order=nome.asc')||[];
   const el=document.getElementById('alunos-list');
   if(!alunos.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">◉</div>Nenhum aluno. Toque no ＋ para adicionar.</div>';
+    el.innerHTML=`<div class="empty"><div class="empty-icon">◉</div>${T('alunos_empty')}</div>`;
     return;
   }
   el.innerHTML=alunos.map((a,i)=>`
@@ -742,7 +907,7 @@ async function renderAlunos(){
       <div class="aluno-info-wrap">
         <div class="aluno-nome">${a.nome}</div>
         <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
-        <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?'ATIVO':'INATIVO'}</span>
+        <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?T('badge_ativo'):T('badge_inativo')}</span>
       </div>
       <div class="chevron">›</div>
     </div>`).join('');
@@ -759,15 +924,15 @@ function animateRing(ativos, total){
   if(total>0) widget.style.display='flex';
   requestAnimationFrame(()=>{fill.style.strokeDashoffset=offset;});
   if(pctEl) pctEl.textContent=pct+'%';
-  if(desc) desc.textContent=`${ativos} de ${total} alunos com treino activo`;
+  if(desc) desc.textContent=T('ring_desc',ativos,total);
 }
 
 async function criarAluno(){
   const nome=document.getElementById('na-nome').value.trim();
-  if(!nome){toast('NOME É OBRIGATÓRIO!');return;}
+  if(!nome){toast(T('t_nome_obrig'));return;}
   const data={nome,email:document.getElementById('na-email').value,telefone:document.getElementById('na-tel').value,objetivo:document.getElementById('na-obj').value,modalidade:document.getElementById('na-mod').value,plano:document.getElementById('na-plano').value,obs:document.getElementById('na-obs').value,ativo:true};
   const res=await sbFetch('alunos',{method:'POST',body:JSON.stringify(data)});
-  if(res){toast('ALUNO CRIADO!');['na-nome','na-email','na-tel','na-obs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['na-obj','na-mod','na-plano'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});openView('lista');}
+  if(res){toast(T('t_aluno_criado'));['na-nome','na-email','na-tel','na-obs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['na-obj','na-mod','na-plano'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});openView('lista');}
 }
 
 async function openAluno(id){
@@ -784,20 +949,20 @@ async function openAluno(id){
 
 function copyLink(){
   const url=document.getElementById('det-link-url').textContent;
-  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast('LINK COPIADO!'));}
-  else{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('LINK COPIADO!');}
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast(T('t_link_copiado')));}
+  else{const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast(T('t_link_copiado'));}
 }
 
 async function toggleAtivo(){
   const alunos=await sbFetch(`alunos?id=eq.${currentAlunoId}`)||[];
   const a=alunos[0]; if(!a) return;
   await sbFetch(`alunos?id=eq.${currentAlunoId}`,{method:'PATCH',body:JSON.stringify({ativo:!a.ativo})});
-  toast(a.ativo?'ALUNO INATIVADO':'ALUNO ATIVADO');
+  toast(a.ativo?T('t_inativado'):T('t_ativado'));
   openAluno(currentAlunoId);
 }
 
 async function deletarAluno(){
-  if(!confirm('Tem certeza? Todos os dados serão excluídos.')) return;
+  if(!confirm(T('confirm_excluir_aluno'))) return;
   await sbFetch(`sessao_cargas?sessao_id=in.(select id from sessoes where aluno_id=eq.${currentAlunoId})`,{method:'DELETE'});
   await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
   await sbFetch(`exercicios?treino_id=in.(select id from treinos where aluno_id=eq.${currentAlunoId})`,{method:'DELETE'});
@@ -805,7 +970,7 @@ async function deletarAluno(){
   await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
   await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
   await sbFetch(`alunos?id=eq.${currentAlunoId}`,{method:'DELETE'});
-  toast('ALUNO EXCLUÍDO'); openView('lista');
+  toast(T('t_excluido_aluno')); openView('lista');
 }
 
 // ── TABS ──
@@ -829,7 +994,7 @@ function showTab(tab){
 // ── TREINOS ──
 function showNovoTreino(){
   document.getElementById('novo-treino-form').style.display='block';
-  document.getElementById('form-treino-title').textContent='NOVO TREINO';
+  document.getElementById('form-treino-title').textContent=T('novo_treino');
   document.getElementById('nt-nome').value='';
   document.getElementById('nt-desc').value='';
   exerciciosList=[]; renderExList(); currentTreinoId=null;
@@ -845,52 +1010,52 @@ function addExercicio(){
 
 function renderExList(){
   const el=document.getElementById('ex-list');
-  if(!exerciciosList.length){el.innerHTML='<div style="font-size:13px;color:var(--dim);padding:12px 0">Nenhum exercício adicionado ainda.</div>';return;}
+  if(!exerciciosList.length){el.innerHTML=`<div style="font-size:13px;color:var(--dim);padding:12px 0">${T('ex_nenhum')}</div>`;return;}
   el.innerHTML=exerciciosList.map((ex,i)=>`
     <div class="ex-card">
       <button class="ex-del" onclick="exerciciosList.splice(${i},1);renderExList()">✕</button>
       <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${ex.nome||''}" oninput="exerciciosList[${i}].nome=this.value"></div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="${T('ph_ex_nome')}" value="${ex.nome||''}" oninput="exerciciosList[${i}].nome=this.value"></div>
       <div class="ex-row">
-        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${ex.series||'3'}" oninput="exerciciosList[${i}].series=this.value"></div>
-        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${ex.reps||'10-12'}" oninput="exerciciosList[${i}].reps=this.value"></div>
+        <div><label class="form-label">${T('lbl_series')}</label><input class="form-inp" placeholder="3" value="${ex.series||'3'}" oninput="exerciciosList[${i}].series=this.value"></div>
+        <div><label class="form-label">${T('lbl_reps')}</label><input class="form-inp" placeholder="10-12" value="${ex.reps||'10-12'}" oninput="exerciciosList[${i}].reps=this.value"></div>
       </div>
-      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="Observações (opcional)" value="${ex.obs||''}" oninput="exerciciosList[${i}].obs=this.value"></div>
+      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="${T('ph_ex_obs')}" value="${ex.obs||''}" oninput="exerciciosList[${i}].obs=this.value"></div>
     </div>`).join('');
 }
 
 async function salvarTreino(){
   const nome=document.getElementById('nt-nome').value.trim();
-  if(!nome){toast('NOME DO TREINO É OBRIGATÓRIO!');return;}
+  if(!nome){toast(T('t_treino_nome_obrig'));return;}
   const exValidos=exerciciosList.filter(e=>e.nome.trim());
-  if(!exValidos.length){toast('ADICIONE PELO MENOS 1 EXERCÍCIO!');return;}
+  if(!exValidos.length){toast(T('t_treino_ex_obrig'));return;}
   let treinoId=currentTreinoId;
   if(treinoId){
     await sbFetch(`treinos?id=eq.${treinoId}`,{method:'PATCH',body:JSON.stringify({nome,descricao:document.getElementById('nt-desc').value})});
     await sbFetch(`exercicios?treino_id=eq.${treinoId}`,{method:'DELETE'});
   } else {
     const res=await sbFetch('treinos',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,nome,descricao:document.getElementById('nt-desc').value})});
-    if(!res||!res[0]){toast('ERRO AO SALVAR');return;}
+    if(!res||!res[0]){toast(T('t_treino_err'));return;}
     treinoId=res[0].id;
   }
   for(let i=0;i<exValidos.length;i++){
     await sbFetch('exercicios',{method:'POST',body:JSON.stringify({treino_id:treinoId,ordem:i+1,nome:exValidos[i].nome.trim(),obs:exValidos[i].obs||'',series:exValidos[i].series,reps:exValidos[i].reps})});
   }
-  toast('TREINO SALVO!'); cancelarTreino(); renderTreinos();
+  toast(T('t_treino_salvo')); cancelarTreino(); renderTreinos();
 }
 
 async function renderTreinos(){
   const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}`)||[];
   treinos.sort((a,b)=>a.nome.localeCompare(b.nome,undefined,{numeric:true,sensitivity:'base'}));
   const el=document.getElementById('treinos-list');
-  if(!treinos.length){el.innerHTML='<div class="empty"><div class="empty-icon">◻</div>Nenhum treino criado. Toque no ＋.</div>';return;}
+  if(!treinos.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◻</div>${T('treinos_empty')}</div>`;return;}
   el.innerHTML=treinos.map(t=>`
     <div class="treino-card">
       <div class="treino-nome">${t.nome}</div>
       <div class="treino-sub">${t.descricao||''}</div>
       <div class="treino-actions">
-        <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">EDITAR</button>
-        <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">EXCLUIR</button>
+        <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">${T('btn_editar')}</button>
+        <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">${T('btn_excluir')}</button>
       </div>
     </div>`).join('');
 }
@@ -901,7 +1066,7 @@ async function editarTreino(id){
   const t=treinos[0]; if(!t) return;
   const exs=await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`)||[];
   document.getElementById('novo-treino-form').style.display='block';
-  document.getElementById('form-treino-title').textContent='EDITAR TREINO';
+  document.getElementById('form-treino-title').textContent=T('editar_treino');
   document.getElementById('nt-nome').value=t.nome;
   document.getElementById('nt-desc').value=t.descricao||'';
   exerciciosList=exs.map(e=>({nome:e.nome,obs:e.obs||'',series:e.series||'3',reps:e.reps||'10-12'}));
@@ -910,10 +1075,10 @@ async function editarTreino(id){
 }
 
 async function deletarTreino(id){
-  if(!confirm('Excluir este treino?')) return;
+  if(!confirm(T('confirm_excluir_treino'))) return;
   await sbFetch(`exercicios?treino_id=eq.${id}`,{method:'DELETE'});
   await sbFetch(`treinos?id=eq.${id}`,{method:'DELETE'});
-  toast('TREINO EXCLUÍDO'); renderTreinos();
+  toast(T('t_treino_excluido')); renderTreinos();
 }
 
 // ── EVOLUÇÃO ──
@@ -924,18 +1089,18 @@ async function renderEvolucao(){
   const maxCarga=todas_cargas.length?Math.max(...todas_cargas.map(c=>c.carga_kg||0)):0;
 
   document.getElementById('det-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
-    <div class="stat-card"><div class="stat-val">${Math.ceil(sessoes.length/3)||0}</div><div class="stat-lbl">Semanas</div></div>
-    <div class="stat-card"><div class="stat-val">${maxCarga?maxCarga.toFixed(1)+'kg':'—'}</div><div class="stat-lbl">Maior carga</div></div>`;
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">${T('stat_sessoes')}</div></div>
+    <div class="stat-card"><div class="stat-val">${Math.ceil(sessoes.length/3)||0}</div><div class="stat-lbl">${T('stat_semanas')}</div></div>
+    <div class="stat-card"><div class="stat-val">${maxCarga?maxCarga.toFixed(1)+'kg':'—'}</div><div class="stat-lbl">${T('ev_maior_carga')}</div></div>`;
 
   const sel=document.getElementById('ev-select');
-  sel.innerHTML='<option value="">Selecione exercício...</option>';
+  sel.innerHTML=`<option value="">${T('ev_sel_ex')}</option>`;
   const exMap={};
   todas_cargas.forEach(c=>{if(c.exercicios) exMap[c.exercicio_id]=c.exercicios.nome;});
   Object.entries(exMap).forEach(([id,nome])=>{const o=document.createElement('option');o.value=id;o.textContent=nome;sel.appendChild(o);});
 
   const hist=document.getElementById('sessoes-hist');
-  if(!sessoes.length){hist.innerHTML='<div class="empty">Nenhuma sessão registrada.</div>';return;}
+  if(!sessoes.length){hist.innerHTML=`<div class="empty">${T('ev_nenhuma')}</div>`;return;}
   hist.innerHTML=sessoes.slice(0,20).map(s=>{
     const cargas=todas_cargas.filter(c=>c.sessao_id===s.id);
     const max=cargas.length?Math.max(...cargas.map(c=>c.carga_kg||0)):0;
@@ -974,13 +1139,13 @@ async function renderMedidas(){
 
   const avs=await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
   const el=document.getElementById('medidas-hist');
-  if(!avs.length){el.innerHTML='<div class="empty">Nenhuma avaliação registrada.</div>';return;}
+  if(!avs.length){el.innerHTML=`<div class="empty">${T('med_nenhuma')}</div>`;return;}
   el.innerHTML=avs.map((av,idx)=>{
     const prev=avs[idx+1]; const med=av.medidas||{};
     return `<div class="card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div class="card-title" style="margin:0">${formatDate(av.data)}</div>
-        <button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button>
+        <button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">${T('btn_excluir')}</button>
       </div>
       <div style="display:flex;gap:10px;margin-bottom:12px">
         ${av.peso?`<div class="stat-card" style="flex:1;padding:10px"><div class="stat-val" style="font-size:22px">${av.peso}kg</div><div class="stat-lbl">Peso</div></div>`:''}
@@ -1006,18 +1171,18 @@ async function renderMedidas(){
 
 async function salvarMedida(){
   const data=document.getElementById('pm-data').value;
-  if(!data){toast('DATA É OBRIGATÓRIA!');return;}
+  if(!data){toast(T('t_data_obrig'));return;}
   const medidas={};
   PERI_CAMPOS.forEach(c=>{const v=document.getElementById('pm-'+c.id)?.value;if(v) medidas[c.id]=parseFloat(v);});
   const payload={aluno_id:currentAlunoId,data,peso:document.getElementById('pm-peso').value||null,gordura:document.getElementById('pm-gord').value||null,massa_magra:document.getElementById('pm-massa').value||null,obs:document.getElementById('pm-obs').value,medidas};
   const res=await sbFetch('perimetria',{method:'POST',body:JSON.stringify(payload)});
-  if(res){toast('AVALIAÇÃO SALVA!');renderMedidas();}
+  if(res){toast(T('t_aval_salva'));renderMedidas();}
 }
 
 async function deletarMedida(id){
-  if(!confirm('Excluir esta avaliação?')) return;
+  if(!confirm(T('confirm_excluir_medida'))) return;
   await sbFetch(`perimetria?id=eq.${id}`,{method:'DELETE'});
-  toast('EXCLUÍDO'); renderMedidas();
+  toast(T('t_excluido')); renderMedidas();
 }
 
 // ── PERFIL ──
@@ -1039,7 +1204,7 @@ async function salvarPerfil(){
   } else {
     await sbFetch('anamnese',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,dados,atualizado_em:new Date().toISOString()})});
   }
-  toast('FICHA SALVA!');
+  toast(T('t_ficha_salva'));
 }
 
 // ── FEEDBACKS ──
@@ -1057,7 +1222,7 @@ async function renderFeedbacks(){
 
   const el=document.getElementById('feedbacks-list');
   if(!feedbacks.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">★</div>Nenhum feedback dos alunos ainda.</div>';
+    el.innerHTML=`<div class="empty"><div class="empty-icon">★</div>${T('fb_nenhum')}</div>`;
     return;
   }
 
@@ -1068,12 +1233,12 @@ async function renderFeedbacks(){
           <div style="font-size:15px;font-weight:600;color:var(--text)">${f.alunos?.nome||'—'}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:2px">${formatDate(f.data)}</div>
         </div>
-        ${!f.lido?'<span class="badge badge-gold">NOVO</span>':'<span class="badge badge-gray">LIDO</span>'}
+        ${!f.lido?`<span class="badge badge-gold">${T('fb_novo')}</span>`:`<span class="badge badge-gray">${T('fb_lido')}</span>`}
       </div>
       ${f.estrelas?`<div style="font-size:22px;color:var(--gold);margin-bottom:8px;letter-spacing:2px">${'★'.repeat(f.estrelas)}${'☆'.repeat(5-f.estrelas)}</div>`:''}
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:${f.mensagem?'10px':'0'}">
         ${f.humor?`<span style="font-size:28px">${f.humor}</span>`:''}
-        ${f.esforco?`<span class="badge badge-gray">Esforço: ${f.esforco}</span>`:''}
+        ${f.esforco?`<span class="badge badge-gray">${T('fb_esforco')}${f.esforco}</span>`:''}
       </div>
       ${f.mensagem?`<div style="font-size:14px;color:#bbb;line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${f.mensagem}"</div>`:''}
     </div>`).join('');
@@ -1086,7 +1251,7 @@ async function markLido(id){
 
 async function marcarTodosLidos(){
   await sbFetch('feedbacks?lido=eq.false',{method:'PATCH',body:JSON.stringify({lido:true})});
-  toast('TODOS MARCADOS COMO LIDOS');
+  toast(T('t_todos_lidos'));
   renderFeedbacks();
 }
 
@@ -1094,16 +1259,16 @@ async function marcarTodosLidos(){
 function salvarConfig(){
   SB_URL=document.getElementById('cfg-url').value.trim().replace(/\/$/,'');
   SB_KEY=document.getElementById('cfg-key').value.trim();
-  sc('sb_url',SB_URL); sc('sb_key',SB_KEY); toast('CONFIGURAÇÕES SALVAS!');
+  sc('sb_url',SB_URL); sc('sb_key',SB_KEY); toast(T('t_cfg_salvo'));
 }
-function salvarBaseUrl(){BASE_URL=document.getElementById('cfg-base-url').value.trim();sc('base_url',BASE_URL);toast('URL SALVA!');}
+function salvarBaseUrl(){BASE_URL=document.getElementById('cfg-base-url').value.trim();sc('base_url',BASE_URL);toast(T('t_url_salva'));}
 async function salvarAnthropicKey(){
   ANTHROPIC_KEY=document.getElementById('cfg-anthropic-key').value.trim();
   sc('anthropic_key',ANTHROPIC_KEY);
   const existe=await sbFetch('configuracoes?chave=eq.anthropic_key')||[];
   if(existe.length){await sbFetch('configuracoes?chave=eq.anthropic_key',{method:'PATCH',body:JSON.stringify({valor:ANTHROPIC_KEY})});}
   else{await sbFetch('configuracoes',{method:'POST',body:JSON.stringify({chave:'anthropic_key',valor:ANTHROPIC_KEY})});}
-  toast('CHAVE IA GUARDADA!');
+  toast(T('t_chave_salva'));
 }
 // ── INIT ──
 
@@ -1115,6 +1280,7 @@ if ('serviceWorker' in navigator) {
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{
+  setLang(localStorage.getItem('lang')||'pt');
   loadConfig();
   const show=()=>{
     document.getElementById('login-screen').style.display='none';

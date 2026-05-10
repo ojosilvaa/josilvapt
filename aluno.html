@@ -308,13 +308,20 @@ button{cursor:pointer;border:none;background:none}
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="brand">JO SILVA PT</div>
-  <div class="aluno-nome" id="aluno-nome-top">A carregar...</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;display:flex;align-items:center;gap:5px">
+      <span id="lang-pt" onclick="setLang('pt')" style="cursor:pointer;color:var(--gold);font-weight:600">PT</span>
+      <span style="color:var(--dim)">|</span>
+      <span id="lang-en" onclick="setLang('en')" style="cursor:pointer;color:var(--muted)">EN</span>
+    </div>
+    <div class="aluno-nome" id="aluno-nome-top">A carregar...</div>
+  </div>
 </div>
 
 <!-- ═══ TREINO ═══ -->
 <div id="screen-treino" class="screen active">
   <div id="treino-hero" class="hero" style="display:none">
-    <div class="hero-greeting">Bom treino,</div>
+    <div class="hero-greeting" data-i18n="greeting">Bom treino,</div>
     <div class="hero-name" id="hero-name"></div>
     <div class="hero-sub" id="hero-sub"></div>
   </div>
@@ -352,18 +359,18 @@ button{cursor:pointer;border:none;background:none}
   <div class="success-banner" id="success-banner">
     <div class="success-icon">🏆</div>
     <div>
-      <div class="success-text">Sessão registada!</div>
-      <div class="success-sub">Excelente trabalho. Até ao próximo treino!</div>
+      <div class="success-text" data-i18n="sessao_ok">Sessão registada!</div>
+      <div class="success-sub" data-i18n="sessao_ok_sub">Excelente trabalho. Até ao próximo treino!</div>
     </div>
   </div>
 
   <!-- Botão registar -->
   <div class="register-wrap" id="register-wrap" style="display:none">
-    <button class="btn-register" id="btn-register" onclick="registrar()">REGISTAR SESSÃO</button>
+    <button class="btn-register" id="btn-register" onclick="registrar()" data-i18n="btn_registar">REGISTAR SESSÃO</button>
   </div>
 
   <!-- Loading / empty -->
-  <div id="treino-loading" class="loading">A CARREGAR...</div>
+  <div id="treino-loading" class="loading" data-i18n="loading">A CARREGAR...</div>
 </div>
 
 <!-- ═══ EVOLUÇÃO ═══ -->
@@ -376,14 +383,14 @@ button{cursor:pointer;border:none;background:none}
     </div>
     <div class="chart-wrap">
       <select class="chart-sel" id="evo-select" onchange="renderChart()">
-        <option value="">Selecione um exercício...</option>
+        <option value="" data-i18n="sel_exercicio">Selecione um exercício...</option>
       </select>
       <div style="position:relative;height:200px">
         <canvas id="myChart" role="img" aria-label="Progressão de carga"></canvas>
       </div>
     </div>
-    <div class="sec-title">HISTÓRICO DE TREINOS</div>
-    <div id="evo-hist"><div class="empty">Nenhuma sessão registada ainda.</div></div>
+    <div class="sec-title" data-i18n="hist_treinos">HISTÓRICO DE TREINOS</div>
+    <div id="evo-hist"><div class="empty" data-i18n="sem_sessoes">Nenhuma sessão registada ainda.</div></div>
   </div>
 </div>
 
@@ -393,7 +400,7 @@ button{cursor:pointer;border:none;background:none}
     <div class="personal-card">
       <div class="personal-av">JS</div>
       <div class="personal-nome">JO SILVA</div>
-      <div class="personal-cargo">Personal Trainer</div>
+      <div class="personal-cargo" data-i18n="personal_cargo">Personal Trainer</div>
       <div class="personal-btns">
         <a class="contact-btn" href="https://instagram.com/ojo.silva" target="_blank">📷 INSTAGRAM</a>
         <a class="contact-btn" href="https://ojosilva.com" target="_blank">🌐 WEBSITE</a>
@@ -401,28 +408,28 @@ button{cursor:pointer;border:none;background:none}
     </div>
 
     <div class="orient-card">
-      <div class="orient-title">AQUECIMENTO</div>
-      <div class="orient-text">Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve com carga reduzida.</div>
+      <div class="orient-title" data-i18n="orient_aquec">AQUECIMENTO</div>
+      <div class="orient-text" data-i18n-html="orient_aquec_txt">Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve com carga reduzida.</div>
     </div>
     <div class="orient-card">
-      <div class="orient-title">DESCANSO ENTRE SÉRIES</div>
-      <div class="orient-text"><strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 seg.<br><strong>Isoladores e máquinas</strong>: 45–60 seg. Descanso longo esfria o estímulo.</div>
+      <div class="orient-title" data-i18n="orient_descanso">DESCANSO ENTRE SÉRIES</div>
+      <div class="orient-text" data-i18n-html="orient_descanso_txt"><strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 seg.<br><strong>Isoladores e máquinas</strong>: 45–60 seg. Descanso longo esfria o estímulo.</div>
     </div>
     <div class="orient-card">
-      <div class="orient-title">EXECUÇÃO</div>
-      <div class="orient-text">Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição deve ser difícil — se saiu fácil, sobe a carga.</div>
+      <div class="orient-title" data-i18n="orient_exec">EXECUÇÃO</div>
+      <div class="orient-text" data-i18n-html="orient_exec_txt">Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição deve ser difícil — se saiu fácil, sobe a carga.</div>
     </div>
     <div class="orient-card">
-      <div class="orient-title">PROGRESSÃO DE CARGA</div>
-      <div class="orient-text">Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.</div>
+      <div class="orient-title" data-i18n="orient_prog">PROGRESSÃO DE CARGA</div>
+      <div class="orient-text" data-i18n-html="orient_prog_txt">Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.</div>
     </div>
     <div class="orient-card">
-      <div class="orient-title">REGISTA AS CARGAS</div>
-      <div class="orient-text">Sempre preenche as cargas no app antes de sair do ginásio. Sem registo, não há progressão — é simples assim.</div>
+      <div class="orient-title" data-i18n="orient_reg">REGISTA AS CARGAS</div>
+      <div class="orient-text" data-i18n-html="orient_reg_txt">Sempre preenche as cargas no app antes de sair do ginásio. Sem registo, não há progressão — é simples assim.</div>
     </div>
     <div class="orient-card">
-      <div class="orient-title">DÚVIDAS</div>
-      <div class="orient-text">Qualquer dúvida sobre execução, carga ou desconforto — chama no direct do <strong>Instagram @ojo.silva</strong>.</div>
+      <div class="orient-title" data-i18n="orient_duvidas">DÚVIDAS</div>
+      <div class="orient-text" data-i18n-html="orient_duvidas_txt">Qualquer dúvida sobre execução, carga ou desconforto — chama no direct do <strong>Instagram @ojo.silva</strong>.</div>
     </div>
   </div>
 </div>
@@ -430,16 +437,16 @@ button{cursor:pointer;border:none;background:none}
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="bnav-item active" onclick="goScreen('treino')" id="nav-treino">
-    <span class="bnav-icon">◉</span>Treino
+    <span class="bnav-icon">◉</span><span data-i18n="nav_treino">Treino</span>
   </button>
   <button class="bnav-item" onclick="goScreen('evolucao')" id="nav-evolucao">
-    <span class="bnav-icon">↗</span>Evolução
+    <span class="bnav-icon">↗</span><span data-i18n="nav_evolucao">Evolução</span>
   </button>
   <button class="bnav-item" onclick="goScreen('orientacoes')" id="nav-orientacoes">
-    <span class="bnav-icon">◎</span>Dicas
+    <span class="bnav-icon">◎</span><span data-i18n="nav_dicas">Dicas</span>
   </button>
   <button class="bnav-item" onclick="goScreen('nutricao')" id="nav-nutricao">
-    <span class="bnav-icon">⊕</span>Nutrição
+    <span class="bnav-icon">⊕</span><span data-i18n="nav_nutricao">Nutrição</span>
   </button>
 </nav>
 
@@ -458,28 +465,28 @@ button{cursor:pointer;border:none;background:none}
         <text class="nutri-ring-sub" x="50" y="60" id="nutri-kcal-meta">/ 2000 kcal</text>
       </svg>
       <div class="nutri-macros">
-        <div class="macro-item"><div class="macro-val" id="nutri-prot">—</div><div class="macro-lbl">Prot</div></div>
-        <div class="macro-item"><div class="macro-val" id="nutri-carb">—</div><div class="macro-lbl">Carbo</div></div>
-        <div class="macro-item"><div class="macro-val" id="nutri-gord">—</div><div class="macro-lbl">Gord</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-prot">—</div><div class="macro-lbl" data-i18n="macro_prot">Prot</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-carb">—</div><div class="macro-lbl" data-i18n="macro_carbo">Carbo</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-gord">—</div><div class="macro-lbl" data-i18n="macro_gord">Gord</div></div>
       </div>
     </div>
 
     <!-- Tabs Hoje / Histórico / Sugestão -->
     <div class="ntab-wrap">
-      <button class="ntab active" id="ntab-hoje" onclick="nutriTab('hoje')">HOJE</button>
-      <button class="ntab" id="ntab-hist" onclick="nutriTab('hist')">HISTÓRICO</button>
-      <button class="ntab" id="ntab-sug" onclick="nutriTab('sug')">SUGESTÃO</button>
+      <button class="ntab active" id="ntab-hoje" onclick="nutriTab('hoje')" data-i18n="ntab_hoje">HOJE</button>
+      <button class="ntab" id="ntab-hist" onclick="nutriTab('hist')" data-i18n="ntab_hist">HISTÓRICO</button>
+      <button class="ntab" id="ntab-sug" onclick="nutriTab('sug')" data-i18n="ntab_sug">SUGESTÃO</button>
     </div>
 
     <div id="nutri-hoje-wrap">
-      <button class="btn-add-refei" onclick="openAddRefeiModal()">＋ REGISTAR REFEIÇÃO</button>
+      <button class="btn-add-refei" onclick="openAddRefeiModal()" data-i18n="btn_add_refei">＋ REGISTAR REFEIÇÃO</button>
       <div id="refeicoes-hoje"></div>
     </div>
     <div id="nutri-hist-wrap" style="display:none">
       <div id="refeicoes-hist"></div>
     </div>
     <div id="nutri-sug-wrap" style="display:none">
-      <div id="sug-inventario"><div class="loading">A CARREGAR...</div></div>
+      <div id="sug-inventario"><div class="loading" data-i18n="loading">A CARREGAR...</div></div>
     </div>
 
   </div>
@@ -488,14 +495,14 @@ button{cursor:pointer;border:none;background:none}
 <!-- ═══ MODAL REGISTO MANUAL REFEIÇÃO ═══ -->
 <div class="add-refei-modal" id="add-refei-modal">
   <div class="add-refei-sheet">
-    <div class="add-refei-title">REGISTAR REFEIÇÃO</div>
+    <div class="add-refei-title" data-i18n="modal_refei">REGISTAR REFEIÇÃO</div>
 
     <!-- Tipo de refeição -->
     <div class="meal-tipos" id="meal-tipos"></div>
 
     <!-- Itens da refeição atual -->
     <div class="draft-section" id="draft-section">
-      <div class="draft-section-hdr">REFEIÇÃO ACTUAL</div>
+      <div class="draft-section-hdr" data-i18n="refei_actual">REFEIÇÃO ACTUAL</div>
       <div id="meal-draft"></div>
     </div>
     <div class="meal-totals-bar" id="meal-totals-bar"></div>
@@ -503,12 +510,12 @@ button{cursor:pointer;border:none;background:none}
     <!-- Pesquisa + lista de alimentos -->
     <div class="food-search-wrap">
       <span class="food-search-icon">🔍</span>
-      <input class="food-search-inp" id="food-search" type="search" placeholder="Pesquisar alimento..." oninput="renderFoodBrowser(this.value)" autocomplete="off">
+      <input class="food-search-inp" id="food-search" type="search" placeholder="Pesquisar alimento..." data-i18n-ph="food_ph" oninput="renderFoodBrowser(this.value)" autocomplete="off">
     </div>
     <div id="food-browser"></div>
 
-    <button class="btn-guardar-refei" onclick="guardarRefeicaoManual()">GUARDAR REFEIÇÃO</button>
-    <button onclick="closeAddRefeiModal()" style="width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;margin-top:8px">Cancelar</button>
+    <button class="btn-guardar-refei" onclick="guardarRefeicaoManual()" data-i18n="btn_guardar_refei">GUARDAR REFEIÇÃO</button>
+    <button onclick="closeAddRefeiModal()" style="width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;margin-top:8px" data-i18n="cancelar">Cancelar</button>
   </div>
 </div>
 
@@ -516,23 +523,23 @@ button{cursor:pointer;border:none;background:none}
 <div class="install-banner" id="install-banner" style="display:none">
   <div class="install-banner-icon">📲</div>
   <div class="install-banner-text">
-    <div class="install-banner-title">Instalar como App</div>
-    <div class="install-banner-sub">Acede direto do ecrã inicial</div>
+    <div class="install-banner-title" data-i18n="install_title">Instalar como App</div>
+    <div class="install-banner-sub" data-i18n="install_sub">Acede direto do ecrã inicial</div>
   </div>
   <div class="install-banner-btns">
-    <button class="install-btn install-btn-no" onclick="dismissInstall()">Agora não</button>
-    <button class="install-btn install-btn-yes" id="install-btn" onclick="installPWA()">INSTALAR</button>
+    <button class="install-btn install-btn-no" onclick="dismissInstall()" data-i18n="install_no">Agora não</button>
+    <button class="install-btn install-btn-yes" id="install-btn" onclick="installPWA()" data-i18n="install_sim">INSTALAR</button>
   </div>
 </div>
 
 <!-- ═══ FEEDBACK MODAL ═══ -->
 <div class="fb-modal" id="feedback-modal">
   <div class="fb-sheet">
-    <div class="fb-title">COMO FOI O TREINO?</div>
-    <div class="fb-sub">O teu feedback ajuda-me a melhorar o teu plano</div>
+    <div class="fb-title" data-i18n="fb_title">COMO FOI O TREINO?</div>
+    <div class="fb-sub" data-i18n="fb_sub">O teu feedback ajuda-me a melhorar o teu plano</div>
 
     <div class="fb-section">
-      <div class="fb-label">AVALIAÇÃO GERAL</div>
+      <div class="fb-label" data-i18n="fb_aval">AVALIAÇÃO GERAL</div>
       <div class="fb-stars" id="fb-stars">
         <span class="fb-star" data-v="1" onclick="setStar(1)">☆</span>
         <span class="fb-star" data-v="2" onclick="setStar(2)">☆</span>
@@ -543,7 +550,7 @@ button{cursor:pointer;border:none;background:none}
     </div>
 
     <div class="fb-section">
-      <div class="fb-label">COMO TE SENTISTE?</div>
+      <div class="fb-label" data-i18n="fb_sentiste">COMO TE SENTISTE?</div>
       <div class="fb-humor">
         <button class="humor-btn" data-v="💀" onclick="setHumor('💀')">💀</button>
         <button class="humor-btn" data-v="😓" onclick="setHumor('😓')">😓</button>
@@ -554,22 +561,22 @@ button{cursor:pointer;border:none;background:none}
     </div>
 
     <div class="fb-section">
-      <div class="fb-label">NÍVEL DE ESFORÇO</div>
+      <div class="fb-label" data-i18n="fb_esforco">NÍVEL DE ESFORÇO</div>
       <div class="fb-esforco">
-        <button class="esforco-chip" data-v="Leve" onclick="setEsforco('Leve')">Leve</button>
-        <button class="esforco-chip" data-v="Moderado" onclick="setEsforco('Moderado')">Moderado</button>
-        <button class="esforco-chip" data-v="Difícil" onclick="setEsforco('Difícil')">Difícil</button>
-        <button class="esforco-chip" data-v="Exaustivo" onclick="setEsforco('Exaustivo')">Exaustivo</button>
+        <button class="esforco-chip" data-v="Leve" onclick="setEsforco('Leve')" data-i18n="esforco_leve">Leve</button>
+        <button class="esforco-chip" data-v="Moderado" onclick="setEsforco('Moderado')" data-i18n="esforco_mod">Moderado</button>
+        <button class="esforco-chip" data-v="Difícil" onclick="setEsforco('Difícil')" data-i18n="esforco_dif">Difícil</button>
+        <button class="esforco-chip" data-v="Exaustivo" onclick="setEsforco('Exaustivo')" data-i18n="esforco_exaust">Exaustivo</button>
       </div>
     </div>
 
     <div class="fb-section">
-      <textarea id="fb-msg" style="width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:14px 16px;font-size:15px;border-radius:var(--radius-sm);outline:none;resize:none;min-height:72px;font-family:'DM Sans',sans-serif" placeholder="Alguma observação? (opcional)" maxlength="300"></textarea>
+      <textarea id="fb-msg" style="width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:14px 16px;font-size:15px;border-radius:var(--radius-sm);outline:none;resize:none;min-height:72px;font-family:'DM Sans',sans-serif" placeholder="Alguma observação? (opcional)" data-i18n-ph="fb_ph" maxlength="300"></textarea>
     </div>
 
     <div class="fb-actions">
-      <button onclick="closeFeedback()" style="flex:1;padding:14px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer">Saltar</button>
-      <button onclick="submitFeedback()" style="flex:2;padding:14px;border-radius:var(--radius-sm);background:var(--gold);border:none;color:#0a0a0a;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer">ENVIAR</button>
+      <button onclick="closeFeedback()" style="flex:1;padding:14px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer" data-i18n="fb_saltar">Saltar</button>
+      <button onclick="submitFeedback()" style="flex:2;padding:14px;border-radius:var(--radius-sm);background:var(--gold);border:none;color:#0a0a0a;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer" data-i18n="fb_enviar">ENVIAR</button>
     </div>
   </div>
 </div>
@@ -577,6 +584,126 @@ button{cursor:pointer;border:none;background:none}
 <div class="toast" id="toast"></div>
 
 <script>
+// ── i18n ──
+let currentLang = localStorage.getItem('lang') || 'pt';
+const LANG = {
+  pt: {
+    greeting:'Bom treino,', nav_treino:'Treino', nav_evolucao:'Evolução', nav_dicas:'Dicas', nav_nutricao:'Nutrição',
+    btn_registar:'REGISTAR SESSÃO', btn_guardando:'A GUARDAR...', loading:'A CARREGAR...',
+    sessao_ok:'Sessão registada!', sessao_ok_sub:'Excelente trabalho. Até ao próximo treino!',
+    t_sessao:'SESSÃO REGISTADA! 🏆', t_offline:'GUARDADO OFFLINE ✓', t_feedback:'OBRIGADO PELO FEEDBACK! 🙏',
+    t_app_inst:'APP INSTALADO! 🎉', t_ios_inst:'No iOS: partilha → "Adicionar ao ecrã inicial"',
+    t_add_food:'ADICIONA PELO MENOS 1 ALIMENTO', t_refei_ok:'REFEIÇÃO GUARDADA! 🥗', t_refei_err:'ERRO AO GUARDAR',
+    t_select_food:'SELECIONA PELO MENOS 1 PROTEÍNA OU 1 CARBOIDRATO',
+    sem_treinos:'Nenhum treino disponível ainda.<br>O teu personal está a preparar o teu plano.',
+    sem_ex:'Sem exercícios neste treino.', sem_sessoes:'Nenhuma sessão registada ainda.',
+    sem_refei:'Sem refeições registadas hoje.', sem_hist:'Sem histórico ainda.',
+    sem_resultados:'Sem resultados', sem_alim:'Nenhum alimento adicionado ainda',
+    sem_alim_sistema:'Sem alimentos configurados no sistema.',
+    link_invalido:'Link inválido.<br>Peça o link correto ao seu personal.',
+    acesso_nao:'Acesso não encontrado.<br>Fala com o teu personal.',
+    obj_prefix:'Objetivo: ', bora:'Bora treinar 💪',
+    stat_sessoes:'Sessões', stat_semanas:'Semanas', stat_dias:'Dias',
+    sel_exercicio:'Selecione um exercício...', hist_treinos:'HISTÓRICO DE TREINOS',
+    series:'séries', reps:'reps', done_pill:'✓ Feito', carga_label:'Carga usada',
+    progress:(d,t)=>`${d} de ${t} exercício${t!==1?'s':''} concluído${t!==1?'s':''}`,
+    ntab_hoje:'HOJE', ntab_hist:'HISTÓRICO', ntab_sug:'SUGESTÃO',
+    btn_add_refei:'＋ REGISTAR REFEIÇÃO', modal_refei:'REGISTAR REFEIÇÃO', refei_actual:'REFEIÇÃO ACTUAL',
+    food_ph:'Pesquisar alimento...', btn_guardar_refei:'GUARDAR REFEIÇÃO', cancelar:'Cancelar',
+    fb_title:'COMO FOI O TREINO?', fb_sub:'O teu feedback ajuda-me a melhorar o teu plano',
+    fb_aval:'AVALIAÇÃO GERAL', fb_sentiste:'COMO TE SENTISTE?', fb_esforco:'NÍVEL DE ESFORÇO',
+    esforco_leve:'Leve', esforco_mod:'Moderado', esforco_dif:'Difícil', esforco_exaust:'Exaustivo',
+    fb_ph:'Alguma observação? (opcional)', fb_saltar:'Saltar', fb_enviar:'ENVIAR',
+    install_title:'Instalar como App', install_sub:'Acede direto do ecrã inicial',
+    install_no:'Agora não', install_sim:'INSTALAR',
+    meal_tipos_labels:['Pequeno-almoço','Almoço','Lanche','Jantar','Ceia'],
+    cat_prot:'PROTEÍNAS', cat_carbo:'CARBOIDRATOS', cat_fibra:'FIBRAS & LEGUMES', cat_gord:'GORDURAS',
+    sug_desc:'Marca o que tens disponível. O app calcula as gramas exactas para atingires a meta desta refeição.',
+    meta_por_refeicao:'meta por refeição', btn_gerar:'GERAR SUGESTÃO',
+    sug_title:'✦ SUGESTÃO DE REFEIÇÃO', sug_prot:'Proteína', sug_carbo:'Carboidrato', sug_gord:'Gordura',
+    kcal_dia:'kcal/dia', obj_label:'OBJETIVO', deficit:'DÉFICIT CALÓRICO', superavit:'SUPERÁVIT CALÓRICO', manutencao:'MANUTENÇÃO',
+    macro_prot:'Prot', macro_carbo:'Carbo', macro_gord:'Gord', personal_cargo:'Personal Trainer',
+    orient_aquec:'AQUECIMENTO', orient_descanso:'DESCANSO ENTRE SÉRIES', orient_exec:'EXECUÇÃO',
+    orient_prog:'PROGRESSÃO DE CARGA', orient_reg:'REGISTA AS CARGAS', orient_duvidas:'DÚVIDAS',
+    orient_aquec_txt:'Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve com carga reduzida.',
+    orient_descanso_txt:'<strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 seg.<br><strong>Isoladores e máquinas</strong>: 45–60 seg. Descanso longo esfria o estímulo.',
+    orient_exec_txt:'Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição deve ser difícil — se saiu fácil, sobe a carga.',
+    orient_prog_txt:'Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.',
+    orient_reg_txt:'Sempre preenches as cargas no app antes de sair do ginásio. Sem registo, não há progressão — é simples assim.',
+    orient_duvidas_txt:'Qualquer dúvida sobre execução, carga ou desconforto — chama no direct do <strong>Instagram @ojo.silva</strong>.',
+  },
+  en: {
+    greeting:'Good workout,', nav_treino:'Workout', nav_evolucao:'Progress', nav_dicas:'Tips', nav_nutricao:'Nutrition',
+    btn_registar:'REGISTER SESSION', btn_guardando:'SAVING...', loading:'LOADING...',
+    sessao_ok:'Session logged!', sessao_ok_sub:'Great work. See you next workout!',
+    t_sessao:'SESSION LOGGED! 🏆', t_offline:'SAVED OFFLINE ✓', t_feedback:'THANKS FOR THE FEEDBACK! 🙏',
+    t_app_inst:'APP INSTALLED! 🎉', t_ios_inst:'On iOS: share → "Add to Home Screen"',
+    t_add_food:'ADD AT LEAST 1 FOOD ITEM', t_refei_ok:'MEAL SAVED! 🥗', t_refei_err:'ERROR SAVING',
+    t_select_food:'SELECT AT LEAST 1 PROTEIN OR 1 CARB',
+    sem_treinos:'No workouts available yet.<br>Your trainer is preparing your plan.',
+    sem_ex:'No exercises in this workout.', sem_sessoes:'No sessions logged yet.',
+    sem_refei:'No meals logged today.', sem_hist:'No history yet.',
+    sem_resultados:'No results', sem_alim:'No food added yet',
+    sem_alim_sistema:'No foods configured in the system.',
+    link_invalido:'Invalid link.<br>Ask your personal trainer for the correct link.',
+    acesso_nao:'Access not found.<br>Talk to your personal trainer.',
+    obj_prefix:'Goal: ', bora:"Let's train 💪",
+    stat_sessoes:'Sessions', stat_semanas:'Weeks', stat_dias:'Days',
+    sel_exercicio:'Select an exercise...', hist_treinos:'TRAINING HISTORY',
+    series:'sets', reps:'reps', done_pill:'✓ Done', carga_label:'Load used',
+    progress:(d,t)=>`${d} of ${t} exercise${t!==1?'s':''} completed`,
+    ntab_hoje:'TODAY', ntab_hist:'HISTORY', ntab_sug:'SUGGESTION',
+    btn_add_refei:'＋ LOG MEAL', modal_refei:'LOG MEAL', refei_actual:'CURRENT MEAL',
+    food_ph:'Search food...', btn_guardar_refei:'SAVE MEAL', cancelar:'Cancel',
+    fb_title:'HOW WAS YOUR WORKOUT?', fb_sub:'Your feedback helps me improve your plan',
+    fb_aval:'OVERALL RATING', fb_sentiste:'HOW DID YOU FEEL?', fb_esforco:'EFFORT LEVEL',
+    esforco_leve:'Light', esforco_mod:'Moderate', esforco_dif:'Hard', esforco_exaust:'Exhausting',
+    fb_ph:'Any notes? (optional)', fb_saltar:'Skip', fb_enviar:'SEND',
+    install_title:'Install as App', install_sub:'Access directly from home screen',
+    install_no:'Not now', install_sim:'INSTALL',
+    meal_tipos_labels:['Breakfast','Lunch','Snack','Dinner','Supper'],
+    cat_prot:'PROTEINS', cat_carbo:'CARBOHYDRATES', cat_fibra:'VEGETABLES & FIBER', cat_gord:'FATS',
+    sug_desc:'Check what you have available. The app calculates exact grams to hit your meal target.',
+    meta_por_refeicao:'per meal target', btn_gerar:'GENERATE SUGGESTION',
+    sug_title:'✦ MEAL SUGGESTION', sug_prot:'Protein', sug_carbo:'Carbohydrate', sug_gord:'Fat',
+    kcal_dia:'kcal/day', obj_label:'GOAL', deficit:'CALORIC DEFICIT', superavit:'CALORIC SURPLUS', manutencao:'MAINTENANCE',
+    macro_prot:'Prot', macro_carbo:'Carb', macro_gord:'Fat', personal_cargo:'Personal Trainer',
+    orient_aquec:'WARM-UP', orient_descanso:'REST BETWEEN SETS', orient_exec:'EXECUTION',
+    orient_prog:'LOAD PROGRESSION', orient_reg:'LOG YOUR LOADS', orient_duvidas:'QUESTIONS',
+    orient_aquec_txt:'Do <strong>5 to 10 minutes</strong> of warm-up before starting — treadmill, bike or elliptical at an easy pace. On the first exercise, do a light set with reduced load.',
+    orient_descanso_txt:'<strong>Heavy exercises</strong> (squat, leg press, deadlift): 60–90 sec.<br><strong>Isolation & machines</strong>: 45–60 sec. Long rest cools the stimulus.',
+    orient_exec_txt:'<strong>Controlled</strong> tempo: 2 seconds down, 1 up. No rushing, no swinging. The last rep should be hard — if it felt easy, increase the load.',
+    orient_prog_txt:'When you complete <strong>all sets at the top of the range</strong> with perfect technique, increase the load. That\'s how the body evolves — session by session.',
+    orient_reg_txt:'Always fill in the loads on the app before leaving the gym. No log, no progress — simple as that.',
+    orient_duvidas_txt:'Any questions about execution, load or discomfort — message on <strong>Instagram @ojo.silva</strong>.',
+  }
+};
+const T = (key, ...args) => {
+  const v = (LANG[currentLang] || LANG.pt)[key] ?? LANG.pt[key] ?? key;
+  return typeof v === 'function' ? v(...args) : v;
+};
+function setLang(l) {
+  currentLang = l;
+  localStorage.setItem('lang', l);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = T(el.dataset.i18n);
+    if (v !== el.dataset.i18n) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = T(el.dataset.i18nHtml);
+    if (v !== el.dataset.i18nHtml) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const v = T(el.dataset.i18nPh);
+    if (v !== el.dataset.i18nPh) el.placeholder = v;
+  });
+  const selEx = document.getElementById('evo-select');
+  if (selEx && selEx.options[0]) selEx.options[0].text = T('sel_exercicio');
+  const pt = document.getElementById('lang-pt'), en = document.getElementById('lang-en');
+  if (pt) { pt.style.color = l==='pt'?'var(--gold)':'var(--muted)'; pt.style.fontWeight = l==='pt'?'600':'400'; }
+  if (en) { en.style.color = l==='en'?'var(--gold)':'var(--muted)'; en.style.fontWeight = l==='en'?'600':'400'; }
+}
+
 const PARAMS = new URLSearchParams(location.search);
 const ALUNO_ID = PARAMS.get('id');
 const SB_URL = 'https://oelbocimyfwwzkzbyswg.supabase.co';
@@ -633,7 +760,7 @@ function goScreen(screen) {
 // ── INIT ──
 async function init() {
   if (!ALUNO_ID) {
-    document.getElementById('treino-loading').innerHTML = '<div class="empty"><div class="empty-icon">🔗</div>Link inválido.<br>Peça o link correto ao seu personal.</div>';
+    document.getElementById('treino-loading').innerHTML = `<div class="empty"><div class="empty-icon">🔗</div>${T('link_invalido')}</div>`;
     return;
   }
 
@@ -644,7 +771,7 @@ async function init() {
   const aluno = alunos[0];
 
   if (!aluno || !aluno.ativo) {
-    document.getElementById('treino-loading').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>Acesso não encontrado.<br>Fala com o teu personal.</div>';
+    document.getElementById('treino-loading').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>${T('acesso_nao')}</div>`;
     return;
   }
 
@@ -652,7 +779,7 @@ async function init() {
   const firstName = aluno.nome.split(' ')[0];
   document.getElementById('aluno-nome-top').textContent = firstName;
   document.getElementById('hero-name').textContent = firstName.toUpperCase();
-  document.getElementById('hero-sub').textContent = aluno.objetivo ? `Objetivo: ${aluno.objetivo}` : 'Bora treinar 💪';
+  document.getElementById('hero-sub').textContent = aluno.objetivo ? `${T('obj_prefix')}${aluno.objetivo}` : T('bora');
   document.title = firstName + ' · Jo Silva PT';
 
   await loadTreinos();
@@ -665,7 +792,7 @@ async function loadTreinos() {
   document.getElementById('treino-loading').style.display = 'none';
 
   if (!treinos.length) {
-    document.getElementById('treino-loading').innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Nenhum treino disponível ainda.<br>O teu personal está a preparar o teu plano.</div>';
+    document.getElementById('treino-loading').innerHTML = `<div class="empty"><div class="empty-icon">📋</div>${T('sem_treinos')}</div>`;
     document.getElementById('treino-loading').style.display = 'block';
     return;
   }
@@ -712,7 +839,7 @@ function renderTreino() {
 
   const container = document.getElementById('ex-list');
   if (!exs.length) {
-    container.innerHTML = '<div class="empty">Sem exercícios neste treino.</div>';
+    container.innerHTML = `<div class="empty">${T('sem_ex')}</div>`;
     return;
   }
 
@@ -727,15 +854,15 @@ function renderTreino() {
           <div class="ex-name">${ex.nome}</div>
           ${ex.obs ? `<div class="ex-obs">${ex.obs}</div>` : ''}
           <div class="ex-pills">
-            <div class="pill"><strong>${ex.series || '3'}</strong> séries</div>
-            <div class="pill"><strong>${ex.reps || '10-12'}</strong> reps</div>
-            ${isDone ? '<div class="pill pill-done">✓ Feito</div>' : ''}
+            <div class="pill"><strong>${ex.series || '3'}</strong> ${T('series')}</div>
+            <div class="pill"><strong>${ex.reps || '10-12'}</strong> ${T('reps')}</div>
+            ${isDone ? `<div class="pill pill-done">${T('done_pill')}</div>` : ''}
           </div>
         </div>
         <div class="ex-check">${isDone ? '✓' : ''}</div>
       </div>
       <div class="ex-carga">
-        <div class="carga-label">Carga usada</div>
+        <div class="carga-label">${T('carga_label')}</div>
         <div class="carga-ctrl">
           <button class="carga-btn" onclick="ajustarCarga('${ex.id}', -2.5)">−</button>
           <div>
@@ -766,9 +893,9 @@ function toggleDone(exId) {
       if (ex) {
         const isDone = doneSet.has(exId);
         pills.innerHTML = `
-          <div class="pill"><strong>${ex.series || '3'}</strong> séries</div>
-          <div class="pill"><strong>${ex.reps || '10-12'}</strong> reps</div>
-          ${isDone ? '<div class="pill pill-done">✓ Feito</div>' : ''}`;
+          <div class="pill"><strong>${ex.series || '3'}</strong> ${T('series')}</div>
+          <div class="pill"><strong>${ex.reps || '10-12'}</strong> ${T('reps')}</div>
+          ${isDone ? `<div class="pill pill-done">${T('done_pill')}</div>` : ''}`;
       }
     }
   }
@@ -793,7 +920,7 @@ function updateProgress(exs) {
   const fill = document.getElementById('progress-fill');
   const text = document.getElementById('progress-text');
   if (fill) fill.style.width = pct + '%';
-  if (text) text.textContent = `${done} de ${total} exercícios concluídos`;
+  if (text) text.textContent = T('progress', done, total);
   const btn = document.getElementById('btn-register');
   if (btn) btn.disabled = done === 0;
   const miniRing = document.getElementById('mini-ring-fill');
@@ -807,7 +934,7 @@ async function registrar() {
   const t = treinos.find(x => x.id === currentTreinoId);
   const exs = exerciciosPorTreino[currentTreinoId] || [];
   const btn = document.getElementById('btn-register');
-  btn.textContent = 'A GUARDAR...'; btn.disabled = true;
+  btn.textContent = T('btn_guardando'); btn.disabled = true;
 
   const sessaoData = {
     aluno_id: ALUNO_ID, treino_id: currentTreinoId,
@@ -823,14 +950,14 @@ async function registrar() {
       .map(e => ({ sessao_id: sessaoId, exercicio_id: e.id, carga_kg: cargas[e.id] }));
     if (payload.length) await sbFetch('sessao_cargas', { method: 'POST', body: JSON.stringify(payload) });
     sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
-    toast('SESSÃO REGISTADA! 🏆');
+    toast(T('t_sessao'));
     setTimeout(() => openFeedback(sessaoId), 900);
   } else {
     // Offline fallback
     const off = lc('offline', []) || [];
     off.push({ ...sessaoData, ts: Date.now() });
     sc('offline', off);
-    toast('GUARDADO OFFLINE ✓');
+    toast(T('t_offline'));
   }
 
   // Reset done
@@ -841,7 +968,7 @@ async function registrar() {
   banner.style.display = 'flex';
   setTimeout(() => banner.style.display = 'none', 4000);
 
-  btn.textContent = 'REGISTAR SESSÃO';
+  btn.textContent = T('btn_registar');
   updateProgress(exs);
   renderTreino();
 }
@@ -858,9 +985,9 @@ async function renderEvolucao() {
     : 0;
 
   document.getElementById('evo-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
-    <div class="stat-card"><div class="stat-val">${semanas}</div><div class="stat-lbl">Semanas</div></div>
-    <div class="stat-card"><div class="stat-val">${dias || '—'}</div><div class="stat-lbl">Dias</div></div>`;
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">${T('stat_sessoes')}</div></div>
+    <div class="stat-card"><div class="stat-val">${semanas}</div><div class="stat-lbl">${T('stat_semanas')}</div></div>
+    <div class="stat-card"><div class="stat-val">${dias || '—'}</div><div class="stat-lbl">${T('stat_dias')}</div></div>`;
 
   // Populate exercise selector
   const sel = document.getElementById('evo-select');
@@ -877,7 +1004,7 @@ async function renderEvolucao() {
 
   // History
   const hist = document.getElementById('evo-hist');
-  if (!sessoes.length) { hist.innerHTML = '<div class="empty">Nenhuma sessão registada ainda.</div>'; return; }
+  if (!sessoes.length) { hist.innerHTML = `<div class="empty">${T('sem_sessoes')}</div>`; return; }
   hist.innerHTML = `<div class="hist-card">` + sessoes.slice(0, 20).map(s => `
     <div class="hist-item">
       <div>
@@ -955,7 +1082,7 @@ async function submitFeedback() {
     lido: false
   };
   await sbFetch('feedbacks', { method: 'POST', body: JSON.stringify(payload) });
-  toast('OBRIGADO PELO FEEDBACK! 🙏');
+  toast(T('t_feedback'));
 }
 
 // ── NUTRIÇÃO ──
@@ -994,7 +1121,7 @@ async function renderNutricao() {
 
   const el = document.getElementById('refeicoes-hoje');
   if (!refs.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:36px;opacity:.3">🥗</div>Sem refeições registadas hoje.</div>';
+    el.innerHTML = `<div class="empty"><div class="empty-icon" style="font-size:36px;opacity:.3">🥗</div>${T('sem_refei')}</div>`;
     return;
   }
   el.innerHTML = refs.map((r, i) => {
@@ -1020,7 +1147,7 @@ async function renderNutricao() {
 async function renderNutriHist() {
   const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&order=data.desc,criado_em.desc&limit=90`) || [];
   const el = document.getElementById('refeicoes-hist');
-  if (!refs.length) { el.innerHTML = '<div class="empty">Sem histórico ainda.</div>'; return; }
+  if (!refs.length) { el.innerHTML = `<div class="empty">${T('sem_hist')}</div>`; return; }
   const byDay = {};
   refs.forEach(r => { if (!byDay[r.data]) byDay[r.data] = []; byDay[r.data].push(r); });
   el.innerHTML = Object.entries(byDay).map(([data, rs]) => {
@@ -1090,8 +1217,10 @@ function setMealTipo(tipo) {
 }
 
 function renderMealTipos() {
-  document.getElementById('meal-tipos').innerHTML = MEAL_TIPOS.map(t =>
-    `<button class="meal-tipo-btn${t===mealTipo?' active':''}" onclick="setMealTipo('${t}')">${t}</button>`
+  const MEAL_TIPOS_PT = ['Pequeno-almoço','Almoço','Lanche','Jantar','Ceia'];
+  const labels = T('meal_tipos_labels');
+  document.getElementById('meal-tipos').innerHTML = MEAL_TIPOS_PT.map((t, i) =>
+    `<button class="meal-tipo-btn${t===mealTipo?' active':''}" onclick="setMealTipo('${t}')">${labels[i]}</button>`
   ).join('');
 }
 
@@ -1141,7 +1270,7 @@ function renderMealDraft() {
   const totBar  = document.getElementById('meal-totals-bar');
   const draftSec = document.getElementById('draft-section');
   if (!mealDraft.length) {
-    draftEl.innerHTML = '<div style="padding:4px 0 6px;font-size:13px;color:var(--dim);text-align:center">Nenhum alimento adicionado ainda</div>';
+    draftEl.innerHTML = `<div style="padding:4px 0 6px;font-size:13px;color:var(--dim);text-align:center">${T('sem_alim')}</div>`;
     totBar.style.display = 'none';
     draftSec.style.borderColor = 'transparent';
     return;
@@ -1178,7 +1307,7 @@ function renderFoodBrowser(filter) {
   const visible = q ? alimentosList.filter(a => a.nome.toLowerCase().includes(q)) : alimentosList;
   const el = document.getElementById('food-browser');
   if (!visible.length) {
-    el.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px">Sem resultados</div>';
+    el.innerHTML = `<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px">${T('sem_resultados')}</div>`;
     return;
   }
   const grupos = ['proteína','carbo','fibra','gordura'].map(cat => ({
@@ -1206,7 +1335,7 @@ function renderFoodBrowser(filter) {
 }
 
 async function guardarRefeicaoManual() {
-  if (!mealDraft.length) { toast('ADICIONA PELO MENOS 1 ALIMENTO'); return; }
+  if (!mealDraft.length) { toast(T('t_add_food')); return; }
   const t = calcMealTotals();
   const hoje = new Date().toISOString().split('T')[0];
   const descricao = mealDraft.map(i => `${i.nome} ${i.gramas}g`).join(', ');
@@ -1221,7 +1350,7 @@ async function guardarRefeicaoManual() {
       gordura: +t.gord.toFixed(1)
     })
   });
-  if (!res || !res[0]) { toast('ERRO AO GUARDAR'); return; }
+  if (!res || !res[0]) { toast(T('t_refei_err')); return; }
   const refeiId = res[0].id;
   const itens = mealDraft.map(item => ({
     refeicao_id: refeiId, alimento_id: item.alimento_id, nome: item.nome,
@@ -1232,7 +1361,7 @@ async function guardarRefeicaoManual() {
     gordura:  +(item.gord100 * item.gramas / 100).toFixed(1)
   }));
   await sbFetch('refeicao_itens', { method: 'POST', body: JSON.stringify(itens) });
-  toast('REFEIÇÃO GUARDADA! 🥗');
+  toast(T('t_refei_ok'));
   closeAddRefeiModal();
   renderNutricao();
 }
@@ -1256,7 +1385,7 @@ function calcDailyKcal(peso, objetivo) {
 }
 
 function catLabel(cat) {
-  return {proteína:'PROTEÍNAS',carbo:'CARBOIDRATOS',fibra:'FIBRAS & LEGUMES'}[cat] || cat.toUpperCase();
+  return {proteína:T('cat_prot'),carbo:T('cat_carbo'),fibra:T('cat_fibra'),gordura:T('cat_gord')}[cat] || cat.toUpperCase();
 }
 
 async function renderSugestaoPanel() {
@@ -1267,7 +1396,7 @@ async function renderSugestaoPanel() {
   const mealKcal = Math.round(daily * 0.30);
 
   if (!alimentosList.length) {
-    el.innerHTML = '<div class="empty">Sem alimentos configurados no sistema.</div>';
+    el.innerHTML = `<div class="empty">${T('sem_alim_sistema')}</div>`;
     return;
   }
 
@@ -1276,20 +1405,20 @@ async function renderSugestaoPanel() {
     items: alimentosList.filter(a => a.categoria === cat)
   })).filter(g => g.items.length);
 
-  const tipoLabel = alunoObjetivo === 'Emagrecimento' ? 'DÉFICIT CALÓRICO' :
-                    (alunoObjetivo === 'Hipertrofia' ? 'SUPERÁVIT CALÓRICO' : 'MANUTENÇÃO');
+  const tipoLabel = alunoObjetivo === 'Emagrecimento' ? T('deficit') :
+                    (alunoObjetivo === 'Hipertrofia' ? T('superavit') : T('manutencao'));
 
   el.innerHTML = `
     <div class="sug-meta-card">
       <div>
-        <div class="sug-meta-obj">${alunoObjetivo||'OBJETIVO'} · ${tipoLabel}</div>
+        <div class="sug-meta-obj">${alunoObjetivo||T('obj_label')} · ${tipoLabel}</div>
         <div class="sug-meta-kcal">${mealKcal} kcal</div>
-        <div class="sug-meta-sub">meta por refeição · ${daily} kcal/dia</div>
+        <div class="sug-meta-sub">${T('meta_por_refeicao')} · ${daily} ${T('kcal_dia')}</div>
       </div>
       <div class="sug-meta-badge">${peso} kg</div>
     </div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
-      Marca o que tens disponível. O app calcula as gramas exactas para atingires a meta desta refeição.
+      ${T('sug_desc')}
     </div>
     ${grupos.map(g => `
       <div class="sug-grupo">
@@ -1303,7 +1432,7 @@ async function renderSugestaoPanel() {
         `).join('')}
       </div>
     `).join('')}
-    <button class="btn-gerar-sug" onclick="calcularSugestao()">GERAR SUGESTÃO</button>
+    <button class="btn-gerar-sug" onclick="calcularSugestao()">${T('btn_gerar')}</button>
     <div id="sug-result"></div>
   `;
 }
@@ -1322,7 +1451,7 @@ function calcularSugestao() {
   const fibras = checked.filter(c => c.dataset.cat === 'fibra').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
 
   if (!prots.length && !carbs.length) {
-    toast('SELECIONA PELO MENOS 1 PROTEÍNA OU 1 CARBOIDRATO');
+    toast(T('t_select_food'));
     return;
   }
 
@@ -1370,7 +1499,7 @@ function calcularSugestao() {
   const el = document.getElementById('sug-result');
   el.innerHTML = `
     <div class="sug-result-card">
-      <div class="sug-result-title">✦ SUGESTÃO DE REFEIÇÃO</div>
+      <div class="sug-result-title">${T('sug_title')}</div>
       ${result.map(r => `
         <div class="sug-ingredient">
           <div class="sug-ing-nome">${r.nome}</div>
@@ -1381,15 +1510,15 @@ function calcularSugestao() {
       <div class="sug-total-row">
         <div class="sug-total-item">
           <div class="sug-total-val">${totalProt.toFixed(0)}g</div>
-          <div class="sug-total-lbl">Proteína</div>
+          <div class="sug-total-lbl">${T('sug_prot')}</div>
         </div>
         <div class="sug-total-item">
           <div class="sug-total-val">${totalCarb.toFixed(0)}g</div>
-          <div class="sug-total-lbl">Carboidrato</div>
+          <div class="sug-total-lbl">${T('sug_carbo')}</div>
         </div>
         <div class="sug-total-item">
           <div class="sug-total-val">${totalGord.toFixed(0)}g</div>
-          <div class="sug-total-lbl">Gordura</div>
+          <div class="sug-total-lbl">${T('sug_gord')}</div>
         </div>
       </div>
     </div>
@@ -1397,6 +1526,7 @@ function calcularSugestao() {
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+setLang(localStorage.getItem('lang') || 'pt');
 init();
 
 // ── PWA / SERVICE WORKER ──
@@ -1422,13 +1552,13 @@ window.addEventListener('beforeinstallprompt', e => {
 window.addEventListener('appinstalled', () => {
   document.getElementById('install-banner').style.display = 'none';
   deferredPrompt = null;
-  toast('APP INSTALADO! 🎉');
+  toast(T('t_app_inst'));
 });
 
 function installPWA() {
   if (!deferredPrompt) {
     // iOS fallback — show instructions
-    toast('No iOS: partilha → "Adicionar ao ecrã inicial"');
+    toast(T('t_ios_inst'));
     dismissInstall();
     return;
   }
