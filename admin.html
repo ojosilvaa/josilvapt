@@ -1051,7 +1051,14 @@ function salvarConfig(){
   sc('sb_url',SB_URL); sc('sb_key',SB_KEY); toast('CONFIGURAÇÕES SALVAS!');
 }
 function salvarBaseUrl(){BASE_URL=document.getElementById('cfg-base-url').value.trim();sc('base_url',BASE_URL);toast('URL SALVA!');}
-function salvarAnthropicKey(){ANTHROPIC_KEY=document.getElementById('cfg-anthropic-key').value.trim();sc('anthropic_key',ANTHROPIC_KEY);toast('CHAVE IA GUARDADA!');}
+async function salvarAnthropicKey(){
+  ANTHROPIC_KEY=document.getElementById('cfg-anthropic-key').value.trim();
+  sc('anthropic_key',ANTHROPIC_KEY);
+  const existe=await sbFetch('configuracoes?chave=eq.anthropic_key')||[];
+  if(existe.length){await sbFetch('configuracoes?chave=eq.anthropic_key',{method:'PATCH',body:JSON.stringify({valor:ANTHROPIC_KEY})});}
+  else{await sbFetch('configuracoes',{method:'POST',body:JSON.stringify({chave:'anthropic_key',valor:ANTHROPIC_KEY})});}
+  toast('CHAVE IA GUARDADA!');
+}
 function alterarSenha(){
   const s1=document.getElementById('cfg-senha').value;
   const s2=document.getElementById('cfg-senha2').value;

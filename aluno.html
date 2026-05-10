@@ -198,6 +198,50 @@ button{cursor:pointer;border:none;background:none}
 .esforco-chip{background:var(--bg3);border:1.5px solid var(--border2);color:var(--muted);font-size:13px;padding:8px 16px;border-radius:30px;transition:all .2s;cursor:pointer}
 .esforco-chip.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
 .fb-actions{display:flex;gap:10px;margin-top:6px}
+
+/* ── NUTRIÇÃO ── */
+.nutri-day{display:flex;align-items:center;gap:16px;background:#111;border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px}
+.nutri-ring-track{fill:none;stroke:#1e1e1e;stroke-width:8}
+.nutri-ring-glow{fill:none;stroke:var(--green);stroke-width:8;opacity:.12}
+.nutri-ring-fill{fill:none;stroke:var(--green);stroke-width:8;stroke-linecap:round;stroke-dasharray:264;stroke-dashoffset:264;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)}
+.nutri-ring-text{font-family:'Bebas Neue',sans-serif;fill:#5DCA9A;font-size:18px;text-anchor:middle;dominant-baseline:middle}
+.nutri-ring-sub{fill:#555;font-size:9px;text-anchor:middle;dominant-baseline:middle}
+.nutri-macros{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.macro-item{text-align:center}
+.macro-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)}
+.macro-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.ntab-wrap{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.ntab{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--muted);padding:12px 16px;border-bottom:2px solid transparent;background:none;transition:color .2s}
+.ntab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.refei-card{background:#111;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.refei-hora{font-size:11px;color:var(--muted);letter-spacing:1px;flex-shrink:0;padding-top:2px}
+.refei-info{flex:1;min-width:0}
+.refei-descr{font-size:14px;color:var(--text);font-weight:500;line-height:1.3}
+.refei-macros-mini{font-size:11px;color:var(--muted);margin-top:4px}
+.refei-kcal{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);flex-shrink:0;align-self:center}
+.refei-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center}
+.refei-sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:24px 20px;padding-bottom:calc(24px + var(--safe-bottom));max-height:92vh;overflow-y:auto}
+.refei-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:4px}
+.refei-sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.rtipo-wrap{display:flex;gap:8px;margin-bottom:20px}
+.rtipo{flex:1;padding:11px 6px;border-radius:12px;border:1.5px solid var(--border2);background:var(--bg3);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;transition:all .2s}
+.rtipo.active{border-color:var(--gold);color:var(--gold);background:rgba(200,169,110,.08)}
+.foto-area{background:var(--bg3);border:2px dashed var(--border2);border-radius:14px;height:190px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;overflow:hidden;transition:border-color .2s}
+.foto-area:active{border-color:var(--gold)}
+.foto-area-hint{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--muted);letter-spacing:2px}
+.foto-area-hint2{font-size:11px;color:var(--dim)}
+.mic-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
+.mic-btn{width:76px;height:76px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);color:var(--muted);font-size:30px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.mic-btn.recording{background:rgba(224,85,85,.1);border-color:var(--red);color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.mic-transcricao{width:100%;min-height:52px;padding:12px 14px;background:var(--bg3);border-radius:10px;font-size:14px;color:var(--text);line-height:1.5;text-align:center}
+.ia-analyzing{display:flex;align-items:center;gap:10px;padding:14px;background:var(--bg3);border-radius:10px;font-size:14px;color:var(--muted);margin:14px 0}
+.ia-result{background:rgba(93,202,154,.05);border:1.5px solid rgba(93,202,154,.2);border-radius:14px;padding:16px;margin:14px 0}
+.ia-result-kcal{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);line-height:1}
+.ia-result-macros{display:flex;gap:16px;margin-top:8px}
+.ia-result-macro{font-size:13px;color:var(--muted)}
+.ia-result-macro strong{color:var(--text)}
+.ia-result-descr{font-size:13px;color:#aaa;margin-top:10px;line-height:1.5;border-left:3px solid rgba(93,202,154,.3);padding-left:10px}
 </style>
 </head>
 <body>
@@ -345,8 +389,99 @@ button{cursor:pointer;border:none;background:none}
   <button class="bnav-item" onclick="goScreen('orientacoes')" id="nav-orientacoes">
     <span class="bnav-icon">◎</span>Dicas
   </button>
+  <button class="bnav-item" onclick="goScreen('nutricao')" id="nav-nutricao">
+    <span class="bnav-icon">⊕</span>Nutrição
+  </button>
 </nav>
 
+
+<!-- ═══ NUTRIÇÃO ═══ -->
+<div id="screen-nutricao" class="screen" style="display:none">
+  <div class="page-content">
+
+    <!-- Resumo do dia -->
+    <div class="nutri-day">
+      <svg width="100" height="100" viewBox="0 0 100 100" style="flex-shrink:0">
+        <circle class="nutri-ring-track" cx="50" cy="50" r="42"/>
+        <circle class="nutri-ring-glow" id="nutri-ring-glow" cx="50" cy="50" r="42"/>
+        <circle class="nutri-ring-fill" id="nutri-ring-fill" cx="50" cy="50" r="42" transform="rotate(-90 50 50)"/>
+        <text class="nutri-ring-text" x="50" y="46" id="nutri-kcal-val">0</text>
+        <text class="nutri-ring-sub" x="50" y="60" id="nutri-kcal-meta">/ 2000 kcal</text>
+      </svg>
+      <div class="nutri-macros">
+        <div class="macro-item"><div class="macro-val" id="nutri-prot">—</div><div class="macro-lbl">Prot</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-carb">—</div><div class="macro-lbl">Carbo</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-gord">—</div><div class="macro-lbl">Gord</div></div>
+      </div>
+    </div>
+
+    <!-- Tabs Hoje / Histórico -->
+    <div class="ntab-wrap">
+      <button class="ntab active" id="ntab-hoje" onclick="nutriTab('hoje')">HOJE</button>
+      <button class="ntab" id="ntab-hist" onclick="nutriTab('hist')">HISTÓRICO</button>
+    </div>
+
+    <div id="nutri-hoje-wrap">
+      <div id="refeicoes-hoje"></div>
+    </div>
+    <div id="nutri-hist-wrap" style="display:none">
+      <div id="refeicoes-hist"></div>
+    </div>
+
+  </div>
+  <button class="fab" onclick="openRefeicaoModal()">＋</button>
+</div>
+
+<!-- ═══ MODAL REFEIÇÃO ═══ -->
+<div class="refei-modal" id="refei-modal">
+  <div class="refei-sheet">
+    <div class="refei-title">REGISTAR REFEIÇÃO</div>
+    <div class="refei-sub">Foto, voz ou texto — a IA calcula tudo</div>
+
+    <!-- Seletor de tipo -->
+    <div class="rtipo-wrap">
+      <button class="rtipo active" id="rtipo-foto" onclick="setRefeiTipo('foto')">📷 FOTO</button>
+      <button class="rtipo" id="rtipo-audio" onclick="setRefeiTipo('audio')">🎙 VOZ</button>
+      <button class="rtipo" id="rtipo-texto" onclick="setRefeiTipo('texto')">✏ TEXTO</button>
+    </div>
+
+    <!-- Foto -->
+    <div id="refei-foto-wrap">
+      <input type="file" accept="image/*" capture="environment" id="refei-foto-input" style="display:none" onchange="onFotoSelected(this)">
+      <div class="foto-area" onclick="document.getElementById('refei-foto-input').click()" id="foto-area">
+        <img id="refei-foto-preview" style="display:none;width:100%;height:100%;object-fit:cover">
+        <div id="foto-area-content">
+          <div style="font-size:36px">📷</div>
+          <div class="foto-area-hint">TIRAR FOTO</div>
+          <div class="foto-area-hint2">toca para abrir a câmara</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Áudio -->
+    <div id="refei-audio-wrap" style="display:none">
+      <div class="mic-wrap">
+        <button class="mic-btn" id="btn-mic" onclick="toggleMic()">🎙</button>
+        <div style="font-size:12px;color:var(--muted);letter-spacing:1px" id="mic-status">TOCA PARA GRAVAR</div>
+        <div class="mic-transcricao" id="mic-transcricao">A aguardar gravação...</div>
+      </div>
+    </div>
+
+    <!-- Texto -->
+    <div id="refei-texto-wrap" style="display:none">
+      <textarea id="refei-texto-inp" style="width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:14px 16px;font-size:15px;border-radius:var(--radius-sm);outline:none;resize:none;min-height:96px" placeholder="Ex: frango grelhado 150g, arroz 80g, salada verde..."></textarea>
+    </div>
+
+    <!-- Resultado IA -->
+    <div id="refei-resultado" style="display:none"></div>
+
+    <!-- Ações -->
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button id="btn-analisar" onclick="analisarRefei()" style="flex:2;padding:15px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px">ANALISAR</button>
+      <button onclick="closeRefeicaoModal()" style="flex:1;padding:15px;border-radius:var(--radius);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <!-- PWA INSTALL BANNER -->
 <div class="install-banner" id="install-banner" style="display:none">
@@ -462,6 +597,7 @@ function goScreen(screen) {
   s.style.display = 'block'; s.classList.add('active');
   document.getElementById('nav-' + screen).classList.add('active');
   if (screen === 'evolucao') renderEvolucao();
+  if (screen === 'nutricao') renderNutricao();
 }
 
 // ── INIT ──
@@ -490,6 +626,7 @@ async function init() {
 
   await loadTreinos();
   sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
+  loadAnthropicKey();
 }
 
 // ── TREINOS ──
@@ -789,6 +926,250 @@ async function submitFeedback() {
   };
   await sbFetch('feedbacks', { method: 'POST', body: JSON.stringify(payload) });
   toast('OBRIGADO PELO FEEDBACK! 🙏');
+}
+
+// ── NUTRIÇÃO ──
+let ANTHROPIC_KEY = '';
+let refeiTipo = 'foto', fotoBase64 = null, fotoMime = null;
+let refeiResultado = null, micAtivo = false, recognition = null;
+
+async function loadAnthropicKey() {
+  const res = await sbFetch('configuracoes?chave=eq.anthropic_key') || [];
+  if (res[0]) ANTHROPIC_KEY = res[0].valor;
+}
+
+const NUTRI_DASHARRAY = 264;
+
+async function renderNutricao() {
+  const hoje = new Date().toISOString().split('T')[0];
+  const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&data=eq.${hoje}&order=criado_em.asc`) || [];
+  const meta = parseInt(lc('meta_kcal', 2000) || 2000);
+
+  const kcal = refs.reduce((s,r) => s+(r.calorias||0), 0);
+  const prot = refs.reduce((s,r) => s+(parseFloat(r.proteina)||0), 0);
+  const carb = refs.reduce((s,r) => s+(parseFloat(r.carboidratos)||0), 0);
+  const gord = refs.reduce((s,r) => s+(parseFloat(r.gordura)||0), 0);
+  const over = kcal > meta;
+  const pct = Math.min(kcal / meta, 1);
+
+  const ring = document.getElementById('nutri-ring-fill');
+  const glow = document.getElementById('nutri-ring-glow');
+  if (ring) {
+    requestAnimationFrame(() => { ring.style.strokeDashoffset = Math.round(NUTRI_DASHARRAY * (1 - pct)); });
+    ring.style.stroke = over ? 'var(--red)' : 'var(--green)';
+    ring.style.fill = 'none';
+  }
+  if (glow) glow.style.stroke = over ? 'var(--red)' : 'var(--green)';
+
+  const kEl = document.getElementById('nutri-kcal-val');
+  const mEl = document.getElementById('nutri-kcal-meta');
+  if (kEl) { kEl.textContent = kcal; kEl.style.fill = over ? 'var(--red)' : '#5DCA9A'; }
+  if (mEl) mEl.textContent = '/ ' + meta + ' kcal';
+  const pEl = document.getElementById('nutri-prot'); if (pEl) pEl.textContent = prot.toFixed(0)+'g';
+  const cEl = document.getElementById('nutri-carb'); if (cEl) cEl.textContent = carb.toFixed(0)+'g';
+  const gEl = document.getElementById('nutri-gord'); if (gEl) gEl.textContent = gord.toFixed(0)+'g';
+
+  const el = document.getElementById('refeicoes-hoje');
+  if (!refs.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:36px;opacity:.3">🥗</div>Sem refeições registadas hoje.<br><span style="font-size:12px">Toca no ＋ para adicionar</span></div>';
+    return;
+  }
+  el.innerHTML = refs.map((r, i) => {
+    const hora = new Date(r.criado_em).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'});
+    return `<div class="refei-card" style="animation:fadeUp .3s ease ${i*0.07}s both">
+      <div class="refei-hora">${hora}</div>
+      <div class="refei-info">
+        <div class="refei-descr">${r.descricao_ia || r.descricao_usuario || '—'}</div>
+        <div class="refei-macros-mini">P: ${r.proteina||0}g · C: ${r.carboidratos||0}g · G: ${r.gordura||0}g</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="refei-kcal">${r.calorias||'—'}</div>
+        <button onclick="deletarRefei('${r.id}')" style="color:var(--dim);font-size:16px;padding:4px;line-height:1">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function renderNutriHist() {
+  const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&order=data.desc,criado_em.desc&limit=60`) || [];
+  const el = document.getElementById('refeicoes-hist');
+  if (!refs.length) { el.innerHTML = '<div class="empty">Sem histórico ainda.</div>'; return; }
+  const byDay = {};
+  refs.forEach(r => { if (!byDay[r.data]) byDay[r.data] = []; byDay[r.data].push(r); });
+  el.innerHTML = Object.entries(byDay).map(([data, rs]) => {
+    const total = rs.reduce((s,r) => s+(r.calorias||0), 0);
+    return `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--muted);letter-spacing:1px">${formatDate(data)}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${total} kcal</div>
+      </div>
+      ${rs.map(r=>`<div class="refei-card">
+        <div class="refei-info">
+          <div class="refei-descr">${r.descricao_ia||r.descricao_usuario||'—'}</div>
+          <div class="refei-macros-mini">P: ${r.proteina||0}g · C: ${r.carboidratos||0}g · G: ${r.gordura||0}g</div>
+        </div>
+        <div class="refei-kcal">${r.calorias||'—'}</div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function nutriTab(tab) {
+  document.getElementById('ntab-hoje').classList.toggle('active', tab === 'hoje');
+  document.getElementById('ntab-hist').classList.toggle('active', tab === 'hist');
+  document.getElementById('nutri-hoje-wrap').style.display = tab === 'hoje' ? 'block' : 'none';
+  document.getElementById('nutri-hist-wrap').style.display = tab === 'hist' ? 'block' : 'none';
+  if (tab === 'hist') renderNutriHist();
+}
+
+function openRefeicaoModal() {
+  refeiTipo = 'foto'; fotoBase64 = null; fotoMime = null; refeiResultado = null;
+  document.getElementById('refei-resultado').style.display = 'none';
+  document.getElementById('refei-foto-input').value = '';
+  document.getElementById('refei-foto-preview').style.display = 'none';
+  document.getElementById('foto-area-content').style.display = 'flex';
+  document.getElementById('mic-transcricao').textContent = 'A aguardar gravação...';
+  document.getElementById('mic-status').textContent = 'TOCA PARA GRAVAR';
+  document.getElementById('btn-mic').classList.remove('recording');
+  document.getElementById('btn-mic').textContent = '🎙';
+  document.getElementById('refei-texto-inp').value = '';
+  document.getElementById('btn-analisar').textContent = 'ANALISAR';
+  setRefeiTipo('foto');
+  document.getElementById('refei-modal').style.display = 'flex';
+}
+
+function closeRefeicaoModal() {
+  document.getElementById('refei-modal').style.display = 'none';
+  if (recognition && micAtivo) { recognition.stop(); micAtivo = false; }
+}
+
+function setRefeiTipo(tipo) {
+  refeiTipo = tipo;
+  ['foto','audio','texto'].forEach(t => {
+    document.getElementById('rtipo-'+t).classList.toggle('active', t === tipo);
+    document.getElementById('refei-'+t+'-wrap').style.display = t === tipo ? 'block' : 'none';
+  });
+}
+
+function onFotoSelected(inp) {
+  const file = inp.files[0]; if (!file) return;
+  fotoMime = file.type;
+  const reader = new FileReader();
+  reader.onload = e => {
+    fotoBase64 = e.target.result.split(',')[1];
+    const prev = document.getElementById('refei-foto-preview');
+    prev.src = e.target.result; prev.style.display = 'block';
+    document.getElementById('foto-area-content').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('VOZ NÃO SUPORTADA — USA TEXTO'); setRefeiTipo('texto'); return; }
+  if (micAtivo) {
+    recognition.stop(); micAtivo = false;
+    document.getElementById('btn-mic').classList.remove('recording');
+    document.getElementById('btn-mic').textContent = '🎙';
+    document.getElementById('mic-status').textContent = 'GRAVAÇÃO PARADA';
+    return;
+  }
+  recognition = new SR();
+  recognition.lang = 'pt-PT'; recognition.continuous = false; recognition.interimResults = true;
+  recognition.onresult = e => {
+    let t = ''; for (const r of e.results) t += r[0].transcript;
+    document.getElementById('mic-transcricao').textContent = t;
+  };
+  recognition.onend = () => {
+    micAtivo = false;
+    document.getElementById('btn-mic').classList.remove('recording');
+    document.getElementById('btn-mic').textContent = '🎙';
+    document.getElementById('mic-status').textContent = 'GRAVAÇÃO CONCLUÍDA';
+  };
+  recognition.start(); micAtivo = true;
+  document.getElementById('btn-mic').classList.add('recording');
+  document.getElementById('btn-mic').textContent = '■';
+  document.getElementById('mic-status').textContent = 'A GRAVAR...';
+}
+
+async function analisarRefei() {
+  if (refeiResultado) { confirmarRefei(); return; }
+  if (!ANTHROPIC_KEY) { toast('CHAVE IA NÃO CONFIGURADA'); return; }
+  if (refeiTipo === 'foto' && !fotoBase64) { toast('TIRA UMA FOTO PRIMEIRO'); return; }
+  if (refeiTipo === 'audio' && !document.getElementById('mic-transcricao').textContent.replace('A aguardar gravação...','').trim()) { toast('GRAVA A DESCRIÇÃO PRIMEIRO'); return; }
+  if (refeiTipo === 'texto' && !document.getElementById('refei-texto-inp').value.trim()) { toast('DESCREVE A REFEIÇÃO'); return; }
+
+  const resultEl = document.getElementById('refei-resultado');
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<div class="ia-analyzing"><div style="font-size:20px;animation:pulse .8s infinite">✦</div>A analisar com IA...</div>';
+  document.getElementById('btn-analisar').textContent = 'A PROCESSAR...';
+
+  try {
+    const content = [];
+    let descUsuario = '';
+    if (refeiTipo === 'foto') {
+      content.push({type:'image',source:{type:'base64',media_type:fotoMime,data:fotoBase64}});
+      content.push({type:'text',text:'Analisa esta refeição na foto e estima calorias e macros.'});
+      descUsuario = 'foto';
+    } else if (refeiTipo === 'audio') {
+      descUsuario = document.getElementById('mic-transcricao').textContent.trim();
+      content.push({type:'text',text:'Refeição descrita por voz: '+descUsuario});
+    } else {
+      descUsuario = document.getElementById('refei-texto-inp').value.trim();
+      content.push({type:'text',text:'Refeição: '+descUsuario});
+    }
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','content-type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:300,
+        system:'Analisa refeições e responde APENAS com JSON válido, sem markdown:\n{"calorias":350,"proteina":25.5,"carboidratos":30.0,"gordura":12.0,"descricao":"descrição curta em português"}\nEstima porções típicas quando não especificado. Sem texto fora do JSON.',
+        messages:[{role:'user',content}]
+      })
+    });
+    if (!res.ok) throw new Error('api');
+    const data = await res.json();
+    refeiResultado = JSON.parse(data.content[0].text.trim());
+    refeiResultado._desc = descUsuario;
+    refeiResultado._tipo = refeiTipo;
+
+    resultEl.innerHTML = `<div class="ia-result">
+      <div class="ia-result-kcal">${refeiResultado.calorias} <span style="font-size:16px;color:var(--muted)">kcal</span></div>
+      <div class="ia-result-macros">
+        <div class="ia-result-macro">Proteína: <strong>${refeiResultado.proteina}g</strong></div>
+        <div class="ia-result-macro">Carbo: <strong>${refeiResultado.carboidratos}g</strong></div>
+        <div class="ia-result-macro">Gordura: <strong>${refeiResultado.gordura}g</strong></div>
+      </div>
+      <div class="ia-result-descr">${refeiResultado.descricao}</div>
+    </div>`;
+    document.getElementById('btn-analisar').textContent = 'GUARDAR ✓';
+  } catch(e) {
+    resultEl.innerHTML = '<div style="color:var(--red);font-size:13px;padding:12px;background:rgba(224,85,85,.06);border-radius:10px">Erro ao analisar. Verifica a chave IA nas configurações do admin.</div>';
+    document.getElementById('btn-analisar').textContent = 'ANALISAR';
+  }
+}
+
+async function confirmarRefei() {
+  if (!refeiResultado) return;
+  const res = await sbFetch('refeicoes', {method:'POST', body:JSON.stringify({
+    aluno_id:ALUNO_ID,
+    data:new Date().toISOString().split('T')[0],
+    tipo:refeiResultado._tipo,
+    descricao_usuario:refeiResultado._desc,
+    calorias:refeiResultado.calorias,
+    proteina:refeiResultado.proteina,
+    carboidratos:refeiResultado.carboidratos,
+    gordura:refeiResultado.gordura,
+    descricao_ia:refeiResultado.descricao
+  })});
+  if (res) { toast('REFEIÇÃO GUARDADA! 🥗'); closeRefeicaoModal(); renderNutricao(); }
+}
+
+async function deletarRefei(id) {
+  await sbFetch(`refeicoes?id=eq.${id}`, {method:'DELETE'});
+  renderNutricao();
 }
 
 init();
