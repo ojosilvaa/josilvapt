@@ -246,6 +246,34 @@ button{cursor:pointer;border:none;background:none}
 .ia-result-macro{font-size:13px;color:var(--muted)}
 .ia-result-macro strong{color:var(--text)}
 .ia-result-descr{font-size:13px;color:#aaa;margin-top:10px;line-height:1.5;border-left:3px solid rgba(93,202,154,.3);padding-left:10px}
+
+/* ── SUGESTÃO DE REFEIÇÃO ── */
+.sug-meta-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.sug-meta-obj{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.sug-meta-kcal{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--green);line-height:1}
+.sug-meta-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.sug-meta-badge{background:rgba(93,202,154,.1);border:1px solid rgba(93,202,154,.25);border-radius:20px;padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--green);letter-spacing:1px;flex-shrink:0}
+.sug-grupo{margin-bottom:16px}
+.sug-grupo-titulo{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sug-check-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(30,30,30,.7);cursor:pointer}
+.sug-check-item:last-child{border-bottom:none}
+.sug-check-item input[type=checkbox]{width:20px;height:20px;border-radius:5px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+.sug-alim-nome{flex:1;font-size:14px;color:var(--text)}
+.sug-alim-hint{font-size:11px;color:var(--dim);white-space:nowrap}
+.btn-gerar-sug{width:100%;padding:16px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;margin-top:6px;transition:opacity .2s}
+.btn-gerar-sug:active{opacity:.8}
+.sug-result-card{background:rgba(93,202,154,.05);border:1.5px solid rgba(93,202,154,.22);border-radius:var(--radius);padding:16px;margin-top:20px;animation:fadeUp .35s ease}
+.sug-result-title{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--green);letter-spacing:2px;margin-bottom:14px}
+.sug-ingredient{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(93,202,154,.1)}
+.sug-ingredient:last-child{border-bottom:none}
+.sug-ing-nome{font-size:14px;color:var(--text);font-weight:500}
+.sug-ing-grams{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold)}
+.sug-ing-grams span{font-size:12px;color:var(--muted);margin-left:2px}
+.sug-total-kcal{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);text-align:center;margin-top:14px;line-height:1}
+.sug-total-row{display:flex;justify-content:space-between;gap:8px;margin-top:10px;padding-top:12px;border-top:1px solid rgba(93,202,154,.2)}
+.sug-total-item{text-align:center;flex:1}
+.sug-total-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);line-height:1}
+.sug-total-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 </style>
 </head>
 <body>
@@ -419,10 +447,11 @@ button{cursor:pointer;border:none;background:none}
       </div>
     </div>
 
-    <!-- Tabs Hoje / Histórico -->
+    <!-- Tabs Hoje / Histórico / Sugestão -->
     <div class="ntab-wrap">
       <button class="ntab active" id="ntab-hoje" onclick="nutriTab('hoje')">HOJE</button>
       <button class="ntab" id="ntab-hist" onclick="nutriTab('hist')">HISTÓRICO</button>
+      <button class="ntab" id="ntab-sug" onclick="nutriTab('sug')">SUGESTÃO</button>
     </div>
 
     <div id="nutri-hoje-wrap">
@@ -430,6 +459,9 @@ button{cursor:pointer;border:none;background:none}
     </div>
     <div id="nutri-hist-wrap" style="display:none">
       <div id="refeicoes-hist"></div>
+    </div>
+    <div id="nutri-sug-wrap" style="display:none">
+      <div id="sug-inventario"><div class="loading">A CARREGAR...</div></div>
     </div>
 
   </div>
@@ -569,6 +601,7 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
 let cargas = {}, doneSet = new Set(), sessoes = [], chartInst = null;
+let alunoObjetivo = '', pesoCached = 0, alimentosList = [];
 
 // ── UTILS ──
 const toast = msg => {
@@ -633,6 +666,7 @@ async function init() {
     return;
   }
 
+  alunoObjetivo = aluno.objetivo || '';
   const firstName = aluno.nome.split(' ')[0];
   document.getElementById('aluno-nome-top').textContent = firstName;
   document.getElementById('hero-name').textContent = firstName.toUpperCase();
@@ -1032,11 +1066,14 @@ async function renderNutriHist() {
 }
 
 function nutriTab(tab) {
-  document.getElementById('ntab-hoje').classList.toggle('active', tab === 'hoje');
-  document.getElementById('ntab-hist').classList.toggle('active', tab === 'hist');
+  ['hoje','hist','sug'].forEach(t => {
+    document.getElementById('ntab-'+t).classList.toggle('active', t === tab);
+  });
   document.getElementById('nutri-hoje-wrap').style.display = tab === 'hoje' ? 'block' : 'none';
   document.getElementById('nutri-hist-wrap').style.display = tab === 'hist' ? 'block' : 'none';
+  document.getElementById('nutri-sug-wrap').style.display = tab === 'sug' ? 'block' : 'none';
   if (tab === 'hist') renderNutriHist();
+  if (tab === 'sug') renderSugestaoPanel();
 }
 
 function openRefeicaoModal() {
@@ -1201,6 +1238,166 @@ async function confirmarRefei() {
 async function deletarRefei(id) {
   await sbFetch(`refeicoes?id=eq.${id}`, {method:'DELETE'});
   renderNutricao();
+}
+
+// ── SUGESTÃO DE REFEIÇÃO ──
+async function loadAlimentos() {
+  if (alimentosList.length) return;
+  alimentosList = await sbFetch('alimentos?order=categoria.asc,nome.asc') || [];
+}
+
+async function loadPeso() {
+  if (pesoCached) return pesoCached;
+  const res = await sbFetch(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=1&select=peso`) || [];
+  pesoCached = parseFloat(res[0]?.peso) || 70;
+  return pesoCached;
+}
+
+function calcDailyKcal(peso, objetivo) {
+  const f = {'Emagrecimento':25,'Hipertrofia':35,'Emagrecimento + Hipertrofia':28,'Condicionamento':30,'Reabilitação':28};
+  return Math.round(peso * (f[objetivo] || 30));
+}
+
+function catLabel(cat) {
+  return {proteína:'PROTEÍNAS',carbo:'CARBOIDRATOS',fibra:'FIBRAS & LEGUMES'}[cat] || cat.toUpperCase();
+}
+
+async function renderSugestaoPanel() {
+  const el = document.getElementById('sug-inventario');
+  await loadAlimentos();
+  const peso = await loadPeso();
+  const daily = calcDailyKcal(peso, alunoObjetivo);
+  const mealKcal = Math.round(daily * 0.30);
+
+  if (!alimentosList.length) {
+    el.innerHTML = '<div class="empty">Sem alimentos configurados no sistema.</div>';
+    return;
+  }
+
+  const grupos = ['proteína','carbo','fibra'].map(cat => ({
+    cat, label: catLabel(cat),
+    items: alimentosList.filter(a => a.categoria === cat)
+  })).filter(g => g.items.length);
+
+  const tipoLabel = alunoObjetivo === 'Emagrecimento' ? 'DÉFICIT CALÓRICO' :
+                    (alunoObjetivo === 'Hipertrofia' ? 'SUPERÁVIT CALÓRICO' : 'MANUTENÇÃO');
+
+  el.innerHTML = `
+    <div class="sug-meta-card">
+      <div>
+        <div class="sug-meta-obj">${alunoObjetivo||'OBJETIVO'} · ${tipoLabel}</div>
+        <div class="sug-meta-kcal">${mealKcal} kcal</div>
+        <div class="sug-meta-sub">meta por refeição · ${daily} kcal/dia</div>
+      </div>
+      <div class="sug-meta-badge">${peso} kg</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+      Marca o que tens disponível. O app calcula as gramas exactas para atingires a meta desta refeição.
+    </div>
+    ${grupos.map(g => `
+      <div class="sug-grupo">
+        <div class="sug-grupo-titulo">${g.label}</div>
+        ${g.items.map(a => `
+          <label class="sug-check-item">
+            <input type="checkbox" class="sug-cb" value="${a.id}" data-cat="${a.categoria}">
+            <span class="sug-alim-nome">${a.nome}</span>
+            <span class="sug-alim-hint">${a.proteina_100g}g prot · ${a.calorias_100g} kcal</span>
+          </label>
+        `).join('')}
+      </div>
+    `).join('')}
+    <button class="btn-gerar-sug" onclick="calcularSugestao()">GERAR SUGESTÃO</button>
+    <div id="sug-result"></div>
+  `;
+}
+
+function calcularSugestao() {
+  const peso = pesoCached || 70;
+  const daily = calcDailyKcal(peso, alunoObjetivo);
+  const mealKcal = Math.round(daily * 0.30);
+
+  const protTarget = Math.round((mealKcal * 0.30) / 4);
+  const carbTarget = Math.round((mealKcal * 0.45) / 4);
+
+  const checked = [...document.querySelectorAll('.sug-cb:checked')];
+  const prots  = checked.filter(c => c.dataset.cat === 'proteína').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
+  const carbs  = checked.filter(c => c.dataset.cat === 'carbo').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
+  const fibras = checked.filter(c => c.dataset.cat === 'fibra').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
+
+  if (!prots.length && !carbs.length) {
+    toast('SELECIONA PELO MENOS 1 PROTEÍNA OU 1 CARBOIDRATO');
+    return;
+  }
+
+  const result = [];
+  let totalKcal = 0, totalProt = 0, totalCarb = 0, totalGord = 0;
+
+  if (prots.length) {
+    const eachProt = protTarget / prots.length;
+    prots.forEach(p => {
+      if (!p.proteina_100g) return;
+      const grams = Math.max(30, Math.round(eachProt / (p.proteina_100g / 100)));
+      const k = grams / 100;
+      totalKcal += p.calorias_100g * k;
+      totalProt += p.proteina_100g * k;
+      totalCarb += p.carbo_100g * k;
+      totalGord += p.gordura_100g * k;
+      result.push({ nome: p.nome, grams });
+    });
+  }
+
+  if (carbs.length) {
+    const eachCarb = carbTarget / carbs.length;
+    carbs.forEach(c => {
+      if (!c.carbo_100g) return;
+      const grams = Math.max(30, Math.round(eachCarb / (c.carbo_100g / 100)));
+      const k = grams / 100;
+      totalKcal += c.calorias_100g * k;
+      totalProt += c.proteina_100g * k;
+      totalCarb += c.carbo_100g * k;
+      totalGord += c.gordura_100g * k;
+      result.push({ nome: c.nome, grams });
+    });
+  }
+
+  fibras.forEach(f => {
+    const grams = 80;
+    const k = grams / 100;
+    totalKcal += f.calorias_100g * k;
+    totalProt += f.proteina_100g * k;
+    totalCarb += f.carbo_100g * k;
+    totalGord += f.gordura_100g * k;
+    result.push({ nome: f.nome, grams });
+  });
+
+  const el = document.getElementById('sug-result');
+  el.innerHTML = `
+    <div class="sug-result-card">
+      <div class="sug-result-title">✦ SUGESTÃO DE REFEIÇÃO</div>
+      ${result.map(r => `
+        <div class="sug-ingredient">
+          <div class="sug-ing-nome">${r.nome}</div>
+          <div class="sug-ing-grams">${r.grams}<span>g</span></div>
+        </div>
+      `).join('')}
+      <div class="sug-total-kcal">${Math.round(totalKcal)} <span style="font-size:16px;color:var(--muted)">kcal</span></div>
+      <div class="sug-total-row">
+        <div class="sug-total-item">
+          <div class="sug-total-val">${totalProt.toFixed(0)}g</div>
+          <div class="sug-total-lbl">Proteína</div>
+        </div>
+        <div class="sug-total-item">
+          <div class="sug-total-val">${totalCarb.toFixed(0)}g</div>
+          <div class="sug-total-lbl">Carboidrato</div>
+        </div>
+        <div class="sug-total-item">
+          <div class="sug-total-val">${totalGord.toFixed(0)}g</div>
+          <div class="sug-total-lbl">Gordura</div>
+        </div>
+      </div>
+    </div>
+  `;
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 init();
