@@ -199,6 +199,10 @@ button{cursor:pointer;border:none;background:none}
 .esforco-chip.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
 .fb-actions{display:flex;gap:10px;margin-top:6px}
 
+/* ── FAB ── */
+.fab{position:fixed;right:20px;bottom:calc(80px + var(--safe-bottom) + 16px);width:56px;height:56px;background:var(--gold);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#080808;box-shadow:0 4px 20px rgba(200,169,110,.35);z-index:150;transition:transform .15s}
+.fab:active{transform:scale(.93)}
+
 /* ── NUTRIÇÃO ── */
 .nutri-day{display:flex;align-items:center;gap:16px;background:#111;border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px}
 .nutri-ring-track{fill:none;stroke:#1e1e1e;stroke-width:8}
