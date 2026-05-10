@@ -16,10 +16,10 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --gold:#C8A96E;--gold2:#8a7449;--gold3:rgba(200,169,110,.1);
-  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1c;--bg4:#222;
-  --border:#2a2a2a;--border2:#333;
-  --text:#f0f0f0;--muted:#777;--dim:#444;
+  --gold:#C8A96E;--gold2:#8a7449;--gold3:rgba(200,169,110,.12);
+  --bg:#080808;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222;
+  --border:#1e1e1e;--border2:#2a2a2a;
+  --text:#f0f0f0;--muted:#555;--dim:#333;
   --green:#5DCA9A;--red:#e05555;
   --radius:14px;--radius-sm:10px;
   --safe-bottom:env(safe-area-inset-bottom,0px);
@@ -28,26 +28,32 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 button,input,select,textarea{font-family:'DM Sans',sans-serif}
 button{cursor:pointer;border:none;background:none}
 
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
 /* ── TOPBAR ── */
-.topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
 .brand{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:3px}
 .aluno-nome{font-size:13px;color:var(--muted);font-weight:500}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(12,12,12,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-bottom)}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;color:var(--dim);font-size:10px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #151515;display:flex;padding-bottom:var(--safe-bottom)}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;color:var(--dim);font-size:10px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;position:relative}
 .bnav-item.active{color:var(--gold)}
+.bnav-item.active::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
 .bnav-icon{font-size:20px;line-height:1}
 
 /* ── SCREENS ── */
 .screen{display:none;padding-bottom:calc(72px + var(--safe-bottom))}
-.screen.active{display:block}
+.screen.active{display:block;animation:screenIn .35s cubic-bezier(.4,0,.2,1)}
 
 /* ── PAGE CONTENT ── */
 .page-content{padding:16px;max-width:600px;margin:0 auto}
 
 /* ── HERO GREETING ── */
-.hero{padding:24px 18px 16px;background:linear-gradient(180deg,rgba(200,169,110,.06) 0%,transparent 100%);border-bottom:1px solid var(--border)}
+.hero{padding:24px 18px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .hero-greeting{font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
 .hero-name{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#fff;letter-spacing:2px;line-height:1}
 .hero-sub{font-size:13px;color:var(--muted);margin-top:6px}
@@ -66,7 +72,8 @@ button{cursor:pointer;border:none;background:none}
 
 /* ── EXERCICIO CARD ── */
 .ex-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
-.ex-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.ex-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .25s,transform .15s}
+.ex-card:active{transform:scale(.99)}
 .ex-card.done{border-color:var(--green)}
 .ex-card-top{display:flex;align-items:flex-start;gap:12px;padding:14px}
 .ex-number{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;min-width:36px}
@@ -75,7 +82,8 @@ button{cursor:pointer;border:none;background:none}
 .ex-name{font-size:16px;font-weight:600;color:var(--text);line-height:1.2}
 .ex-obs{font-size:12px;color:var(--muted);margin-top:3px;font-style:italic}
 .ex-pills{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.pill{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--muted)}
+.pill{background:var(--bg3);border:1px solid #252525;border-radius:20px;padding:3px 8px;font-size:10px;color:#777}
+.pill-done{background:rgba(93,202,154,.08);border-color:rgba(93,202,154,.2);color:var(--green)}
 .pill strong{color:var(--text);font-weight:600}
 .ex-check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;flex-shrink:0;transition:all .2s}
 .ex-card.done .ex-check{background:var(--green);border-color:var(--green);color:#fff}
@@ -84,20 +92,20 @@ button{cursor:pointer;border:none;background:none}
 .ex-carga{display:flex;align-items:center;gap:0;background:var(--bg3);border-top:1px solid var(--border);padding:10px 14px}
 .carga-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;flex:1}
 .carga-ctrl{display:flex;align-items:center;gap:10px}
-.carga-btn{width:36px;height:36px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:20px;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.carga-btn:active{background:var(--gold);color:#0a0a0a;border-color:var(--gold)}
+.carga-btn{width:28px;height:28px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:17px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.carga-btn:active{background:var(--gold);color:#080808;border-color:var(--gold)}
 .carga-value{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);min-width:70px;text-align:center;line-height:1}
 .carga-kg{font-size:12px;color:var(--muted)}
 
 /* ── PROGRESS BAR ── */
 .progress-wrap{padding:0 16px 14px}
 .progress-bar{height:3px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .4s}
+.progress-fill{height:100%;background:linear-gradient(90deg,#8a7449,#C8A96E);border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
 .progress-text{font-size:11px;color:var(--muted);margin-top:6px;text-align:right}
 
 /* ── REGISTER BTN ── */
 .register-wrap{padding:16px}
-.btn-register{width:100%;background:var(--gold);color:#0a0a0a;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;padding:16px;border-radius:var(--radius);transition:opacity .2s}
+.btn-register{width:100%;background:var(--gold);color:#080808;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;padding:16px;border-radius:var(--radius);transition:opacity .2s}
 .btn-register:active{opacity:.8}
 .btn-register:disabled{opacity:.4}
 
@@ -109,9 +117,17 @@ button{cursor:pointer;border:none;background:none}
 
 /* ── STATS ── */
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.stat-card{background:#111;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1}
 .stat-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+
+/* ── MINI RING ── */
+.treino-header-inner{display:flex;align-items:center;gap:14px}
+.treino-header-info{flex:1;min-width:0}
+.mini-ring-track{fill:none;stroke:#1e1e1e;stroke-width:5}
+.mini-ring-glow{fill:none;stroke:#C8A96E;stroke-width:5;opacity:.15}
+.mini-ring-fill{fill:none;stroke:url(#miniGrad);stroke-width:5;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:138;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)}
+.mini-ring-pct{font-family:'Bebas Neue',sans-serif;fill:#C8A96E;font-size:10px;text-anchor:middle;dominant-baseline:middle}
 
 /* ── CHART ── */
 .chart-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
@@ -129,12 +145,12 @@ button{cursor:pointer;border:none;background:none}
 
 /* ── ORIENTAÇÕES ── */
 .personal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;text-align:center}
-.personal-av{width:60px;height:60px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#0a0a0a;margin:0 auto 12px}
+.personal-av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#C8A96E,#8a7449);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#080808;margin:0 auto 12px}
 .personal-nome{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:2px}
 .personal-cargo{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
 .personal-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 .contact-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:10px 18px;border-radius:var(--radius-sm);text-decoration:none;transition:all .2s}
-.contact-btn:active{background:var(--gold);color:#0a0a0a}
+.contact-btn:active{background:var(--gold);color:#080808}
 
 .orient-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;border-left:3px solid var(--gold)}
 .orient-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
@@ -155,14 +171,13 @@ button{cursor:pointer;border:none;background:none}
 
 /* ── PWA INSTALL BANNER ── */
 .install-banner{position:fixed;bottom:calc(72px + var(--safe-bottom));left:12px;right:12px;z-index:300;background:var(--bg2);border:1.5px solid var(--gold);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:slideUp .4s ease}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .install-banner-icon{font-size:28px;flex-shrink:0}
 .install-banner-text{flex:1}
 .install-banner-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:1px}
 .install-banner-sub{font-size:12px;color:var(--muted);margin-top:1px}
 .install-banner-btns{display:flex;gap:8px;flex-shrink:0}
 .install-btn{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:8px;cursor:pointer}
-.install-btn-yes{background:var(--gold);color:#0a0a0a;border:none}
+.install-btn-yes{background:var(--gold);color:#080808;border:none}
 .install-btn-no{background:none;border:1px solid var(--border2);color:var(--muted)}
 
 /* ── FEEDBACK MODAL ── */
@@ -207,9 +222,25 @@ button{cursor:pointer;border:none;background:none}
   <!-- Header do treino ativo -->
   <div id="treino-header" style="display:none">
     <div class="treino-header">
-      <div class="treino-dia" id="t-dia"></div>
-      <div class="treino-title" id="t-title"></div>
-      <div class="treino-count" id="t-count"></div>
+      <div class="treino-header-inner">
+        <svg width="56" height="56" viewBox="0 0 56 56" style="flex-shrink:0;overflow:visible">
+          <defs>
+            <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#8a7449"/>
+              <stop offset="100%" style="stop-color:#C8A96E"/>
+            </linearGradient>
+          </defs>
+          <circle class="mini-ring-track" cx="28" cy="28" r="22"/>
+          <circle class="mini-ring-glow" cx="28" cy="28" r="22"/>
+          <circle class="mini-ring-fill" id="mini-ring-fill" cx="28" cy="28" r="22" transform="rotate(-90 28 28)"/>
+          <text class="mini-ring-pct" x="28" y="28" id="mini-ring-pct">0%</text>
+        </svg>
+        <div class="treino-header-info">
+          <div class="treino-dia" id="t-dia"></div>
+          <div class="treino-title" id="t-title"></div>
+          <div class="treino-count" id="t-count"></div>
+        </div>
+      </div>
     </div>
     <div class="progress-wrap" style="padding-top:12px">
       <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
@@ -527,7 +558,7 @@ function renderTreino() {
           <div class="ex-pills">
             <div class="pill"><strong>${ex.series || '3'}</strong> séries</div>
             <div class="pill"><strong>${ex.reps || '10-12'}</strong> reps</div>
-            ${isDone ? '<div class="pill" style="border-color:var(--green);color:var(--green)">✓ Feito</div>' : ''}
+            ${isDone ? '<div class="pill pill-done">✓ Feito</div>' : ''}
           </div>
         </div>
         <div class="ex-check">${isDone ? '✓' : ''}</div>
@@ -566,7 +597,7 @@ function toggleDone(exId) {
         pills.innerHTML = `
           <div class="pill"><strong>${ex.series || '3'}</strong> séries</div>
           <div class="pill"><strong>${ex.reps || '10-12'}</strong> reps</div>
-          ${isDone ? '<div class="pill" style="border-color:var(--green);color:var(--green)">✓ Feito</div>' : ''}`;
+          ${isDone ? '<div class="pill pill-done">✓ Feito</div>' : ''}`;
       }
     }
   }
@@ -594,6 +625,10 @@ function updateProgress(exs) {
   if (text) text.textContent = `${done} de ${total} exercícios concluídos`;
   const btn = document.getElementById('btn-register');
   if (btn) btn.disabled = done === 0;
+  const miniRing = document.getElementById('mini-ring-fill');
+  const miniPct = document.getElementById('mini-ring-pct');
+  if (miniRing) requestAnimationFrame(() => { miniRing.style.strokeDashoffset = Math.round(138 * (1 - pct / 100)); });
+  if (miniPct) miniPct.textContent = pct + '%';
 }
 
 // ── REGISTAR SESSÃO ──

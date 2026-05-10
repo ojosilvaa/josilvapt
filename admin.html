@@ -17,9 +17,9 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --gold:#C8A96E;--gold2:#8a7449;--gold3:rgba(200,169,110,.12);
-  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1c;--bg4:#222;
-  --border:#2a2a2a;--border2:#333;
-  --text:#f0f0f0;--muted:#888;--dim:#555;
+  --bg:#080808;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222;
+  --border:#1e1e1e;--border2:#2a2a2a;
+  --text:#f0f0f0;--muted:#555;--dim:#333;
   --red:#e05555;--green:#5DCA9A;
   --radius:14px;--radius-sm:10px;
   --safe-bottom:env(safe-area-inset-bottom,0px);
@@ -28,9 +28,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 input,select,textarea,button{font-family:'DM Sans',sans-serif}
 button{cursor:pointer}
 
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
 /* ── SCREEN SYSTEM ── */
 .screen{display:none;min-height:100vh;padding-bottom:calc(72px + var(--safe-bottom))}
-.screen.active{display:block}
+.screen.active{display:block;animation:screenIn .35s cubic-bezier(.4,0,.2,1)}
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;padding-bottom:24px}
 
 /* ── LOGIN ── */
@@ -40,21 +43,22 @@ button{cursor:pointer}
 .login-field{position:relative;margin-bottom:14px}
 .login-field input{width:100%;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);padding:16px 18px;font-size:16px;border-radius:var(--radius-sm);outline:none;transition:border .2s}
 .login-field input:focus{border-color:var(--gold)}
-.btn-login{width:100%;background:var(--gold);color:#0a0a0a;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;padding:16px;border-radius:var(--radius-sm);margin-top:6px;transition:opacity .2s;active:opacity:.8}
+.btn-login{width:100%;background:var(--gold);color:#080808;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;padding:16px;border-radius:var(--radius-sm);margin-top:6px;transition:opacity .2s}
 .btn-login:active{opacity:.8}
 .login-err{font-size:13px;color:var(--red);text-align:center;margin-top:10px;min-height:18px}
 
 /* ── TOPBAR ── */
-.topbar{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
 .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px}
 .topbar-sub{font-size:11px;color:var(--muted);letter-spacing:1px}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .icon-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(12,12,12,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-bottom)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(8,8,8,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #151515;display:flex;padding-bottom:var(--safe-bottom)}
 .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:4px;background:none;border:none;color:var(--dim);font-size:10px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;position:relative}
 .bnav-item.active{color:var(--gold)}
+.bnav-item.active::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
 .bnav-item .icon{font-size:22px;line-height:1}
 .bnav-badge{position:absolute;top:6px;right:calc(50% - 20px);background:var(--red);color:#fff;font-size:9px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;font-weight:600}
 
@@ -67,10 +71,10 @@ button{cursor:pointer}
 
 /* ── STAT CARDS ── */
 .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);line-height:1}
-.stat-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
-.stat-delta{font-size:12px;margin-top:6px}
+.stat-card{background:#111;border:1px solid var(--border);border-radius:12px;padding:14px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.stat-delta{font-size:10px;margin-top:6px}
 .delta-up{color:var(--green)}
 .delta-down{color:var(--red)}
 
@@ -81,7 +85,7 @@ button{cursor:pointer}
 /* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:transparent;color:var(--text);font-size:14px;font-weight:500;min-height:44px;transition:all .15s}
 .btn:active{opacity:.7;transform:scale(.98)}
-.btn-gold{background:var(--gold);border-color:var(--gold);color:#0a0a0a;font-weight:600}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#080808;font-weight:600}
 .btn-gold:active{opacity:.85}
 .btn-outline-gold{border-color:var(--gold);color:var(--gold)}
 .btn-danger{border-color:var(--red);color:var(--red)}
@@ -90,9 +94,13 @@ button{cursor:pointer}
 .btn-icon{width:44px;height:44px;padding:0;border-radius:50%}
 
 /* ── ALUNO CARD ── */
-.aluno-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:border-color .2s}
-.aluno-card:active{border-color:var(--gold);background:var(--bg3)}
-.av{width:48px;height:48px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#0a0a0a;flex-shrink:0}
+.aluno-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:border-color .25s,transform .15s}
+.aluno-card:active{border-color:var(--gold);transform:translateX(3px)}
+.av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#080808;flex-shrink:0}
+.av-0{background:linear-gradient(135deg,#C8A96E,#8a7449)}
+.av-1{background:linear-gradient(135deg,#378ADD,#0C447C)}
+.av-2{background:linear-gradient(135deg,#D4537E,#72243E)}
+.av-3{background:linear-gradient(135deg,#5DCA9A,#085041)}
 .av-sm{width:38px;height:38px;font-size:14px}
 .aluno-info-wrap{flex:1;min-width:0}
 .aluno-nome{font-size:16px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -156,19 +164,19 @@ textarea.form-inp{resize:vertical;min-height:80px}
 
 /* ── DETAIL HEADER ── */
 .det-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:20px 16px}
-.det-av-big{width:64px;height:64px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#0a0a0a;margin-bottom:12px}
+.det-av-big{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#C8A96E,#8a7449);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#080808;margin-bottom:12px}
 .det-nome{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:2px;line-height:1.1}
 .det-sub{font-size:13px;color:var(--muted);margin-top:4px}
 
 /* ── LINK BOX ── */
 .link-box{background:var(--bg3);border:1.5px solid var(--gold);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:12px}
 .link-url{font-size:12px;color:var(--gold);word-break:break-all;flex:1;line-height:1.4}
-.copy-btn{background:var(--gold);color:#0a0a0a;border:none;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:8px;flex-shrink:0}
+.copy-btn{background:var(--gold);color:#080808;border:none;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:8px;flex-shrink:0}
 
 /* ── TABS ── */
 .tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:58px;z-index:50;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
-.tab{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted);padding:14px 18px;border-bottom:2.5px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:color .2s;flex-shrink:0}
+.tab{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--muted);padding:14px 18px;border-bottom:2.5px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:color .2s;flex-shrink:0}
 .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 .tab-content{display:none}
 .tab-content.active{display:block}
@@ -198,8 +206,19 @@ textarea.form-inp{resize:vertical;min-height:80px}
 .back-btn:active{color:var(--gold)}
 
 /* ── FLOATING ACTION ── */
-.fab{position:fixed;right:20px;bottom:calc(80px + var(--safe-bottom) + 16px);width:56px;height:56px;background:var(--gold);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#0a0a0a;box-shadow:0 4px 20px rgba(200,169,110,.35);z-index:150;transition:transform .15s}
+.fab{position:fixed;right:20px;bottom:calc(80px + var(--safe-bottom) + 16px);width:56px;height:56px;background:var(--gold);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#080808;box-shadow:0 4px 20px rgba(200,169,110,.35);z-index:150;transition:transform .15s}
 .fab:active{transform:scale(.93)}
+
+/* ── RING WIDGET ── */
+.ring-widget{display:flex;align-items:center;gap:20px;background:#111;border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:20px}
+.ring-track{fill:none;stroke:#1e1e1e;stroke-width:8}
+.ring-fill{fill:none;stroke:url(#ringGrad);stroke-width:8;stroke-linecap:round;stroke-dasharray:320;stroke-dashoffset:320;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1);transform:rotate(-90deg);transform-origin:center}
+.ring-glow{fill:none;stroke:#C8A96E;stroke-width:8;opacity:.15;transform:rotate(-90deg);transform-origin:center}
+.ring-text{font-family:'Bebas Neue',sans-serif;fill:#C8A96E;font-size:22px;text-anchor:middle;dominant-baseline:middle}
+.ring-sub-text{fill:#555;font-size:9px;text-anchor:middle;dominant-baseline:middle}
+.ring-info{flex:1}
+.ring-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px}
+.ring-desc{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
 
 /* ── RESPONSIVE ── */
 @media(min-width:600px){
@@ -261,8 +280,28 @@ textarea.form-inp{resize:vertical;min-height:80px}
         <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Sessões</div></div>
         <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Inativos</div></div>
       </div>
+      <!-- RING WIDGET -->
+      <div class="ring-widget" id="ring-widget" style="display:none">
+        <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#8a7449"/>
+              <stop offset="100%" style="stop-color:#C8A96E"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-track" cx="60" cy="60" r="52"/>
+          <circle class="ring-glow" cx="60" cy="60" r="52"/>
+          <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"/>
+          <text class="ring-text" x="60" y="55" id="ring-pct">0%</text>
+          <text class="ring-sub-text" x="60" y="70">ativos</text>
+        </svg>
+        <div class="ring-info">
+          <div class="ring-title">TAXA DE ACTIVIDADE</div>
+          <div class="ring-desc" id="ring-desc">Carregando...</div>
+        </div>
+      </div>
       <!-- IA BANNER -->
-      <div style="background:linear-gradient(135deg,rgba(200,169,110,.1) 0%,rgba(91,156,246,.08) 100%);border:1.5px solid rgba(200,169,110,.3);border-radius:var(--radius);padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+      <div style="background:var(--bg2);border:1.5px solid rgba(200,169,110,.3);border-radius:var(--radius);padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
         <div style="width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✦</div>
         <div style="flex:1">
           <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);letter-spacing:2px;margin-bottom:3px">IA · GERAR TREINO</div>
@@ -612,16 +651,24 @@ function openView(view){
 
 // ── DASHBOARD ──
 async function renderDash(){
-  const alunos=await sbFetch('alunos?select=id,ativo&order=criado_em.desc')||[];
-  const sessoes=await sbFetch('sessoes?select=id,data,aluno_id,treino_id,alunos(nome),treinos(nome)&order=criado_em.desc&limit=20')||[];
+  const alunos=await sbFetch('alunos?select=id,ativo,criado_em&order=criado_em.desc')||[];
+  const sessoes=await sbFetch('sessoes?select=id,data,aluno_id,treino_id,alunos(nome),treinos(nome)&order=criado_em.desc&limit=60')||[];
   const ativos=alunos.filter(a=>a.ativo).length;
   loadFeedbackBadge();
 
+  const now=Date.now(), w7=now-7*86400000, w14=now-14*86400000;
+  const novosAlunos=alunos.filter(a=>a.criado_em&&new Date(a.criado_em).getTime()>w7).length;
+  const sesSem=sessoes.filter(s=>s.data&&new Date(s.data).getTime()>w7).length;
+  const sesPrev=sessoes.filter(s=>s.data&&new Date(s.data).getTime()>w14&&new Date(s.data).getTime()<=w7).length;
+  const alunosDelta=novosAlunos>0?`<div class="stat-delta delta-up">↑ +${novosAlunos}</div>`:'';
+  const sesDelta=sesSem>0?`<div class="stat-delta delta-up">↑ +${sesSem>sesPrev?sesSem-sesPrev:sesSem}</div>`:'';
+
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">Total Alunos</div></div>
+    <div class="stat-card"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">Total Alunos</div>${alunosDelta}</div>
     <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">Ativos</div></div>
-    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div>${sesDelta}</div>
     <div class="stat-card"><div class="stat-val">${alunos.length-ativos}</div><div class="stat-lbl">Inativos</div></div>`;
+  animateRing(ativos, alunos.length);
 
   const el=document.getElementById('atividade-list');
   if(!sessoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">◌</div>Nenhuma sessão registrada ainda.</div>';return;}
@@ -644,9 +691,9 @@ async function renderAlunos(){
     el.innerHTML='<div class="empty"><div class="empty-icon">◉</div>Nenhum aluno. Toque no ＋ para adicionar.</div>';
     return;
   }
-  el.innerHTML=alunos.map(a=>`
-    <div class="aluno-card" onclick="openAluno('${a.id}')">
-      <div class="av">${initials(a.nome)}</div>
+  el.innerHTML=alunos.map((a,i)=>`
+    <div class="aluno-card" style="animation:fadeUp .3s ease ${i*0.07}s both" onclick="openAluno('${a.id}')">
+      <div class="av av-${i%4}">${initials(a.nome)}</div>
       <div class="aluno-info-wrap">
         <div class="aluno-nome">${a.nome}</div>
         <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
@@ -654,6 +701,20 @@ async function renderAlunos(){
       </div>
       <div class="chevron">›</div>
     </div>`).join('');
+}
+
+function animateRing(ativos, total){
+  const pct=total?Math.round((ativos/total)*100):0;
+  const offset=Math.round(320*(1-pct/100));
+  const widget=document.getElementById('ring-widget');
+  const fill=document.getElementById('ring-fill');
+  const pctEl=document.getElementById('ring-pct');
+  const desc=document.getElementById('ring-desc');
+  if(!fill) return;
+  if(total>0) widget.style.display='flex';
+  requestAnimationFrame(()=>{fill.style.strokeDashoffset=offset;});
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(desc) desc.textContent=`${ativos} de ${total} alunos com treino activo`;
 }
 
 async function criarAluno(){
