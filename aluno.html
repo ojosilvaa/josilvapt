@@ -941,6 +941,8 @@ let refeiTipo = 'foto', fotoBase64 = null, fotoMime = null;
 let refeiResultado = null, micAtivo = false, recognition = null;
 
 async function loadAnthropicKey() {
+  const local = localStorage.getItem('anthropic_key');
+  if (local) { ANTHROPIC_KEY = local; return; }
   const res = await sbFetch('configuracoes?chave=eq.anthropic_key') || [];
   if (res[0]) ANTHROPIC_KEY = res[0].valor;
 }
