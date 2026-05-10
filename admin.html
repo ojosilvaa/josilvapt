@@ -880,7 +880,7 @@ async function salvarTreino(){
 }
 
 async function renderTreinos(){
-  const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&order=criado_em.asc`)||[];
+  const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&order=nome.asc`)||[];
   const el=document.getElementById('treinos-list');
   if(!treinos.length){el.innerHTML='<div class="empty"><div class="empty-icon">◻</div>Nenhum treino criado. Toque no ＋.</div>';return;}
   el.innerHTML=treinos.map(t=>`
