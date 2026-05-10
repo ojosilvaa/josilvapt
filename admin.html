@@ -248,6 +248,13 @@ textarea.form-inp{resize:vertical;min-height:80px}
 <!-- ═══ APP ═══ -->
 <div id="app" style="display:none">
 
+  <!-- LANG TOGGLE persistente -->
+  <div style="position:fixed;top:14px;right:60px;z-index:300;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;display:flex;align-items:center;gap:5px">
+    <span class="lang-btn" data-lang="pt" onclick="setLang('pt')" style="cursor:pointer;color:var(--gold);font-weight:600">PT</span>
+    <span style="color:var(--dim)">|</span>
+    <span class="lang-btn" data-lang="en" onclick="setLang('en')" style="cursor:pointer;color:var(--muted)">EN</span>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="bnav-item active" onclick="goTab('dash')" id="nav-dash">
@@ -526,10 +533,10 @@ textarea.form-inp{resize:vertical;min-height:80px}
     <div class="page-content">
       <div class="config-section">
         <div class="config-title" data-i18n="cfg_idioma_title">IDIOMA</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;display:flex;align-items:center;gap:5px">
-          <span id="lang-pt" onclick="setLang('pt')" style="cursor:pointer;color:var(--gold);font-weight:600">PT</span>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;display:flex;align-items:center;gap:8px">
+          <span class="lang-btn" data-lang="pt" onclick="setLang('pt')" style="cursor:pointer;color:var(--gold);font-weight:600">PT</span>
           <span style="color:var(--dim)">|</span>
-          <span id="lang-en" onclick="setLang('en')" style="cursor:pointer;color:var(--muted)">EN</span>
+          <span class="lang-btn" data-lang="en" onclick="setLang('en')" style="cursor:pointer;color:var(--muted)">EN</span>
         </div>
       </div>
       <div class="config-section">
@@ -727,9 +734,11 @@ function setLang(l){
   document.querySelectorAll('[data-i18n]').forEach(el=>{const v=T(el.dataset.i18n);if(v!==el.dataset.i18n)el.textContent=v;});
   document.querySelectorAll('[data-i18n-html]').forEach(el=>{const v=T(el.dataset.i18nHtml);if(v!==el.dataset.i18nHtml)el.innerHTML=v;});
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const v=T(el.dataset.i18nPh);if(v!==el.dataset.i18nPh)el.placeholder=v;});
-  const pt=document.getElementById('lang-pt'),en=document.getElementById('lang-en');
-  if(pt){pt.style.color=l==='pt'?'var(--gold)':'var(--muted)';pt.style.fontWeight=l==='pt'?'600':'400';}
-  if(en){en.style.color=l==='en'?'var(--gold)':'var(--muted)';en.style.fontWeight=l==='en'?'600':'400';}
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const active=btn.dataset.lang===l;
+    btn.style.color=active?'var(--gold)':'var(--muted)';
+    btn.style.fontWeight=active?'600':'400';
+  });
 }
 
 // ── LOCAL STORAGE ──
