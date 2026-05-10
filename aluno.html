@@ -433,8 +433,10 @@ button{cursor:pointer;border:none;background:none}
     </div>
 
   </div>
-  <button class="fab" onclick="openRefeicaoModal()">＋</button>
 </div>
+
+<!-- FAB fora do screen para não ser afetado pela animação transform -->
+<button class="fab" id="fab-nutricao" style="display:none" onclick="openRefeicaoModal()">＋</button>
 
 <!-- ═══ MODAL REFEIÇÃO ═══ -->
 <div class="refei-modal" id="refei-modal">
@@ -600,6 +602,7 @@ function goScreen(screen) {
   const s = document.getElementById('screen-' + screen);
   s.style.display = 'block'; s.classList.add('active');
   document.getElementById('nav-' + screen).classList.add('active');
+  document.getElementById('fab-nutricao').style.display = screen === 'nutricao' ? 'flex' : 'none';
   if (screen === 'evolucao') renderEvolucao();
   if (screen === 'nutricao') renderNutricao();
 }
