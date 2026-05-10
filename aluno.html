@@ -202,6 +202,16 @@ button{cursor:pointer;border:none;background:none}
 </head>
 <body>
 
+<!-- SVG DEFS GLOBAIS -->
+<svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
+  <defs>
+    <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8a7449"/>
+      <stop offset="100%" style="stop-color:#C8A96E"/>
+    </linearGradient>
+  </defs>
+</svg>
+
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="brand">JO SILVA PT</div>
@@ -224,12 +234,6 @@ button{cursor:pointer;border:none;background:none}
     <div class="treino-header">
       <div class="treino-header-inner">
         <svg width="56" height="56" viewBox="0 0 56 56" style="flex-shrink:0;overflow:visible">
-          <defs>
-            <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:#8a7449"/>
-              <stop offset="100%" style="stop-color:#C8A96E"/>
-            </linearGradient>
-          </defs>
           <circle class="mini-ring-track" cx="28" cy="28" r="22"/>
           <circle class="mini-ring-glow" cx="28" cy="28" r="22"/>
           <circle class="mini-ring-fill" id="mini-ring-fill" cx="28" cy="28" r="22" transform="rotate(-90 28 28)"/>
