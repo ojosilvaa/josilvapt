@@ -1,4 +1,4 @@
-const CACHE_NAME = 'josilvaPT-v4';
+const CACHE_NAME = 'josilvaPT-v5';
 const CACHE_FILES = [
   './',
   './aluno.html',
