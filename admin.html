@@ -1126,7 +1126,9 @@ async function salvarTreino(){
     await sbFetch(`treinos?id=eq.${treinoId}`,{method:'PATCH',body:JSON.stringify({nome,descricao:document.getElementById('nt-desc').value})});
     await sbFetch(`exercicios?treino_id=eq.${treinoId}`,{method:'DELETE'});
   } else {
-    const res=await sbFetch('treinos',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,nome,descricao:document.getElementById('nt-desc').value})});
+    const ex=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&select=ordem&order=ordem.desc&limit=1`)||[];
+    const nextOrdem=(ex[0]?.ordem||0)+1;
+    const res=await sbFetch('treinos',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,nome,descricao:document.getElementById('nt-desc').value,ordem:nextOrdem})});
     if(!res||!res[0]){toast(T('t_treino_err'));return;}
     treinoId=res[0].id;
   }
@@ -1137,8 +1139,7 @@ async function salvarTreino(){
 }
 
 async function renderTreinos(){
-  const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}`)||[];
-  treinos.sort((a,b)=>a.nome.localeCompare(b.nome,undefined,{numeric:true,sensitivity:'base'}));
+  const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&order=ordem.asc`)||[];
   const el=document.getElementById('treinos-list');
   if(!treinos.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◻</div>${T('treinos_empty')}</div>`;return;}
   el.innerHTML=treinos.map(t=>`

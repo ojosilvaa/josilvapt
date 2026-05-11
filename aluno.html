@@ -1005,7 +1005,7 @@ async function init() {
 
 // ── TREINOS ──
 async function loadTreinos() {
-  treinos = await sbFetch(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`) || [];
+  treinos = await sbFetch(`treinos?aluno_id=eq.${ALUNO_ID}&order=ordem.asc`) || [];
   document.getElementById('treino-loading').style.display = 'none';
 
   if (!treinos.length) {
@@ -1036,9 +1036,7 @@ async function selectTreino(id, btn) {
 
 async function selectTreinoById(id) {
   currentTreinoId = id;
-  if (!exerciciosPorTreino[id]) {
-    exerciciosPorTreino[id] = await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
-  }
+  exerciciosPorTreino[id] = await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
   doneSet = new Set(lc('done_' + id, []));
   renderTreino();
 }
