@@ -830,7 +830,9 @@ function setLang(l) {
 }
 
 const PARAMS = new URLSearchParams(location.search);
-const ALUNO_ID = PARAMS.get('id');
+const _id_url = PARAMS.get('id');
+if (_id_url) localStorage.setItem('pwa_aluno_id', _id_url);
+const ALUNO_ID = _id_url || localStorage.getItem('pwa_aluno_id');
 
 /* ════════════════════════════════════════════════════════════
    CONFIG · edita aqui · override via localStorage opcional
