@@ -248,6 +248,17 @@ button{cursor:pointer;border:none;background:none}
 .hist-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)}
 .hist-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-right:4px}
 
+/* ── MEDIDAS ALUNO ── */
+.med-section-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px}
+.med-bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.med-bio-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.med-bio-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);line-height:1}
+.med-bio-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.med-peri-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.med-peri-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.med-peri-lbl{font-size:12px;color:var(--muted)}
+.med-peri-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text)}
+
 /* ── ORIENTAÇÕES ── */
 .personal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;text-align:center}
 .personal-av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#C8A96E,#8a7449);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#080808;margin:0 auto 12px}
@@ -487,7 +498,13 @@ button{cursor:pointer;border:none;background:none}
       <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Semanas</div></div>
       <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Dias</div></div>
     </div>
-    <div class="chart-wrap">
+    <div id="evo-medidas" style="display:none">
+      <div class="med-section-lbl" data-i18n="evo_medidas_title">MEDIDAS CORPORAIS</div>
+      <div class="med-bio-grid" id="evo-bio-grid"></div>
+      <div class="med-section-lbl" data-i18n="evo_perimetros_title">PERÍMETROS (cm)</div>
+      <div class="med-peri-grid" id="evo-peri-grid"></div>
+    </div>
+    <div class="chart-wrap" style="margin-top:16px">
       <select class="chart-sel" id="evo-select" onchange="renderChart()">
         <option value="" data-i18n="sel_exercicio">Selecione um exercício...</option>
       </select>
@@ -710,6 +727,7 @@ const LANG = {
     acesso_nao:'Acesso não encontrado.<br>Fala com o teu personal.',
     obj_prefix:'Objetivo: ', bora:'Bora treinar 💪',
     stat_sessoes:'Sessões', stat_semanas:'Semanas', stat_dias:'Dias',
+    evo_medidas_title:'MEDIDAS CORPORAIS', evo_perimetros_title:'PERÍMETROS (cm)',
     sel_exercicio:'Selecione um exercício...', hist_treinos:'HISTÓRICO DE TREINOS',
     series:'séries', reps:'reps', done_pill:'✓ Feito', carga_label:'Carga usada',
     progress:(d,t)=>`${d} de ${t} exercício${t!==1?'s':''} concluído${t!==1?'s':''}`,
@@ -755,6 +773,7 @@ const LANG = {
     acesso_nao:'Access not found.<br>Talk to your personal trainer.',
     obj_prefix:'Goal: ', bora:"Let's train 💪",
     stat_sessoes:'Sessions', stat_semanas:'Weeks', stat_dias:'Days',
+    evo_medidas_title:'BODY MEASUREMENTS', evo_perimetros_title:'CIRCUMFERENCES (cm)',
     sel_exercicio:'Select an exercise...', hist_treinos:'TRAINING HISTORY',
     series:'sets', reps:'reps', done_pill:'✓ Done', carga_label:'Load used',
     progress:(d,t)=>`${d} of ${t} exercise${t!==1?'s':''} completed`,
@@ -1178,6 +1197,17 @@ async function registrar() {
 }
 
 // ── EVOLUÇÃO ──
+const PERI_CAMPOS_ALUNO=[
+  {id:'pescoco',label:'Pescoço'},{id:'ombro',label:'Ombro'},{id:'torax',label:'Tórax'},
+  {id:'cintura',label:'Cintura'},{id:'abdomen',label:'Abdômen'},{id:'quadril',label:'Quadril'},
+  {id:'coxa_d',label:'Coxa D'},{id:'coxa_e',label:'Coxa E'},
+  {id:'joelho_d',label:'Joelho D'},{id:'joelho_e',label:'Joelho E'},
+  {id:'panturrilha_d',label:'Pant. D'},{id:'panturrilha_e',label:'Pant. E'},
+  {id:'braco_d',label:'Braço D'},{id:'braco_e',label:'Braço E'},
+  {id:'braco_flex_d',label:'Braço Flex. D'},{id:'braco_flex_e',label:'Braço Flex. E'},
+  {id:'antebraco_d',label:'Antebr. D'},{id:'antebraco_e',label:'Antebr. E'}
+];
+
 async function renderEvolucao() {
   if (!sessoes.length) {
     sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
@@ -1192,6 +1222,32 @@ async function renderEvolucao() {
     <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">${T('stat_sessoes')}</div></div>
     <div class="stat-card"><div class="stat-val">${semanas}</div><div class="stat-lbl">${T('stat_semanas')}</div></div>
     <div class="stat-card"><div class="stat-val">${dias || '—'}</div><div class="stat-lbl">${T('stat_dias')}</div></div>`;
+
+  const avs = await sbFetch(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=1`) || [];
+  const av = avs[0];
+  const medDiv = document.getElementById('evo-medidas');
+  if (av) {
+    const med = av.medidas || {};
+    const bioItems = [
+      {v: av.peso, u:'kg', l:'Peso'},
+      {v: med.bio_imc, u:'', l:'IMC'},
+      {v: av.gordura, u:'%', l:'Gordura'},
+      {v: med.bio_gord_abs, u:'kg', l:'Gord. Abs.'},
+      {v: av.massa_magra, u:'kg', l:'Massa Magra'},
+      {v: med.bio_gord_visc, u:'', l:'Visceral'},
+      {v: med.bio_tmb, u:' kcal', l:'TMB'},
+    ].filter(x => x.v != null && x.v !== '');
+    document.getElementById('evo-bio-grid').innerHTML = bioItems.map(x =>
+      `<div class="med-bio-card"><div class="med-bio-val">${x.v}${x.u}</div><div class="med-bio-lbl">${x.l}</div></div>`
+    ).join('');
+    const periItems = PERI_CAMPOS_ALUNO.filter(c => med[c.id]);
+    document.getElementById('evo-peri-grid').innerHTML = periItems.map(c =>
+      `<div class="med-peri-item"><span class="med-peri-lbl">${c.label}</span><span class="med-peri-val">${med[c.id]}cm</span></div>`
+    ).join('');
+    medDiv.style.display = (bioItems.length || periItems.length) ? '' : 'none';
+  } else {
+    medDiv.style.display = 'none';
+  }
 
   // Populate exercise selector
   const sel = document.getElementById('evo-select');

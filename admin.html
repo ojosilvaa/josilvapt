@@ -31,6 +31,73 @@ button{cursor:pointer}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
+/* ── VISUAL EFFECTS ── */
+:root{
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
+  --shadow-md:0 4px 12px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.7);
+  --shadow-gold:0 0 20px rgba(200,169,110,.15);
+  --grad-gold:linear-gradient(135deg,#C8A96E,#8a7449);
+  --grad-gold-soft:linear-gradient(135deg,rgba(200,169,110,.1),rgba(138,116,73,.05));
+  --grad-dark:linear-gradient(180deg,#111111,#080808);
+  --grad-card:linear-gradient(135deg,rgba(17,17,17,.8),rgba(10,10,10,.95));
+  --ease-standard:cubic-bezier(.4,0,.2,1);
+  --ease-entrance:cubic-bezier(0,.7,.3,1);
+  --ease-exit:cubic-bezier(.4,.0,.6,1);
+}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 0 0 rgba(200,169,110,.4)}50%{box-shadow:0 0 0 12px rgba(200,169,110,0)}}
+@keyframes scaleBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 0 rgba(200,169,110,0))}50%{filter:drop-shadow(0 0 8px rgba(200,169,110,.4))}}
+.topbar{box-shadow:0 2px 12px rgba(0,0,0,.6)!important;transition:box-shadow .3s ease}
+.topbar:hover{box-shadow:0 2px 16px rgba(0,0,0,.7)!important}
+.bottom-nav{box-shadow:0 -2px 12px rgba(0,0,0,.6)!important;transition:box-shadow .3s ease}
+.card{box-shadow:var(--shadow-md)!important;transition:all .3s var(--ease-standard)}
+.card:hover{box-shadow:var(--shadow-lg),var(--shadow-gold)!important;border-color:rgba(200,169,110,.3)!important;transform:translateY(-2px)}
+.stat-card{background:var(--grad-card)!important;box-shadow:var(--shadow-md)!important;transition:all .3s var(--ease-standard);position:relative;overflow:hidden;border-color:var(--border)!important}
+.stat-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent,rgba(200,169,110,.1),transparent);opacity:0;transition:opacity .4s ease}
+.stat-card:hover{border-color:rgba(200,169,110,.4)!important;box-shadow:var(--shadow-lg),var(--shadow-gold)!important;transform:translateY(-3px)}
+.stat-card:hover::before{opacity:1}
+.aluno-card{transition:all .3s var(--ease-standard);box-shadow:var(--shadow-sm)}
+.aluno-card:hover{border-color:var(--gold)!important;transform:translateX(4px);box-shadow:var(--shadow-md),var(--shadow-gold);background:rgba(17,17,17,.8)}
+.btn{transition:all .2s var(--ease-standard);position:relative}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)!important}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn-gold{background:var(--grad-gold)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 4px 16px rgba(200,169,110,.2)!important;position:relative;overflow:hidden;transition:all .3s var(--ease-standard)}
+.btn-gold::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:left .5s ease}
+.btn-gold:hover::before{left:100%}
+.btn-gold:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 8px 24px rgba(200,169,110,.4)!important}
+.form-inp{transition:all .25s var(--ease-standard);box-shadow:0 0 0 0 rgba(200,169,110,0)}
+.form-inp:focus{border-color:var(--gold)!important;box-shadow:0 0 0 3px rgba(200,169,110,.1),var(--shadow-sm)}
+.progress-fill{background:linear-gradient(90deg,#8a7449,#C8A96E,#8a7449)!important;border-radius:4px;transition:width 1.2s var(--ease-standard);box-shadow:0 0 10px rgba(200,169,110,.5);filter:drop-shadow(0 2px 4px rgba(200,169,110,.2))}
+.badge{transition:all .25s var(--ease-standard);position:relative;overflow:hidden}
+.badge-green{box-shadow:0 0 0 1px rgba(93,202,154,.2)}
+.badge-green:hover{box-shadow:0 0 12px rgba(93,202,154,.4);transform:scale(1.05);border-color:var(--green)!important}
+.badge-gold:hover{box-shadow:0 0 12px rgba(200,169,110,.4);transform:scale(1.05);border-color:var(--gold)!important}
+.badge-gray:hover{transform:scale(1.05)}
+.tab{position:relative;transition:all .3s var(--ease-standard)}
+.tab::after{content:'';position:absolute;bottom:4px;left:0;width:0;height:2.5px;background:var(--gold);border-radius:2px;transition:width .4s var(--ease-standard)}
+.tab.active::after{width:100%}
+.tab.active{color:var(--gold)!important}
+.bnav-item{transition:all .3s var(--ease-standard);position:relative}
+.bnav-item .icon{transition:transform .3s var(--ease-standard)}
+.bnav-item:active .icon{transform:scale(1.15)}
+.bnav-item.active .icon{animation:scaleBounce .4s var(--ease-standard)}
+.av{transition:all .3s var(--ease-standard);box-shadow:0 0 0 2px var(--border);position:relative}
+.av:hover{box-shadow:0 0 0 2px var(--gold),0 0 16px rgba(200,169,110,.3);transform:scale(1.08)}
+.det-av-big{transition:all .3s var(--ease-standard);box-shadow:0 4px 16px rgba(200,169,110,.2)}
+.det-av-big:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(200,169,110,.3)}
+.link-box{transition:all .3s var(--ease-standard);box-shadow:0 0 0 1.5px var(--gold)}
+.link-box:hover{box-shadow:0 0 0 1.5px var(--gold),0 0 16px rgba(200,169,110,.3)}
+.screen.active{animation:screenIn .4s var(--ease-entrance)!important}
+.treino-card{transition:all .3s var(--ease-standard);box-shadow:var(--shadow-sm)}
+.treino-card:hover{box-shadow:var(--shadow-md),rgba(200,169,110,.1) 0 0 12px;border-color:rgba(200,169,110,.3)!important;transform:translateY(-2px)}
+.pill{transition:all .25s var(--ease-standard)}
+.pill:hover{border-color:rgba(200,169,110,.4)!important;box-shadow:0 0 8px rgba(200,169,110,.15);transform:translateY(-1px)}
+.pill-done{box-shadow:0 0 0 1px rgba(93,202,154,.2)}
+.pill-done:hover{box-shadow:0 0 8px rgba(93,202,154,.3)}
+
 /* ── SCREEN SYSTEM ── */
 .screen{display:none;min-height:100vh;padding-bottom:calc(72px + var(--safe-bottom))}
 .screen.active{display:block;animation:screenIn .35s cubic-bezier(.4,0,.2,1)}
@@ -450,17 +517,26 @@ textarea.form-inp{resize:vertical;min-height:80px}
       <div id="tab-medidas" class="tab-content">
         <div class="page-content">
           <div class="card">
-            <div class="card-title" data-i18n="med_nova_aval">NOVA AVALIAÇÃO</div>
+            <div class="card-title" id="pm-card-title" data-i18n="med_nova_aval">NOVA AVALIAÇÃO</div>
+            <input type="hidden" id="pm-id">
             <div class="form-group"><label class="form-label" data-i18n="lbl_data">Data *</label><input type="date" class="form-inp" id="pm-data"></div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-i18n="lbl_bioimpedancia">BIOIMPEDÂNCIA</div>
             <div class="form-grid">
-              <div class="form-group"><label class="form-label" data-i18n="lbl_peso">Peso (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-peso" placeholder="65.5"></div>
-              <div class="form-group"><label class="form-label" data-i18n="lbl_gord">% Gordura</label><input type="number" step="0.1" class="form-inp" id="pm-gord" placeholder="24.5"></div>
-              <div class="form-group"><label class="form-label" data-i18n="lbl_massa">Massa Magra (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-massa" placeholder="49.0"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_peso">Peso (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-peso" placeholder="96.2"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_imc">IMC</label><input type="number" step="0.1" class="form-inp" id="pm-imc" placeholder="29.4"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_gord">% Gordura</label><input type="number" step="0.1" class="form-inp" id="pm-gord" placeholder="29.6"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_gord_abs">Gord. Abs. (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-gord-abs" placeholder="28.5"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_massa">Massa Magra (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-massa" placeholder="67.7"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_gord_visc">Gord. Visceral</label><input type="number" step="1" class="form-inp" id="pm-gord-visc" placeholder="12"></div>
+              <div class="form-group"><label class="form-label" data-i18n="lbl_tmb">TMB (kcal)</label><input type="number" step="1" class="form-inp" id="pm-tmb" placeholder="1959"></div>
             </div>
-            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px" data-i18n="lbl_perimetros">PERÍMETROS (cm)</div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin:10px 0 10px" data-i18n="lbl_perimetros">PERÍMETROS (cm)</div>
             <div class="peri-grid" id="peri-inputs"></div>
             <div class="form-group"><label class="form-label" data-i18n="lbl_obs">Observações</label><textarea class="form-inp" id="pm-obs" placeholder="Postura, evolução observada..." data-i18n-ph="ph_pm_obs"></textarea></div>
-            <button class="btn btn-gold btn-full" onclick="salvarMedida()" data-i18n="btn_salvar_aval">SALVAR AVALIAÇÃO</button>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-gold btn-full" onclick="salvarMedida()" id="pm-btn-salvar" data-i18n="btn_salvar_aval">SALVAR AVALIAÇÃO</button>
+              <button class="btn btn-full" onclick="cancelarEditarMedida()" id="pm-btn-cancel" style="display:none;background:var(--bg3);color:var(--muted);border:1px solid var(--border)" data-i18n="btn_cancelar">CANCELAR</button>
+            </div>
           </div>
           <div class="sec-title" style="margin:20px 0 12px" data-i18n="med_historico">HISTÓRICO</div>
           <div id="medidas-hist"></div>
@@ -573,6 +649,7 @@ const PERI_CAMPOS=[
   {id:'joelho_d',label:'Joelho D'},{id:'joelho_e',label:'Joelho E'},
   {id:'panturrilha_d',label:'Pant. D'},{id:'panturrilha_e',label:'Pant. E'},
   {id:'braco_d',label:'Braço D'},{id:'braco_e',label:'Braço E'},
+  {id:'braco_flex_d',label:'Braço Flex. D'},{id:'braco_flex_e',label:'Braço Flex. E'},
   {id:'antebraco_d',label:'Antebr. D'},{id:'antebraco_e',label:'Antebr. E'}
 ];
 
@@ -580,7 +657,7 @@ let SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co';
 let SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 let BASE_URL='https://ojosilvaa.github.io/josilvapt/aluno.html';
 let ANTHROPIC_KEY='';
-let currentAlunoId=null, currentTreinoId=null, exerciciosList=[], evoChartInst=null;
+let currentAlunoId=null, currentTreinoId=null, exerciciosList=[], evoChartInst=null, editingMedidaId=null;
 
 // ── i18n ──
 let currentLang=localStorage.getItem('lang')||'pt';
@@ -621,9 +698,12 @@ const LANG={
     ev_maior_carga:'Maior carga',ev_hist_sessoes:'HISTÓRICO DE SESSÕES',
     ev_nenhuma:'Nenhuma sessão registrada.',ev_sem_sessoes:'Nenhuma sessão registrada ainda.',
     med_nova_aval:'NOVA AVALIAÇÃO',lbl_data:'Data *',lbl_peso:'Peso (kg)',
-    lbl_gord:'% Gordura',lbl_massa:'Massa Magra (kg)',lbl_perimetros:'PERÍMETROS (cm)',
+    lbl_imc:'IMC',lbl_gord:'% Gordura',lbl_gord_abs:'Gord. Abs. (kg)',
+    lbl_massa:'Massa Magra (kg)',lbl_gord_visc:'Gord. Visceral',lbl_tmb:'TMB (kcal)',
+    lbl_bioimpedancia:'BIOIMPEDÂNCIA',lbl_perimetros:'PERÍMETROS (cm)',
     ph_pm_obs:'Postura, evolução observada...',btn_salvar_aval:'SALVAR AVALIAÇÃO',
     med_historico:'HISTÓRICO',med_nenhuma:'Nenhuma avaliação registrada.',
+    med_editar_aval:'EDITAR AVALIAÇÃO',
     pf_dados_pessoais:'DADOS PESSOAIS',lbl_pf_nome:'Nome completo',lbl_pf_nasc:'Data de Nasc.',
     lbl_pf_altura:'Altura (cm)',lbl_pf_prof:'Profissão',ph_pf_prof:'Ex: Enfermeira',
     pf_saude:'SAÚDE E OBJETIVOS',
@@ -692,9 +772,12 @@ const LANG={
     ev_maior_carga:'Top load',ev_hist_sessoes:'SESSION HISTORY',
     ev_nenhuma:'No sessions logged.',ev_sem_sessoes:'No sessions logged yet.',
     med_nova_aval:'NEW ASSESSMENT',lbl_data:'Date *',lbl_peso:'Weight (kg)',
-    lbl_gord:'% Fat',lbl_massa:'Lean Mass (kg)',lbl_perimetros:'MEASUREMENTS (cm)',
+    lbl_imc:'BMI',lbl_gord:'% Fat',lbl_gord_abs:'Abs. Fat (kg)',
+    lbl_massa:'Lean Mass (kg)',lbl_gord_visc:'Visceral Fat',lbl_tmb:'BMR (kcal)',
+    lbl_bioimpedancia:'BIOIMPEDANCE',lbl_perimetros:'MEASUREMENTS (cm)',
     ph_pm_obs:'Posture, observed changes...',btn_salvar_aval:'SAVE ASSESSMENT',
     med_historico:'HISTORY',med_nenhuma:'No assessments recorded.',
+    med_editar_aval:'EDIT ASSESSMENT',
     pf_dados_pessoais:'PERSONAL DATA',lbl_pf_nome:'Full name',lbl_pf_nasc:'Date of Birth',
     lbl_pf_altura:'Height (cm)',lbl_pf_prof:'Profession',ph_pf_prof:'E.g.: Nurse',
     pf_saude:'HEALTH & GOALS',
@@ -1137,6 +1220,7 @@ async function renderEvoChart(){
 }
 
 // ── MEDIDAS ──
+let _medidasCache=[];
 async function renderMedidas(){
   document.getElementById('peri-inputs').innerHTML=PERI_CAMPOS.map(c=>`
     <div class="peri-item">
@@ -1144,23 +1228,32 @@ async function renderMedidas(){
       <input class="peri-inp" type="number" step="0.1" id="pm-${c.id}" placeholder="—">
       <div class="peri-unit">cm</div>
     </div>`).join('');
-  document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+  if(!editingMedidaId) document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
 
   const avs=await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
+  _medidasCache=avs;
   const el=document.getElementById('medidas-hist');
   if(!avs.length){el.innerHTML=`<div class="empty">${T('med_nenhuma')}</div>`;return;}
   el.innerHTML=avs.map((av,idx)=>{
     const prev=avs[idx+1]; const med=av.medidas||{};
+    const bioCards=[
+      av.peso?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.peso}kg</div><div class="stat-lbl">Peso</div></div>`:'',
+      med.bio_imc?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${med.bio_imc}</div><div class="stat-lbl">IMC</div></div>`:'',
+      av.gordura?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>`:'',
+      med.bio_gord_abs?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${med.bio_gord_abs}kg</div><div class="stat-lbl">Gord.Abs</div></div>`:'',
+      av.massa_magra?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.massa_magra}kg</div><div class="stat-lbl">Massa</div></div>`:'',
+      med.bio_gord_visc?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${med.bio_gord_visc}</div><div class="stat-lbl">Visceral</div></div>`:'',
+      med.bio_tmb?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${med.bio_tmb}</div><div class="stat-lbl">TMB kcal</div></div>`:'',
+    ].filter(Boolean).join('');
     return `<div class="card" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div class="card-title" style="margin:0">${formatDate(av.data)}</div>
-        <button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">${T('btn_excluir')}</button>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm" style="background:var(--bg3);color:var(--gold);border:1px solid var(--gold2)" onclick="editarMedida('${av.id}')">${T('btn_editar')}</button>
+          <button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">${T('btn_excluir')}</button>
+        </div>
       </div>
-      <div style="display:flex;gap:10px;margin-bottom:12px">
-        ${av.peso?`<div class="stat-card" style="flex:1;padding:10px"><div class="stat-val" style="font-size:22px">${av.peso}kg</div><div class="stat-lbl">Peso</div></div>`:''}
-        ${av.gordura?`<div class="stat-card" style="flex:1;padding:10px"><div class="stat-val" style="font-size:22px">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>`:''}
-        ${av.massa_magra?`<div class="stat-card" style="flex:1;padding:10px"><div class="stat-val" style="font-size:22px">${av.massa_magra}kg</div><div class="stat-lbl">Massa</div></div>`:''}
-      </div>
+      ${bioCards?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">${bioCards}</div>`:''}
       ${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{
         const cur=med[c.id]; const prevV=prev?.medidas?.[c.id];
         let delta='',cls='zero';
@@ -1178,19 +1271,62 @@ async function renderMedidas(){
   }).join('');
 }
 
+function editarMedida(id){
+  const av=_medidasCache.find(x=>x.id===id); if(!av) return;
+  editingMedidaId=av.id;
+  const med=av.medidas||{};
+  document.getElementById('pm-id').value=av.id;
+  document.getElementById('pm-data').value=av.data;
+  document.getElementById('pm-peso').value=av.peso||'';
+  document.getElementById('pm-imc').value=med.bio_imc||'';
+  document.getElementById('pm-gord').value=av.gordura||'';
+  document.getElementById('pm-gord-abs').value=med.bio_gord_abs||'';
+  document.getElementById('pm-massa').value=av.massa_magra||'';
+  document.getElementById('pm-gord-visc').value=med.bio_gord_visc||'';
+  document.getElementById('pm-tmb').value=med.bio_tmb||'';
+  document.getElementById('pm-obs').value=av.obs||'';
+  PERI_CAMPOS.forEach(c=>{const el=document.getElementById('pm-'+c.id);if(el) el.value=med[c.id]||'';});
+  document.getElementById('pm-card-title').textContent=T('med_editar_aval');
+  document.getElementById('pm-btn-cancel').style.display='';
+  document.getElementById('tab-medidas').querySelector('.page-content').scrollTop=0;
+  window.scrollTo(0,0);
+}
+
+function cancelarEditarMedida(){
+  editingMedidaId=null;
+  document.getElementById('pm-id').value='';
+  document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+  ['peso','imc','gord','gord-abs','massa','gord-visc','tmb','obs'].forEach(f=>{const el=document.getElementById('pm-'+f);if(el) el.value='';});
+  PERI_CAMPOS.forEach(c=>{const el=document.getElementById('pm-'+c.id);if(el) el.value='';});
+  document.getElementById('pm-card-title').setAttribute('data-i18n','med_nova_aval');
+  document.getElementById('pm-card-title').textContent=T('med_nova_aval');
+  document.getElementById('pm-btn-cancel').style.display='none';
+}
+
 async function salvarMedida(){
   const data=document.getElementById('pm-data').value;
   if(!data){toast(T('t_data_obrig'));return;}
   const medidas={};
   PERI_CAMPOS.forEach(c=>{const v=document.getElementById('pm-'+c.id)?.value;if(v) medidas[c.id]=parseFloat(v);});
+  const imc=document.getElementById('pm-imc').value; if(imc) medidas.bio_imc=parseFloat(imc);
+  const gordAbs=document.getElementById('pm-gord-abs').value; if(gordAbs) medidas.bio_gord_abs=parseFloat(gordAbs);
+  const gordVisc=document.getElementById('pm-gord-visc').value; if(gordVisc) medidas.bio_gord_visc=parseFloat(gordVisc);
+  const tmb=document.getElementById('pm-tmb').value; if(tmb) medidas.bio_tmb=parseFloat(tmb);
   const payload={aluno_id:currentAlunoId,data,peso:document.getElementById('pm-peso').value||null,gordura:document.getElementById('pm-gord').value||null,massa_magra:document.getElementById('pm-massa').value||null,obs:document.getElementById('pm-obs').value,medidas};
-  const res=await sbFetch('perimetria',{method:'POST',body:JSON.stringify(payload)});
-  if(res){toast(T('t_aval_salva'));renderMedidas();}
+  let res;
+  if(editingMedidaId){
+    res=await sbFetch(`perimetria?id=eq.${editingMedidaId}`,{method:'PATCH',body:JSON.stringify(payload)});
+    cancelarEditarMedida();
+  } else {
+    res=await sbFetch('perimetria',{method:'POST',body:JSON.stringify(payload)});
+  }
+  if(res!==null){toast(T('t_aval_salva'));renderMedidas();}
 }
 
 async function deletarMedida(id){
   if(!confirm(T('confirm_excluir_medida'))) return;
   await sbFetch(`perimetria?id=eq.${id}`,{method:'DELETE'});
+  if(editingMedidaId===id) cancelarEditarMedida();
   toast(T('t_excluido')); renderMedidas();
 }
 
