@@ -624,7 +624,7 @@ textarea.form-inp{resize:vertical;min-height:80px}
       <div class="config-section">
         <div class="config-title" data-i18n="cfg_base_title">URL BASE DO SISTEMA</div>
         <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">URL do arquivo <strong style="color:var(--gold)">aluno.html</strong> — será usada para gerar os links dos alunos.</div>
-        <div class="form-group"><label class="form-label" data-i18n="cfg_base_lbl">URL base</label><input class="form-inp" id="cfg-base-url" placeholder="https://seusite.github.io/aluno.html"></div>
+        <div class="form-group"><label class="form-label" data-i18n="cfg_base_lbl">URL base</label><input class="form-inp" id="cfg-base-url" placeholder="https://josilvapt.ptjuklebson.workers.dev/aluno.html"></div>
         <button class="btn btn-gold btn-full" onclick="salvarBaseUrl()" data-i18n="btn_salvar_cfg">SALVAR</button>
       </div>
       <div class="config-section">
@@ -655,7 +655,7 @@ const PERI_CAMPOS=[
 
 let SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co';
 let SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
-let BASE_URL='https://ojosilvaa.github.io/josilvapt/aluno.html';
+let BASE_URL='https://josilvapt.ptjuklebson.workers.dev/aluno.html';
 let ANTHROPIC_KEY='';
 let currentAlunoId=null, currentTreinoId=null, exerciciosList=[], evoChartInst=null, editingMedidaId=null;
 
@@ -829,7 +829,7 @@ const lc=(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(
 const sc=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 
 function loadConfig(){
-  BASE_URL=lc('base_url','https://ojosilvaa.github.io/josilvapt/aluno.html');
+  BASE_URL=lc('base_url','https://josilvapt.ptjuklebson.workers.dev/aluno.html');
   ANTHROPIC_KEY=lc('anthropic_key','');
   const u=document.getElementById('cfg-url'),k=document.getElementById('cfg-key'),b=document.getElementById('cfg-base-url'),ak=document.getElementById('cfg-anthropic-key');
   if(u)u.value=SB_URL; if(k)k.value=SB_KEY; if(b)b.value=BASE_URL; if(ak)ak.value=ANTHROPIC_KEY;
