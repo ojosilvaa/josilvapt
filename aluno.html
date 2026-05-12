@@ -407,6 +407,15 @@ button{cursor:pointer;border:none;background:none}
 .sug-total-item{text-align:center;flex:1}
 .sug-total-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);line-height:1}
 .sug-total-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+/* ── FOTOS EVOLUÇÃO ── */
+.fotos-evo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px}
+.foto-thumb{position:relative;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--bg3)}
+.foto-thumb img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.foto-del{position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,.75);border-radius:50%;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;line-height:1}
+.foto-lbl{font-size:10px;color:var(--muted);text-align:center;margin-top:3px;line-height:1.3;padding:0 2px}
+.foto-lightbox{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.97);display:none;flex-direction:column;align-items:center;justify-content:center}
+.angle-sheet{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.8);display:none;align-items:flex-end;justify-content:center}
+.angle-card{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:24px 20px;padding-bottom:calc(24px + var(--safe-bottom))}
 </style>
 </head>
 <body data-theme="gold" data-mode="dark">
@@ -493,6 +502,10 @@ button{cursor:pointer;border:none;background:none}
 <!-- ═══ EVOLUÇÃO ═══ -->
 <div id="screen-evolucao" class="screen" style="display:none">
   <div class="page-content">
+    <div class="sec-title" style="margin-bottom:10px">FOTOS DA EVOLUÇÃO</div>
+    <button class="btn btn-gold" style="width:100%;margin-bottom:14px;padding:13px;font-size:13px;letter-spacing:1px" onclick="openAngleSheet()">+ ADICIONAR FOTO</button>
+    <div class="fotos-evo-grid" id="fotos-evo-grid"></div>
+    <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="uploadFotoEvo(this)">
     <div class="stats-row" id="evo-stats">
       <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Sessões</div></div>
       <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Semanas</div></div>
@@ -647,6 +660,26 @@ button{cursor:pointer;border:none;background:none}
     <button class="btn-guardar-refei" onclick="guardarRefeicaoManual()" data-i18n="btn_guardar_refei">GUARDAR REFEIÇÃO</button>
     <button onclick="closeAddRefeiModal()" style="width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;margin-top:8px" data-i18n="cancelar">Cancelar</button>
   </div>
+</div>
+
+<!-- ANGLE PICKER SHEET -->
+<div class="angle-sheet" id="angle-sheet" onclick="if(event.target===this)closeAngleSheet()">
+  <div class="angle-card">
+    <div style="font-family:var(--display);font-size:18px;letter-spacing:2px;margin-bottom:16px;color:var(--text)">SELECIONAR ÂNGULO</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      <button class="btn btn-gold" onclick="selectFotoAngle('frente')" style="padding:14px 0;font-size:13px;letter-spacing:1px">FRENTE</button>
+      <button class="btn btn-gold" onclick="selectFotoAngle('lado')" style="padding:14px 0;font-size:13px;letter-spacing:1px">LADO</button>
+      <button class="btn btn-gold" onclick="selectFotoAngle('costas')" style="padding:14px 0;font-size:13px;letter-spacing:1px">COSTAS</button>
+    </div>
+    <button onclick="closeAngleSheet()" style="width:100%;padding:13px;background:none;border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--muted);font-size:14px">CANCELAR</button>
+  </div>
+</div>
+
+<!-- FOTO LIGHTBOX -->
+<div class="foto-lightbox" id="foto-lightbox" onclick="closeFotoLightbox()">
+  <button onclick="closeFotoLightbox()" style="position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;z-index:1">×</button>
+  <img id="foto-lb-img" style="max-width:100%;max-height:82vh;object-fit:contain;border-radius:4px" onclick="event.stopPropagation()">
+  <div id="foto-lb-lbl" style="color:var(--muted);font-size:12px;margin-top:10px;letter-spacing:1px;text-transform:uppercase"></div>
 </div>
 
 <!-- PWA INSTALL BANNER -->
@@ -1218,6 +1251,7 @@ const PERI_CAMPOS_ALUNO=[
 ];
 
 async function renderEvolucao() {
+  renderFotosEvo();
   if (!sessoes.length) {
     sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
   }
@@ -1866,6 +1900,107 @@ async function setupPush(reg) {
       body: JSON.stringify({ aluno_id: ALUNO_ID, subscription: sub.toJSON() })
     });
   } catch(e) {}
+}
+
+// ── FOTOS EVOLUÇÃO ──
+let _fotoAngle = 'frente';
+
+function openAngleSheet() {
+  document.getElementById('angle-sheet').style.display = 'flex';
+}
+function closeAngleSheet() {
+  document.getElementById('angle-sheet').style.display = 'none';
+}
+function selectFotoAngle(angle) {
+  _fotoAngle = angle;
+  closeAngleSheet();
+  document.getElementById('foto-input').click();
+}
+
+async function compressImg(file, maxW = 1200) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = img.width * scale; c.height = img.height * scale;
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(resolve, 'image/jpeg', 0.82);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function uploadFotoEvo(input) {
+  const file = input.files[0]; if (!file) return;
+  input.value = '';
+  const grid = document.getElementById('fotos-evo-grid');
+  grid.innerHTML = '<div class="empty">A enviar foto...</div>';
+  const blob = await compressImg(file);
+  const date = new Date().toISOString().split('T')[0];
+  const path = `${ALUNO_ID}/${date}_${_fotoAngle}_${Date.now()}.jpg`;
+  try {
+    const r = await fetch(`${SB_URL}/storage/v1/object/fotos-evolucao/${path}`, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'image/jpeg' },
+      body: blob
+    });
+    if (!r.ok) { toast('Erro ao enviar foto'); }
+  } catch(e) { toast('Erro ao enviar foto'); }
+  await renderFotosEvo();
+}
+
+async function deletarFotoEvo(path, e) {
+  e.stopPropagation();
+  if (!confirm('Apagar esta foto?')) return;
+  await fetch(`${SB_URL}/storage/v1/object/fotos-evolucao/${path}`, {
+    method: 'DELETE',
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY }
+  });
+  await renderFotosEvo();
+}
+
+async function renderFotosEvo() {
+  const grid = document.getElementById('fotos-evo-grid');
+  grid.innerHTML = '<div class="empty" style="grid-column:1/-1">A carregar...</div>';
+  try {
+    const r = await fetch(`${SB_URL}/storage/v1/object/list/fotos-evolucao`, {
+      method: 'POST',
+      headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prefix: ALUNO_ID + '/', limit: 100, offset: 0 })
+    });
+    if (!r.ok) { grid.innerHTML = ''; return; }
+    const files = await r.json();
+    if (!Array.isArray(files) || !files.length) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1;font-size:13px">Sem fotos ainda.</div>';
+      return;
+    }
+    files.sort((a, b) => b.name.localeCompare(a.name));
+    grid.innerHTML = files.map(f => {
+      const url = `${SB_URL}/storage/v1/object/public/fotos-evolucao/${ALUNO_ID}/${f.name}`;
+      const parts = f.name.split('_');
+      const lbl = (parts[1] || '').charAt(0).toUpperCase() + (parts[1] || '').slice(1);
+      const dateStr = parts[0] || '';
+      const fullPath = `${ALUNO_ID}/${f.name}`;
+      return `<div>
+        <div class="foto-thumb" onclick="openFotoLightbox('${url}','${lbl} · ${formatDate(dateStr)}')">
+          <img src="${url}" loading="lazy">
+          <button class="foto-del" onclick="deletarFotoEvo('${fullPath}',event)">×</button>
+        </div>
+        <div class="foto-lbl">${lbl}<br>${formatDate(dateStr)}</div>
+      </div>`;
+    }).join('');
+  } catch(e) { grid.innerHTML = ''; }
+}
+
+function openFotoLightbox(url, lbl) {
+  document.getElementById('foto-lb-img').src = url;
+  document.getElementById('foto-lb-lbl').textContent = lbl;
+  document.getElementById('foto-lightbox').style.display = 'flex';
+}
+function closeFotoLightbox() {
+  document.getElementById('foto-lightbox').style.display = 'none';
+  document.getElementById('foto-lb-img').src = '';
 }
 
 async function loadMsgsPT() {
