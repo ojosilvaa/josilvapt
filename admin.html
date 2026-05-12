@@ -718,6 +718,8 @@ const LANG={
     btn_salvar_ficha:'SALVAR FICHA',
     fb_topbar_sub:'RESPOSTAS DOS ALUNOS',fb_todos:'✓ TODOS',
     fb_nenhum:'Nenhum feedback dos alunos ainda.',fb_novo:'NOVO',fb_lido:'LIDO',fb_esforco:'Esforço: ',
+    fb_responder:'RESPONDER',fb_editar_resp:'EDITAR RESPOSTA',fb_enviar:'ENVIAR',
+    fb_resp_ph:'Escreve a tua resposta...',fb_resp_enviada:'RESPOSTA ENVIADA!',fb_resp_vazia:'ESCREVE UMA RESPOSTA!',
     cfg_title:'CONFIGURAÇÕES',cfg_sb_title:'SUPABASE',
     cfg_url_lbl:'URL do projeto',cfg_key_lbl:'Anon Key',
     cfg_base_title:'URL BASE DO SISTEMA',cfg_base_lbl:'URL base',btn_salvar_cfg:'SALVAR',
@@ -792,6 +794,8 @@ const LANG={
     btn_salvar_ficha:'SAVE PROFILE',
     fb_topbar_sub:'STUDENT RESPONSES',fb_todos:'✓ ALL',
     fb_nenhum:'No student feedback yet.',fb_novo:'NEW',fb_lido:'READ',fb_esforco:'Effort: ',
+    fb_responder:'REPLY',fb_editar_resp:'EDIT REPLY',fb_enviar:'SEND',
+    fb_resp_ph:'Write your reply...',fb_resp_enviada:'REPLY SENT!',fb_resp_vazia:'WRITE A REPLY!',
     cfg_title:'SETTINGS',cfg_sb_title:'SUPABASE',
     cfg_url_lbl:'Project URL',cfg_key_lbl:'Anon Key',
     cfg_base_title:'SYSTEM BASE URL',cfg_base_lbl:'Base URL',btn_salvar_cfg:'SAVE',
@@ -1387,6 +1391,17 @@ async function renderFeedbacks(){
         ${f.esforco?`<span class="badge badge-gray">${T('fb_esforco')}${f.esforco}</span>`:''}
       </div>
       ${f.mensagem?`<div style="font-size:14px;color:#bbb;line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${f.mensagem}"</div>`:''}
+      ${f.resposta?`<div style="margin-top:12px;padding:10px 12px;background:rgba(93,202,154,.08);border-left:3px solid var(--green);border-radius:0 var(--radius-sm) var(--radius-sm) 0"><div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:2px;margin-bottom:6px">PERSONAL</div><div style="font-size:13px;color:#ccc;line-height:1.55">${f.resposta}</div></div>`:''}
+      <div style="margin-top:12px" onclick="event.stopPropagation()">
+        <button onclick="toggleResposta('${f.id}')" style="background:none;border:1.5px solid ${f.resposta?'var(--green)':'var(--border2)'};color:${f.resposta?'var(--green)':'var(--muted)'};font-size:12px;letter-spacing:2px;padding:7px 16px;border-radius:var(--radius-sm);font-family:'Bebas Neue',sans-serif">${f.resposta?T('fb_editar_resp'):T('fb_responder')}</button>
+      </div>
+      <div id="resp-area-${f.id}" style="display:none;margin-top:12px" onclick="event.stopPropagation()">
+        <textarea id="resp-txt-${f.id}" placeholder="${T('fb_resp_ph')}" style="width:100%;background:var(--bg3);border:1.5px solid var(--border2);color:var(--text);padding:12px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;resize:none;min-height:80px;outline:none;line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">${(f.resposta||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button onclick="enviarResposta('${f.id}','${f.aluno_id}')" style="background:var(--green);color:#080808;border:none;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 0;border-radius:var(--radius-sm);flex:1;cursor:pointer">${T('fb_enviar')}</button>
+          <button onclick="toggleResposta('${f.id}')" style="background:var(--bg4);color:var(--muted);border:1px solid var(--border2);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer">${T('btn_cancelar')}</button>
+        </div>
+      </div>
     </div>`).join('');
 }
 
@@ -1398,6 +1413,32 @@ async function markLido(id){
 async function marcarTodosLidos(){
   await sbFetch('feedbacks?lido=eq.false',{method:'PATCH',body:JSON.stringify({lido:true})});
   toast(T('t_todos_lidos'));
+  renderFeedbacks();
+}
+
+function toggleResposta(id){
+  const area=document.getElementById('resp-area-'+id);
+  if(!area)return;
+  const open=area.style.display==='none';
+  area.style.display=open?'block':'none';
+  if(open){const ta=document.getElementById('resp-txt-'+id);if(ta)ta.focus();}
+}
+
+async function enviarResposta(id,alunoId){
+  const ta=document.getElementById('resp-txt-'+id);
+  if(!ta)return;
+  const resposta=ta.value.trim();
+  if(!resposta){toast(T('fb_resp_vazia'));return;}
+  const ok=await sbFetch(`feedbacks?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({resposta,resposta_em:new Date().toISOString(),lido:true})});
+  if(!ok){toast(T('t_conn_err'));return;}
+  try{
+    await fetch(SB_URL+'/functions/v1/send-push',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(getToken()||SB_KEY),'apikey':SB_KEY},
+      body:JSON.stringify({aluno_id:alunoId,title:'Jo Silva PT',body:resposta.substring(0,100)})
+    });
+  }catch(e){}
+  toast(T('fb_resp_enviada'));
   renderFeedbacks();
 }
 

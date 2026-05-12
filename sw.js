@@ -1,8 +1,9 @@
-const CACHE_NAME = 'josilvaPT-v5';
+const CACHE_NAME = 'josilvaPT-v6';
 const CACHE_FILES = [
   './',
   './aluno.html',
   './admin.html',
+  './logo.jpg',
   './icon-192.png',
   './icon-512.png',
   './manifest.json',
@@ -52,5 +53,32 @@ self.addEventListener('fetch', e => {
         return res;
       })
       .catch(() => caches.match(e.request))
+  );
+});
+
+self.addEventListener('push', e => {
+  if (!e.data) return;
+  let data;
+  try { data = e.data.json(); } catch(ex) { data = { title: 'Jo Silva PT', body: e.data.text() }; }
+  e.waitUntil(
+    self.registration.showNotification(data.title || 'Jo Silva PT', {
+      body: data.body || '',
+      icon: './icon-192.png',
+      badge: './icon-192.png',
+      vibrate: [200, 100, 200],
+      tag: 'pt-resposta'
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if (c.url.includes('aluno.html') && 'focus' in c) return c.focus();
+      }
+      return clients.openWindow('./aluno.html');
+    })
   );
 });
