@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Meu Treino · Jo Silva PT</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#C8A96E">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Jo Silva PT">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --radius:14px;--radius-sm:10px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --t:.28s;
+  /* defaults = Dourado escuro */
+  --accent:#C8A96E;--accent2:#8a7449;--accent3:rgba(200,169,110,.12);
+  --bg:#080808;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222;
+  --border:#1e1e1e;--border2:#2a2a2a;
+  --text:#f0f0f0;--muted:#555;--dim:#333;
+  --green:#5DCA9A;--red:#e05555;
+  --display:'Bebas Neue',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --letter-display:2px;
+  --gold:var(--accent);--gold2:var(--accent2);--gold3:var(--accent3);
+}
+[data-theme="gold"][data-mode="light"]{
+  --bg:#faf8f4;--bg2:#fff;--bg3:#f3efe6;--bg4:#e9e2d2;
+  --border:#e5dfd0;--border2:#d6cdb6;
+  --text:#1a1612;--muted:#8a7e63;--dim:#bdb29a;
+  --accent:#8a7449;--accent2:#6b5836;--accent3:rgba(138,116,73,.1);
+}
+[data-theme="arcade"]{
+  --accent:#a3ff12;--accent2:#7ed500;--accent3:rgba(163,255,18,.14);
+  --bg:#070a05;--bg2:#0e120a;--bg3:#161c10;--bg4:#1f2716;
+  --border:#1c2415;--border2:#2a3520;
+  --text:#eaffd6;--muted:#5d6e44;--dim:#3a4628;
+  --display:'Space Grotesk',sans-serif;--letter-display:0px;
+}
+[data-theme="arcade"][data-mode="light"]{
+  --bg:#f6fae8;--bg2:#fff;--bg3:#eef5d4;--bg4:#dfeab8;
+  --border:#dde7c0;--border2:#c7d49d;
+  --text:#1a2210;--muted:#6b7d4e;--dim:#a8b986;
+  --accent:#4e7a00;--accent2:#365400;--accent3:rgba(78,122,0,.1);
+}
+[data-theme="editorial"]{
+  --accent:#c44536;--accent2:#8e2f25;--accent3:rgba(196,69,54,.1);
+  --bg:#0f0d0b;--bg2:#171411;--bg3:#1f1b17;--bg4:#27221c;
+  --border:#241f1a;--border2:#332b24;
+  --text:#f4ece0;--muted:#7a6f60;--dim:#4a4036;
+  --display:'Fraunces',serif;--body:'Inter',sans-serif;--letter-display:0px;
+}
+[data-theme="editorial"][data-mode="light"]{
+  --bg:#fbf6ee;--bg2:#fff;--bg3:#f3ebdc;--bg4:#e8ddc6;
+  --border:#e6dcc6;--border2:#d2c4a6;
+  --text:#241c12;--muted:#7d6e58;--dim:#b3a386;
+  --accent:#8e2f25;--accent2:#5e1f18;--accent3:rgba(142,47,37,.1);
+}
+html,body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;transition:background var(--t),color var(--t)}
+button,input,select,textarea{font-family:var(--body)}
+button{cursor:pointer;border:none;background:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb, var(--bg) 92%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:var(--display);font-size:20px;color:var(--accent);letter-spacing:3px}
+.aluno-nome{font-size:13px;color:var(--muted);font-weight:500}
+.theme-toggle{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform var(--t)}
+.theme-toggle:active{transform:scale(.9)}
+.theme-dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent3)}
+.tema-sheet{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
+.tema-sheet.open{display:flex;animation:fadeUp .25s ease}
+.tema-card{background:var(--bg2);border-top:1px solid var(--border);border-radius:24px 24px 0 0;width:100%;max-width:600px;padding:22px 18px calc(24px + var(--safe-bottom));animation:slideUp .35s cubic-bezier(.4,0,.2,1)}
+.tema-title{font-family:var(--display);font-size:20px;letter-spacing:var(--letter-display);color:var(--text);margin-bottom:12px;text-transform:uppercase}
+.tema-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.tema-mode{display:flex;gap:8px}
+.tema-mode .tema-opt{flex:1}
+.tema-opt{background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:14px 8px;color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all var(--t);font-family:var(--body);font-weight:500}
+.tema-opt.active{border-color:var(--accent);color:var(--accent);background:var(--accent3)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(8,8,8,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #151515;display:flex;padding-bottom:var(--safe-bottom)}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;color:var(--dim);font-size:10px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;position:relative}
+.bnav-item.active{color:var(--gold)}
+.bnav-item.active::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
+.bnav-icon{font-size:20px;line-height:1}
+
+/* ── SCREENS ── */
+.screen{display:none;padding-bottom:calc(72px + var(--safe-bottom))}
+.screen.active{display:block;animation:screenIn .35s cubic-bezier(.4,0,.2,1)}
+
+/* ── PAGE CONTENT ── */
+.page-content{padding:16px;max-width:600px;margin:0 auto}
+
+/* ── HERO GREETING ── */
+.hero{padding:24px 18px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hero-greeting{font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#fff;letter-spacing:2px;line-height:1}
+.hero-sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* ── TREINO SELECTOR ── */
+.treino-selector{display:flex;gap:8px;padding:14px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid var(--border)}
+.treino-selector::-webkit-scrollbar{display:none}
+.ttab{background:var(--bg3);border:1.5px solid var(--border);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:8px 16px;border-radius:30px;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.ttab.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
+
+/* ── TREINO HEADER ── */
+.treino-header{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.treino-dia{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.treino-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;letter-spacing:1px;line-height:1.1}
+.treino-count{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* ── EXERCICIO CARD ── */
+.ex-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.ex-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .25s,transform .15s}
+.ex-card:active{transform:scale(.99)}
+.ex-card.done{border-color:var(--green)}
+.ex-card-top{display:flex;align-items:flex-start;gap:12px;padding:14px}
+.ex-number{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1;min-width:36px}
+.ex-card.done .ex-number{color:var(--green)}
+.ex-body{flex:1}
+.ex-name{font-size:16px;font-weight:600;color:var(--text);line-height:1.2}
+.ex-obs{font-size:12px;color:var(--muted);margin-top:3px;font-style:italic}
+.ex-pills{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.pill{background:var(--bg3);border:1px solid #252525;border-radius:20px;padding:3px 8px;font-size:10px;color:#777}
+.pill-done{background:rgba(93,202,154,.08);border-color:rgba(93,202,154,.2);color:var(--green)}
+.pill strong{color:var(--text);font-weight:600}
+.ex-check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;flex-shrink:0;transition:all .2s}
+.ex-card.done .ex-check{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ── CARGA INPUT ── */
+.ex-carga{display:flex;align-items:center;gap:0;background:var(--bg3);border-top:1px solid var(--border);padding:10px 14px}
+.carga-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;flex:1}
+.carga-ctrl{display:flex;align-items:center;gap:10px}
+.carga-btn{width:28px;height:28px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:17px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.carga-btn:active{background:var(--gold);color:#080808;border-color:var(--gold)}
+.carga-value{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);min-width:70px;text-align:center;line-height:1}
+.carga-kg{font-size:12px;color:var(--muted)}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{padding:0 16px 14px}
+.progress-bar{height:3px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#8a7449,#C8A96E);border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.progress-text{font-size:11px;color:var(--muted);margin-top:6px;text-align:right}
+
+/* ── REGISTER BTN ── */
+.register-wrap{padding:16px}
+.btn-register{width:100%;background:var(--gold);color:#080808;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;padding:16px;border-radius:var(--radius);transition:opacity .2s}
+.btn-register:active{opacity:.8}
+.btn-register:disabled{opacity:.4}
+
+/* ── SUCCESS BANNER ── */
+.success-banner{background:rgba(93,202,154,.1);border:1.5px solid var(--green);border-radius:var(--radius);padding:16px;margin:16px;display:flex;align-items:center;gap:12px;display:none}
+.success-icon{font-size:28px}
+.success-text{font-size:14px;color:var(--green);font-weight:500}
+.success-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:#111;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+
+/* ── MINI RING ── */
+.treino-header-inner{display:flex;align-items:center;gap:14px}
+.treino-header-info{flex:1;min-width:0}
+.mini-ring-track{fill:none;stroke:#1e1e1e;stroke-width:5}
+.mini-ring-glow{fill:none;stroke:#C8A96E;stroke-width:5;opacity:.15}
+.mini-ring-fill{fill:none;stroke:url(#miniGrad);stroke-width:5;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:138;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)}
+.mini-ring-pct{font-family:'Bebas Neue',sans-serif;fill:#C8A96E;font-size:10px;text-anchor:middle;dominant-baseline:middle}
+
+/* ── CHART ── */
+.chart-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.chart-sel{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:12px 14px;border-radius:var(--radius-sm);font-size:14px;outline:none;margin-bottom:14px;-webkit-appearance:none}
+.chart-sel:focus{border-color:var(--gold)}
+
+/* ── HIST ITEMS ── */
+.hist-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.hist-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+.hist-item:last-child{border-bottom:none}
+.hist-nome{font-size:14px;font-weight:500;color:var(--text)}
+.hist-data{font-size:12px;color:var(--muted);margin-top:2px}
+.hist-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)}
+.hist-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-right:4px}
+
+/* ── ORIENTAÇÕES ── */
+.personal-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;text-align:center}
+.personal-av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#C8A96E,#8a7449);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#080808;margin:0 auto 12px}
+.personal-nome{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:2px}
+.personal-cargo{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+.personal-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.contact-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:10px 18px;border-radius:var(--radius-sm);text-decoration:none;transition:all .2s}
+.contact-btn:active{background:var(--gold);color:#080808}
+
+.orient-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;border-left:3px solid var(--gold)}
+.orient-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:8px}
+.orient-text{font-size:14px;color:#bbb;line-height:1.65}
+.orient-text strong{color:#fff;font-weight:600}
+
+/* ── EMPTY / LOADING ── */
+.empty{padding:48px 20px;text-align:center;color:var(--muted);font-size:14px}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.loading{padding:48px 20px;text-align:center;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(80px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--gold);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:12px 24px;border-radius:30px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── SEC TITLE ── */
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:2px;margin-bottom:12px}
+
+/* ── PWA INSTALL BANNER ── */
+.install-banner{position:fixed;bottom:calc(72px + var(--safe-bottom));left:12px;right:12px;z-index:300;background:var(--bg2);border:1.5px solid var(--gold);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:slideUp .4s ease}
+.install-banner-icon{font-size:28px;flex-shrink:0}
+.install-banner-text{flex:1}
+.install-banner-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:1px}
+.install-banner-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.install-banner-btns{display:flex;gap:8px;flex-shrink:0}
+.install-btn{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:8px 12px;border-radius:8px;cursor:pointer}
+.install-btn-yes{background:var(--gold);color:#080808;border:none}
+.install-btn-no{background:none;border:1px solid var(--border2);color:var(--muted)}
+
+/* ── FEEDBACK MODAL ── */
+.fb-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center}
+.fb-sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:24px 20px;padding-bottom:calc(24px + var(--safe-bottom));max-height:88vh;overflow-y:auto}
+.fb-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);letter-spacing:3px;text-align:center;margin-bottom:4px}
+.fb-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:22px}
+.fb-section{margin-bottom:18px}
+.fb-label{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:10px}
+.fb-stars{display:flex;justify-content:center;gap:10px}
+.fb-star{font-size:38px;cursor:pointer;color:var(--dim);transition:all .15s;line-height:1;user-select:none;-webkit-user-select:none}
+.fb-star.on{color:var(--gold)}
+.fb-star:active{transform:scale(1.25)}
+.fb-humor{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.humor-btn{background:none;border:2px solid var(--border);border-radius:50%;width:54px;height:54px;font-size:26px;transition:all .2s;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.humor-btn.active{border-color:var(--gold);background:var(--gold3);transform:scale(1.1)}
+.fb-esforco{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.esforco-chip{background:var(--bg3);border:1.5px solid var(--border2);color:var(--muted);font-size:13px;padding:8px 16px;border-radius:30px;transition:all .2s;cursor:pointer}
+.esforco-chip.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
+.fb-actions{display:flex;gap:10px;margin-top:6px}
+
+/* ── NUTRIÇÃO ── */
+.nutri-day{display:flex;align-items:center;gap:16px;background:#111;border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px}
+.nutri-ring-track{fill:none;stroke:#1e1e1e;stroke-width:8}
+.nutri-ring-glow{fill:none;stroke:var(--green);stroke-width:8;opacity:.12}
+.nutri-ring-fill{fill:none;stroke:var(--green);stroke-width:8;stroke-linecap:round;stroke-dasharray:264;stroke-dashoffset:264;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)}
+.nutri-ring-text{font-family:'Bebas Neue',sans-serif;fill:#5DCA9A;font-size:18px;text-anchor:middle;dominant-baseline:middle}
+.nutri-ring-sub{fill:#555;font-size:9px;text-anchor:middle;dominant-baseline:middle}
+.nutri-macros{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.macro-item{text-align:center}
+.macro-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold)}
+.macro-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.ntab-wrap{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.ntab{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:var(--muted);padding:12px 16px;border-bottom:2px solid transparent;background:none;transition:color .2s}
+.ntab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.refei-card{background:#111;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.refei-hora{font-size:11px;color:var(--muted);letter-spacing:1px;flex-shrink:0;padding-top:2px}
+.refei-info{flex:1;min-width:0}
+.refei-descr{font-size:14px;color:var(--text);font-weight:500;line-height:1.3}
+.refei-macros-mini{font-size:11px;color:var(--muted);margin-top:4px}
+.refei-kcal{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--green);flex-shrink:0;align-self:center}
+.refei-tipo{font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--gold);letter-spacing:1.5px;margin-bottom:2px}
+.btn-add-refei{width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--gold);background:none;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.btn-add-refei:active{background:var(--gold);color:#080808}
+
+/* ── REGISTO MANUAL REFEIÇÃO ── */
+.add-refei-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center}
+.add-refei-sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:20px 18px;padding-bottom:calc(20px + var(--safe-bottom));max-height:93vh;overflow-y:auto}
+.add-refei-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:14px}
+.meal-tipos{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;margin-bottom:16px}
+.meal-tipos::-webkit-scrollbar{display:none}
+.meal-tipo-btn{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;padding:9px 14px;border-radius:30px;border:1.5px solid var(--border2);background:var(--bg3);color:var(--muted);white-space:nowrap;flex-shrink:0;transition:all .2s}
+.meal-tipo-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gold3)}
+.draft-section{background:var(--bg3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px}
+.draft-section-hdr{font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.draft-item{padding:8px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px}
+.draft-item:last-child{border-bottom:none}
+.draft-item-nome{font-size:13px;color:var(--text);font-weight:600;line-height:1.2}
+.draft-item-ctrl{display:flex;align-items:center;gap:7px}
+.gram-btn{width:28px;height:28px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;transition:background .15s}
+.gram-btn:active{background:var(--gold);color:#080808;border-color:var(--gold)}
+.gram-inp{width:58px;background:var(--bg);border:1.5px solid var(--border);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:22px;text-align:center;border-radius:8px;padding:3px 0;outline:none;-webkit-appearance:none;-moz-appearance:textfield}
+.gram-inp:focus{border-color:var(--gold)}
+.gram-inp::-webkit-inner-spin-button,.gram-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.draft-item-kcal{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--muted);margin-left:auto}
+.draft-del{color:var(--dim);font-size:16px;padding:4px;line-height:1;flex-shrink:0}
+.draft-del:active{color:var(--red)}
+.meal-totals-bar{background:rgba(93,202,154,.06);border:1.5px solid rgba(93,202,154,.2);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;display:none}
+.totals-kcal{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--green);line-height:1}
+.totals-macros{display:flex;gap:16px;margin-top:5px;font-size:13px;color:var(--muted)}
+.totals-macros strong{color:var(--text)}
+.food-search-wrap{position:relative;margin-bottom:12px}
+.food-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+.food-search-inp{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:11px 14px 11px 36px;font-size:14px;border-radius:var(--radius-sm);outline:none;-webkit-appearance:none}
+.food-search-inp:focus{border-color:var(--gold)}
+.food-section-hdr{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px}
+.food-list-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(30,30,30,.7);cursor:pointer}
+.food-list-item:last-child{border-bottom:none}
+.food-item-info{flex:1;min-width:0}
+.food-item-nome{font-size:14px;color:var(--text);font-weight:500}
+.food-item-hint{font-size:11px;color:var(--dim);margin-top:2px}
+.food-add-btn{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);color:var(--gold);font-size:19px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;line-height:1}
+.food-add-btn.added{background:rgba(93,202,154,.1);border-color:var(--green);color:var(--green);font-size:13px}
+.btn-guardar-refei{width:100%;padding:16px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;margin-top:10px;transition:opacity .2s}
+.btn-guardar-refei:active{opacity:.8}
+
+/* ── SUGESTÃO DE REFEIÇÃO ── */
+.sug-meta-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.sug-meta-obj{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.sug-meta-kcal{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--green);line-height:1}
+.sug-meta-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.sug-meta-badge{background:rgba(93,202,154,.1);border:1px solid rgba(93,202,154,.25);border-radius:20px;padding:7px 14px;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--green);letter-spacing:1px;flex-shrink:0}
+.sug-grupo{margin-bottom:16px}
+.sug-grupo-titulo{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sug-check-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(30,30,30,.7);cursor:pointer}
+.sug-check-item:last-child{border-bottom:none}
+.sug-check-item input[type=checkbox]{width:20px;height:20px;border-radius:5px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+.sug-alim-nome{flex:1;font-size:14px;color:var(--text)}
+.sug-alim-hint{font-size:11px;color:var(--dim);white-space:nowrap}
+.btn-gerar-sug{width:100%;padding:16px;border-radius:var(--radius);background:var(--gold);border:none;color:#080808;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;margin-top:6px;transition:opacity .2s}
+.btn-gerar-sug:active{opacity:.8}
+.sug-result-card{background:rgba(93,202,154,.05);border:1.5px solid rgba(93,202,154,.22);border-radius:var(--radius);padding:16px;margin-top:20px;animation:fadeUp .35s ease}
+.sug-result-title{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--green);letter-spacing:2px;margin-bottom:14px}
+.sug-ingredient{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(93,202,154,.1)}
+.sug-ingredient:last-child{border-bottom:none}
+.sug-ing-nome{font-size:14px;color:var(--text);font-weight:500}
+.sug-ing-grams{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold)}
+.sug-ing-grams span{font-size:12px;color:var(--muted);margin-left:2px}
+.sug-total-kcal{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--green);text-align:center;margin-top:14px;line-height:1}
+.sug-total-row{display:flex;justify-content:space-between;gap:8px;margin-top:10px;padding-top:12px;border-top:1px solid rgba(93,202,154,.2)}
+.sug-total-item{text-align:center;flex:1}
+/* ──────────────────────────────────────────────────────────
+   APPLE HEALTH REFRESH (overrides — pure black, glass, Inter)
+   ────────────────────────────────────────────────────────── */
+:root,
+[data-theme="gold"][data-mode="dark"]{
+  --bg:#000; --bg2:rgba(255,255,255,.04); --bg3:rgba(255,255,255,.06); --bg4:rgba(255,255,255,.10);
+  --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --text:#fff; --muted:rgba(255,255,255,.6); --dim:rgba(255,255,255,.32);
+  --green:#5FE3D3;
+  --radius:18px; --radius-sm:14px;
+  --display:'Inter',sans-serif;
+  --body:'Inter',sans-serif;
+  --letter-display:-.02em;
+}
+html,body{font-family:'Inter','DM Sans',sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'ss01','cv11'}
+button,input,select,textarea{font-family:inherit}
+
+/* TOPBAR ---------------------------- */
+.topbar{padding:10px 18px 12px;background:rgba(0,0,0,.65);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.brand{font-family:'Inter',sans-serif;font-weight:800;font-size:12px;letter-spacing:.2em;color:var(--gold)}
+.topbar-r{display:flex;align-items:center;gap:14px}
+.aluno-nome{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:-.01em}
+.lang-toggle{display:flex;gap:6px;font-family:'JetBrains Mono','SF Mono',ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.04em;align-items:center}
+.lang-toggle span{color:var(--dim);cursor:pointer;transition:color .2s;padding:2px 1px}
+.lang-toggle span.on{color:var(--gold)}
+.lang-sep{color:var(--dim);opacity:.5;cursor:default}
+.color-picker{display:flex;gap:6px;align-items:center}
+.color-swatch{width:14px;height:14px;border-radius:50%;background:var(--c);border:1.5px solid rgba(255,255,255,.18);cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;padding:0}
+.color-swatch:hover{transform:scale(1.1);border-color:rgba(255,255,255,.38)}
+.color-swatch.on{border-color:#fff;transform:scale(1.2);box-shadow:0 0 10px var(--c)}
+
+/* HERO + TREINO -------------------- */
+.hero{padding:18px 22px 14px;background:transparent;border-bottom:1px solid var(--border)}
+.hero-greeting{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;font-weight:600;color:var(--dim);text-transform:uppercase}
+.hero-name{font-family:'Inter',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.025em;color:#fff;line-height:1.05}
+.hero-sub{font-size:13px;color:var(--muted);font-weight:500;letter-spacing:-.005em}
+.treino-header{padding:18px 22px 16px;border-bottom:1px solid var(--border)}
+.treino-dia{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;font-weight:600;color:var(--dim)}
+.treino-title{font-family:'Inter',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;color:#fff}
+.treino-count{font-size:13px;color:var(--muted);font-weight:500}
+
+/* TTABS ---------------------------- */
+.treino-selector{padding:14px 18px}
+.ttab{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;letter-spacing:-.005em;text-transform:none;padding:9px 14px;background:rgba(255,255,255,.04);border-color:var(--border);border-width:1px}
+.ttab.active{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 0 20px var(--accent3)}
+
+/* EXERCISE CARD -------------------- */
+.ex-list{padding:14px 16px}
+.ex-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.ex-card.done{border-color:var(--green);background:rgba(95,227,211,.05)}
+.ex-card.done::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);box-shadow:0 0 12px rgba(95,227,211,.5)}
+.ex-number{font-family:'Inter',sans-serif;font-weight:700;letter-spacing:-.02em;font-size:26px;color:var(--gold);min-width:38px}
+.ex-card.done .ex-number{color:var(--green)}
+.ex-name{font-family:'Inter',sans-serif;font-weight:700;letter-spacing:-.015em;font-size:15px}
+.ex-obs{font-size:12px;color:var(--dim);font-style:italic;font-weight:500}
+.ex-check{border-color:var(--border2)}
+.pill{background:rgba(255,255,255,.06);border-color:var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--muted);padding:4px 8px}
+.pill strong{color:#fff;font-weight:700}
+.ex-carga{background:rgba(255,255,255,.04);border-top:1px solid var(--border);padding:12px 16px}
+.carga-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;font-weight:600;color:var(--dim)}
+.carga-btn{border-radius:10px;background:rgba(255,255,255,.08);border:1px solid var(--border2);font-weight:600;width:32px;height:32px;font-size:18px;color:#fff}
+.carga-btn:active{background:var(--gold);color:#000;border-color:var(--gold);transform:scale(.92)}
+.carga-value{font-family:'Inter',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--gold);font-feature-settings:'tnum'}
+.carga-kg{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--dim);letter-spacing:0}
+
+/* REGISTER BTN --------------------- */
+.register-wrap{padding:18px 16px}
+.btn-register{font-family:'Inter',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.005em;border-radius:16px;padding:17px;text-transform:none;background:var(--gold);color:#000}
+.btn-register:disabled{background:rgba(255,255,255,.06);color:var(--dim);opacity:1}
+.btn-register:not(:disabled){box-shadow:0 0 30px var(--accent3)}
+
+/* BOTTOM NAV ----------------------- */
+.bottom-nav{background:rgba(0,0,0,.78);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);border-top:1px solid var(--border)}
+.bnav-item{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--dim);padding:10px 4px 8px}
+.bnav-item.active{color:var(--gold)}
+.bnav-item.active::after{content:'';position:absolute;top:4px;bottom:auto;left:50%;transform:translateX(-50%);width:20px;height:3px;border-radius:2px;background:var(--gold);box-shadow:0 0 12px var(--accent3)}
+.bnav-icon{font-size:18px}
+
+/* STATS / CARDS / CHARTS ----------- */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;backdrop-filter:blur(20px)}
+.stat-val{font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-.025em;font-size:26px;color:var(--gold);font-feature-settings:'tnum'}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;font-weight:600;color:var(--dim);text-transform:uppercase}
+.chart-wrap{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(20px)}
+.chart-sel{background:rgba(255,255,255,.06);border:1px solid var(--border);font-family:'Inter';font-size:14px;font-weight:500;border-radius:10px}
+.sec-title{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+
+/* HISTORY ROWS --------------------- */
+.hist-nome{font-family:'Inter';font-weight:600;font-size:14px;letter-spacing:-.01em}
+.hist-data{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.04em}
+.hist-val{font-family:'Inter';font-weight:700;letter-spacing:-.02em;font-size:18px;color:var(--gold);font-feature-settings:'tnum'}
+.hist-dot{background:var(--gold)}
+
+/* ORIENTAÇÕES ---------------------- */
+.personal-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(20px)}
+.personal-nome{font-family:'Inter';font-weight:800;letter-spacing:-.015em;font-size:22px}
+.personal-cargo{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;font-weight:600;color:var(--dim)}
+.contact-btn{font-family:'Inter';font-weight:600;font-size:12px;letter-spacing:-.005em;text-transform:none;border-radius:10px;padding:9px 14px;border-width:1px}
+.orient-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:18px;backdrop-filter:blur(20px)}
+.orient-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;font-weight:700;color:var(--gold)}
+.orient-text{font-family:'Inter';font-size:13px;font-weight:500;color:var(--muted);line-height:1.55}
+.orient-text strong{color:#fff;font-weight:700}
+
+/* TOAST ---------------------------- */
+.toast{background:rgba(0,0,0,.85);backdrop-filter:blur(20px);border:1px solid var(--gold);font-family:'Inter';font-weight:700;font-size:14px;letter-spacing:-.01em;color:var(--gold);border-radius:14px;padding:12px 18px}
+
+/* MINI RING (workout progress) ----- */
+.mini-ring-track{stroke:rgba(255,255,255,.08)}
+.mini-ring-glow{stroke:var(--gold);opacity:.18}
+.mini-ring-fill{stroke:var(--gold);filter:drop-shadow(0 0 6px var(--accent3))}
+.mini-ring-pct{font-family:'Inter',sans-serif;font-weight:800;fill:var(--gold);font-size:11px}
+
+/* INSTALL BANNER + FEEDBACK MODAL -- */
+.install-banner{background:rgba(255,255,255,.06);border:1px solid var(--gold);border-radius:18px;backdrop-filter:blur(20px)}
+.install-banner-title{font-family:'Inter';font-weight:700;letter-spacing:-.01em}
+.install-btn{font-family:'Inter';font-weight:700;font-size:12px;letter-spacing:-.005em;text-transform:none;border-radius:10px}
+.fb-sheet{background:rgba(20,20,22,.95);backdrop-filter:blur(28px);border-radius:24px 24px 0 0;border-top:1px solid var(--border)}
+.fb-title{font-family:'Inter';font-weight:800;letter-spacing:-.015em;font-size:22px;text-transform:none}
+.humor-btn{border-radius:18px;border:1px solid var(--border2)}
+.humor-btn.active{background:var(--accent3);border-color:var(--gold)}
+.esforco-chip{font-family:'Inter';font-weight:500;font-size:13px;letter-spacing:-.005em;border-radius:18px;padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
+.esforco-chip.active{background:var(--accent3);border-color:var(--gold);color:var(--gold)}
+
+/* NUTRIÇÃO ------------------------- */
+.nutri-day{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(20px)}
+.macro-val{font-family:'Inter';font-weight:800;letter-spacing:-.025em;font-size:20px;font-feature-settings:'tnum'}
+.macro-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;font-weight:600}
+.ntab{font-family:'Inter';font-weight:600;font-size:13px;letter-spacing:-.005em;text-transform:none;border-bottom-width:2px}
+.refei-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(20px)}
+.refei-hora{font-family:'JetBrains Mono',monospace;font-weight:600;letter-spacing:.04em}
+.refei-kcal{font-family:'Inter';font-weight:800;letter-spacing:-.025em;font-feature-settings:'tnum'}
+.refei-tipo{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;font-weight:600}
+.btn-add-refei{font-family:'Inter';font-weight:700;letter-spacing:-.005em;text-transform:none;border-radius:14px;font-size:14px}
+
+/* HIDE old theme bottom sheet if it leaks in */
+.tema-sheet{display:none !important}
+
+</style>
+</head>
+<body data-theme="gold" data-mode="dark">
+
+<!-- SVG DEFS GLOBAIS -->
+<svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
+  <defs>
+    <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8a7449"/>
+      <stop offset="100%" style="stop-color:#C8A96E"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">JO SILVA PT</div>
+  <div class="topbar-r">
+    <div class="lang-toggle">
+      <span id="lang-pt" onclick="setLang('pt')" class="on">PT</span>
+      <span class="lang-sep">|</span>
+      <span id="lang-en" onclick="setLang('en')">EN</span>
+    </div>
+    <div class="color-picker" role="radiogroup" aria-label="Esquema de cores">
+      <button class="color-swatch on" data-accent="gold"  style="--c:#FFD96B" aria-label="Dourado"></button>
+      <button class="color-swatch"     data-accent="green" style="--c:#5FE3D3" aria-label="Verde"></button>
+      <button class="color-swatch"     data-accent="red"   style="--c:#FF6B6B" aria-label="Vermelho"></button>
+      <button class="color-swatch"     data-accent="blue"  style="--c:#5FA8FF" aria-label="Azul"></button>
+    </div>
+    <div class="aluno-nome" id="aluno-nome-top">A carregar...</div>
+  </div>
+</div>
+
+<!-- ═══ TREINO ═══ -->
+<div id="screen-treino" class="screen active">
+  <div id="treino-hero" class="hero" style="display:none">
+    <div class="hero-greeting" data-i18n="greeting">Bom treino,</div>
+    <div class="hero-name" id="hero-name"></div>
+    <div class="hero-sub" id="hero-sub"></div>
+  </div>
+
+  <!-- Seletor de treinos -->
+  <div class="treino-selector" id="treino-selector" style="display:none"></div>
+
+  <!-- Header do treino ativo -->
+  <div id="treino-header" style="display:none">
+    <div class="treino-header">
+      <div class="treino-header-inner">
+        <svg width="56" height="56" viewBox="0 0 56 56" style="flex-shrink:0;overflow:visible">
+          <circle class="mini-ring-track" cx="28" cy="28" r="22"/>
+          <circle class="mini-ring-glow" cx="28" cy="28" r="22"/>
+          <circle class="mini-ring-fill" id="mini-ring-fill" cx="28" cy="28" r="22" transform="rotate(-90 28 28)"/>
+          <text class="mini-ring-pct" x="28" y="28" id="mini-ring-pct">0%</text>
+        </svg>
+        <div class="treino-header-info">
+          <div class="treino-dia" id="t-dia"></div>
+          <div class="treino-title" id="t-title"></div>
+          <div class="treino-count" id="t-count"></div>
+        </div>
+      </div>
+    </div>
+    <div class="progress-wrap" style="padding-top:12px">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="progress-text">0 de 0 exercícios concluídos</div>
+    </div>
+  </div>
+
+  <!-- Lista de exercícios -->
+  <div id="ex-list" class="ex-list"></div>
+
+  <!-- Banner de sucesso -->
+  <div class="success-banner" id="success-banner">
+    <div class="success-icon">🏆</div>
+    <div>
+      <div class="success-text" data-i18n="sessao_ok">Sessão registada!</div>
+      <div class="success-sub" data-i18n="sessao_ok_sub">Excelente trabalho. Até ao próximo treino!</div>
+    </div>
+  </div>
+
+  <!-- Botão registar -->
+  <div class="register-wrap" id="register-wrap" style="display:none">
+    <button class="btn-register" id="btn-register" onclick="registrar()" data-i18n="btn_registar">REGISTAR SESSÃO</button>
+  </div>
+
+  <!-- Loading / empty -->
+  <div id="treino-loading" class="loading" data-i18n="loading">A CARREGAR...</div>
+</div>
+
+<!-- ═══ EVOLUÇÃO ═══ -->
+<div id="screen-evolucao" class="screen" style="display:none">
+  <div class="page-content">
+    <div class="stats-row" id="evo-stats">
+      <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Sessões</div></div>
+      <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Semanas</div></div>
+      <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Dias</div></div>
+    </div>
+    <div class="chart-wrap">
+      <select class="chart-sel" id="evo-select" onchange="renderChart()">
+        <option value="" data-i18n="sel_exercicio">Selecione um exercício...</option>
+      </select>
+      <div style="position:relative;height:200px">
+        <canvas id="myChart" role="img" aria-label="Progressão de carga"></canvas>
+      </div>
+    </div>
+    <div class="sec-title" data-i18n="hist_treinos">HISTÓRICO DE TREINOS</div>
+    <div id="evo-hist"><div class="empty" data-i18n="sem_sessoes">Nenhuma sessão registada ainda.</div></div>
+  </div>
+</div>
+
+<!-- ═══ ORIENTAÇÕES ═══ -->
+<div id="screen-orientacoes" class="screen" style="display:none">
+  <div class="page-content">
+    <div class="personal-card">
+      <div class="personal-av">JS</div>
+      <div class="personal-nome">JO SILVA</div>
+      <div class="personal-cargo" data-i18n="personal_cargo">Personal Trainer</div>
+      <div class="personal-btns">
+        <a class="contact-btn" href="https://instagram.com/ojo.silva" target="_blank">📷 INSTAGRAM</a>
+        <a class="contact-btn" href="https://ojosilva.com" target="_blank">🌐 WEBSITE</a>
+      </div>
+    </div>
+
+    <div class="orient-card">
+      <div class="orient-title" data-i18n="orient_aquec">AQUECIMENTO</div>
+      <div class="orient-text" data-i18n-html="orient_aquec_txt">Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve com carga reduzida.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title" data-i18n="orient_descanso">DESCANSO ENTRE SÉRIES</div>
+      <div class="orient-text" data-i18n-html="orient_descanso_txt"><strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 seg.<br><strong>Isoladores e máquinas</strong>: 45–60 seg. Descanso longo esfria o estímulo.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title" data-i18n="orient_exec">EXECUÇÃO</div>
+      <div class="orient-text" data-i18n-html="orient_exec_txt">Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição deve ser difícil — se saiu fácil, sobe a carga.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title" data-i18n="orient_prog">PROGRESSÃO DE CARGA</div>
+      <div class="orient-text" data-i18n-html="orient_prog_txt">Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title" data-i18n="orient_reg">REGISTA AS CARGAS</div>
+      <div class="orient-text" data-i18n-html="orient_reg_txt">Sempre preenche as cargas no app antes de sair do ginásio. Sem registo, não há progressão — é simples assim.</div>
+    </div>
+    <div class="orient-card">
+      <div class="orient-title" data-i18n="orient_duvidas">DÚVIDAS</div>
+      <div class="orient-text" data-i18n-html="orient_duvidas_txt">Qualquer dúvida sobre execução, carga ou desconforto — chama no direct do <strong>Instagram @ojo.silva</strong>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" onclick="goScreen('treino')" id="nav-treino">
+    <span class="bnav-icon">◉</span><span data-i18n="nav_treino">Treino</span>
+  </button>
+  <button class="bnav-item" onclick="goScreen('evolucao')" id="nav-evolucao">
+    <span class="bnav-icon">↗</span><span data-i18n="nav_evolucao">Evolução</span>
+  </button>
+  <button class="bnav-item" onclick="goScreen('orientacoes')" id="nav-orientacoes">
+    <span class="bnav-icon">◎</span><span data-i18n="nav_dicas">Dicas</span>
+  </button>
+  <button class="bnav-item" onclick="goScreen('nutricao')" id="nav-nutricao">
+    <span class="bnav-icon">⊕</span><span data-i18n="nav_nutricao">Nutrição</span>
+  </button>
+</nav>
+
+
+<!-- ═══ NUTRIÇÃO ═══ -->
+<div id="screen-nutricao" class="screen" style="display:none">
+  <div class="page-content">
+
+    <!-- Resumo do dia -->
+    <div class="nutri-day">
+      <svg width="100" height="100" viewBox="0 0 100 100" style="flex-shrink:0">
+        <circle class="nutri-ring-track" cx="50" cy="50" r="42"/>
+        <circle class="nutri-ring-glow" id="nutri-ring-glow" cx="50" cy="50" r="42"/>
+        <circle class="nutri-ring-fill" id="nutri-ring-fill" cx="50" cy="50" r="42" transform="rotate(-90 50 50)"/>
+        <text class="nutri-ring-text" x="50" y="46" id="nutri-kcal-val">0</text>
+        <text class="nutri-ring-sub" x="50" y="60" id="nutri-kcal-meta">/ 2000 kcal</text>
+      </svg>
+      <div class="nutri-macros">
+        <div class="macro-item"><div class="macro-val" id="nutri-prot">—</div><div class="macro-lbl" data-i18n="macro_prot">Prot</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-carb">—</div><div class="macro-lbl" data-i18n="macro_carbo">Carbo</div></div>
+        <div class="macro-item"><div class="macro-val" id="nutri-gord">—</div><div class="macro-lbl" data-i18n="macro_gord">Gord</div></div>
+      </div>
+    </div>
+
+    <!-- Tabs Hoje / Histórico / Sugestão -->
+    <div class="ntab-wrap">
+      <button class="ntab active" id="ntab-hoje" onclick="nutriTab('hoje')" data-i18n="ntab_hoje">HOJE</button>
+      <button class="ntab" id="ntab-hist" onclick="nutriTab('hist')" data-i18n="ntab_hist">HISTÓRICO</button>
+      <button class="ntab" id="ntab-sug" onclick="nutriTab('sug')" data-i18n="ntab_sug">SUGESTÃO</button>
+    </div>
+
+    <div id="nutri-hoje-wrap">
+      <button class="btn-add-refei" onclick="openAddRefeiModal()" data-i18n="btn_add_refei">＋ REGISTAR REFEIÇÃO</button>
+      <div id="refeicoes-hoje"></div>
+    </div>
+    <div id="nutri-hist-wrap" style="display:none">
+      <div id="refeicoes-hist"></div>
+    </div>
+    <div id="nutri-sug-wrap" style="display:none">
+      <div id="sug-inventario"><div class="loading" data-i18n="loading">A CARREGAR...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MODAL REGISTO MANUAL REFEIÇÃO ═══ -->
+<div class="add-refei-modal" id="add-refei-modal">
+  <div class="add-refei-sheet">
+    <div class="add-refei-title" data-i18n="modal_refei">REGISTAR REFEIÇÃO</div>
+
+    <!-- Tipo de refeição -->
+    <div class="meal-tipos" id="meal-tipos"></div>
+
+    <!-- Itens da refeição atual -->
+    <div class="draft-section" id="draft-section">
+      <div class="draft-section-hdr" data-i18n="refei_actual">REFEIÇÃO ACTUAL</div>
+      <div id="meal-draft"></div>
+    </div>
+    <div class="meal-totals-bar" id="meal-totals-bar"></div>
+
+    <!-- Pesquisa + lista de alimentos -->
+    <div class="food-search-wrap">
+      <span class="food-search-icon">🔍</span>
+      <input class="food-search-inp" id="food-search" type="search" placeholder="Pesquisar alimento..." data-i18n-ph="food_ph" oninput="renderFoodBrowser(this.value)" autocomplete="off">
+    </div>
+    <div id="food-browser"></div>
+
+    <button class="btn-guardar-refei" onclick="guardarRefeicaoManual()" data-i18n="btn_guardar_refei">GUARDAR REFEIÇÃO</button>
+    <button onclick="closeAddRefeiModal()" style="width:100%;padding:13px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;margin-top:8px" data-i18n="cancelar">Cancelar</button>
+  </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div class="install-banner" id="install-banner" style="display:none">
+  <div class="install-banner-icon">📲</div>
+  <div class="install-banner-text">
+    <div class="install-banner-title" data-i18n="install_title">Instalar como App</div>
+    <div class="install-banner-sub" data-i18n="install_sub">Acede direto do ecrã inicial</div>
+  </div>
+  <div class="install-banner-btns">
+    <button class="install-btn install-btn-no" onclick="dismissInstall()" data-i18n="install_no">Agora não</button>
+    <button class="install-btn install-btn-yes" id="install-btn" onclick="installPWA()" data-i18n="install_sim">INSTALAR</button>
+  </div>
+</div>
+
+<!-- ═══ FEEDBACK MODAL ═══ -->
+<div class="fb-modal" id="feedback-modal">
+  <div class="fb-sheet">
+    <div class="fb-title" data-i18n="fb_title">COMO FOI O TREINO?</div>
+    <div class="fb-sub" data-i18n="fb_sub">O teu feedback ajuda-me a melhorar o teu plano</div>
+
+    <div class="fb-section">
+      <div class="fb-label" data-i18n="fb_aval">AVALIAÇÃO GERAL</div>
+      <div class="fb-stars" id="fb-stars">
+        <span class="fb-star" data-v="1" onclick="setStar(1)">☆</span>
+        <span class="fb-star" data-v="2" onclick="setStar(2)">☆</span>
+        <span class="fb-star" data-v="3" onclick="setStar(3)">☆</span>
+        <span class="fb-star" data-v="4" onclick="setStar(4)">☆</span>
+        <span class="fb-star" data-v="5" onclick="setStar(5)">☆</span>
+      </div>
+    </div>
+
+    <div class="fb-section">
+      <div class="fb-label" data-i18n="fb_sentiste">COMO TE SENTISTE?</div>
+      <div class="fb-humor">
+        <button class="humor-btn" data-v="💀" onclick="setHumor('💀')">💀</button>
+        <button class="humor-btn" data-v="😓" onclick="setHumor('😓')">😓</button>
+        <button class="humor-btn" data-v="💪" onclick="setHumor('💪')">💪</button>
+        <button class="humor-btn" data-v="🔥" onclick="setHumor('🔥')">🔥</button>
+        <button class="humor-btn" data-v="🤩" onclick="setHumor('🤩')">🤩</button>
+      </div>
+    </div>
+
+    <div class="fb-section">
+      <div class="fb-label" data-i18n="fb_esforco">NÍVEL DE ESFORÇO</div>
+      <div class="fb-esforco">
+        <button class="esforco-chip" data-v="Leve" onclick="setEsforco('Leve')" data-i18n="esforco_leve">Leve</button>
+        <button class="esforco-chip" data-v="Moderado" onclick="setEsforco('Moderado')" data-i18n="esforco_mod">Moderado</button>
+        <button class="esforco-chip" data-v="Difícil" onclick="setEsforco('Difícil')" data-i18n="esforco_dif">Difícil</button>
+        <button class="esforco-chip" data-v="Exaustivo" onclick="setEsforco('Exaustivo')" data-i18n="esforco_exaust">Exaustivo</button>
+      </div>
+    </div>
+
+    <div class="fb-section">
+      <textarea id="fb-msg" style="width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:14px 16px;font-size:15px;border-radius:var(--radius-sm);outline:none;resize:none;min-height:72px;font-family:'DM Sans',sans-serif" placeholder="Alguma observação? (opcional)" data-i18n-ph="fb_ph" maxlength="300"></textarea>
+    </div>
+
+    <div class="fb-actions">
+      <button onclick="closeFeedback()" style="flex:1;padding:14px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:none;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer" data-i18n="fb_saltar">Saltar</button>
+      <button onclick="submitFeedback()" style="flex:2;padding:14px;border-radius:var(--radius-sm);background:var(--gold);border:none;color:#0a0a0a;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer" data-i18n="fb_enviar">ENVIAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── i18n ──
+let currentLang = localStorage.getItem('lang') || 'pt';
+const LANG = {
+  pt: {
+    greeting:'Bom treino,', nav_treino:'Treino', nav_evolucao:'Evolução', nav_dicas:'Dicas', nav_nutricao:'Nutrição',
+    btn_registar:'REGISTAR SESSÃO', btn_guardando:'A GUARDAR...', loading:'A CARREGAR...',
+    sessao_ok:'Sessão registada!', sessao_ok_sub:'Excelente trabalho. Até ao próximo treino!',
+    t_sessao:'SESSÃO REGISTADA! 🏆', t_offline:'GUARDADO OFFLINE ✓', t_feedback:'OBRIGADO PELO FEEDBACK! 🙏',
+    t_app_inst:'APP INSTALADO! 🎉', t_ios_inst:'No iOS: partilha → "Adicionar ao ecrã inicial"',
+    t_add_food:'ADICIONA PELO MENOS 1 ALIMENTO', t_refei_ok:'REFEIÇÃO GUARDADA! 🥗', t_refei_err:'ERRO AO GUARDAR',
+    t_select_food:'SELECIONA PELO MENOS 1 PROTEÍNA OU 1 CARBOIDRATO',
+    sem_treinos:'Nenhum treino disponível ainda.<br>O teu personal está a preparar o teu plano.',
+    sem_ex:'Sem exercícios neste treino.', sem_sessoes:'Nenhuma sessão registada ainda.',
+    sem_refei:'Sem refeições registadas hoje.', sem_hist:'Sem histórico ainda.',
+    sem_resultados:'Sem resultados', sem_alim:'Nenhum alimento adicionado ainda',
+    sem_alim_sistema:'Sem alimentos configurados no sistema.',
+    link_invalido:'Link inválido.<br>Peça o link correto ao seu personal.',
+    acesso_nao:'Acesso não encontrado.<br>Fala com o teu personal.',
+    obj_prefix:'Objetivo: ', bora:'Bora treinar 💪',
+    stat_sessoes:'Sessões', stat_semanas:'Semanas', stat_dias:'Dias',
+    sel_exercicio:'Selecione um exercício...', hist_treinos:'HISTÓRICO DE TREINOS',
+    series:'séries', reps:'reps', done_pill:'✓ Feito', carga_label:'Carga usada',
+    progress:(d,t)=>`${d} de ${t} exercício${t!==1?'s':''} concluído${t!==1?'s':''}`,
+    ntab_hoje:'HOJE', ntab_hist:'HISTÓRICO', ntab_sug:'SUGESTÃO',
+    btn_add_refei:'＋ REGISTAR REFEIÇÃO', modal_refei:'REGISTAR REFEIÇÃO', refei_actual:'REFEIÇÃO ACTUAL',
+    food_ph:'Pesquisar alimento...', btn_guardar_refei:'GUARDAR REFEIÇÃO', cancelar:'Cancelar',
+    fb_title:'COMO FOI O TREINO?', fb_sub:'O teu feedback ajuda-me a melhorar o teu plano',
+    fb_aval:'AVALIAÇÃO GERAL', fb_sentiste:'COMO TE SENTISTE?', fb_esforco:'NÍVEL DE ESFORÇO',
+    esforco_leve:'Leve', esforco_mod:'Moderado', esforco_dif:'Difícil', esforco_exaust:'Exaustivo',
+    fb_ph:'Alguma observação? (opcional)', fb_saltar:'Saltar', fb_enviar:'ENVIAR',
+    install_title:'Instalar como App', install_sub:'Acede direto do ecrã inicial',
+    install_no:'Agora não', install_sim:'INSTALAR',
+    meal_tipos_labels:['Pequeno-almoço','Almoço','Lanche','Jantar','Ceia'],
+    cat_prot:'PROTEÍNAS', cat_carbo:'CARBOIDRATOS', cat_fibra:'FIBRAS & LEGUMES', cat_gord:'GORDURAS',
+    sug_desc:'Marca o que tens disponível. O app calcula as gramas exactas para atingires a meta desta refeição.',
+    meta_por_refeicao:'meta por refeição', btn_gerar:'GERAR SUGESTÃO',
+    sug_title:'✦ SUGESTÃO DE REFEIÇÃO', sug_prot:'Proteína', sug_carbo:'Carboidrato', sug_gord:'Gordura',
+    kcal_dia:'kcal/dia', obj_label:'OBJETIVO', deficit:'DÉFICIT CALÓRICO', superavit:'SUPERÁVIT CALÓRICO', manutencao:'MANUTENÇÃO',
+    macro_prot:'Prot', macro_carbo:'Carbo', macro_gord:'Gord', personal_cargo:'Personal Trainer',
+    orient_aquec:'AQUECIMENTO', orient_descanso:'DESCANSO ENTRE SÉRIES', orient_exec:'EXECUÇÃO',
+    orient_prog:'PROGRESSÃO DE CARGA', orient_reg:'REGISTA AS CARGAS', orient_duvidas:'DÚVIDAS',
+    orient_aquec_txt:'Faça <strong>5 a 10 minutos</strong> de aquecimento antes de começar — esteira, bike ou elíptico em ritmo leve. No primeiro exercício, faça uma série leve com carga reduzida.',
+    orient_descanso_txt:'<strong>Exercícios pesados</strong> (agachamento, leg press, terra): 60–90 seg.<br><strong>Isoladores e máquinas</strong>: 45–60 seg. Descanso longo esfria o estímulo.',
+    orient_exec_txt:'Cadência <strong>controlada</strong>: 2 segundos descendo, 1 subindo. Sem pressa, sem balanço. A última repetição deve ser difícil — se saiu fácil, sobe a carga.',
+    orient_prog_txt:'Quando fechar <strong>todas as séries no topo da faixa</strong> com técnica perfeita, sobe a carga. É assim que o corpo evolui — sessão a sessão.',
+    orient_reg_txt:'Sempre preenches as cargas no app antes de sair do ginásio. Sem registo, não há progressão — é simples assim.',
+    orient_duvidas_txt:'Qualquer dúvida sobre execução, carga ou desconforto — chama no direct do <strong>Instagram @ojo.silva</strong>.',
+  },
+  en: {
+    greeting:'Good workout,', nav_treino:'Workout', nav_evolucao:'Progress', nav_dicas:'Tips', nav_nutricao:'Nutrition',
+    btn_registar:'REGISTER SESSION', btn_guardando:'SAVING...', loading:'LOADING...',
+    sessao_ok:'Session logged!', sessao_ok_sub:'Great work. See you next workout!',
+    t_sessao:'SESSION LOGGED! 🏆', t_offline:'SAVED OFFLINE ✓', t_feedback:'THANKS FOR THE FEEDBACK! 🙏',
+    t_app_inst:'APP INSTALLED! 🎉', t_ios_inst:'On iOS: share → "Add to Home Screen"',
+    t_add_food:'ADD AT LEAST 1 FOOD ITEM', t_refei_ok:'MEAL SAVED! 🥗', t_refei_err:'ERROR SAVING',
+    t_select_food:'SELECT AT LEAST 1 PROTEIN OR 1 CARB',
+    sem_treinos:'No workouts available yet.<br>Your trainer is preparing your plan.',
+    sem_ex:'No exercises in this workout.', sem_sessoes:'No sessions logged yet.',
+    sem_refei:'No meals logged today.', sem_hist:'No history yet.',
+    sem_resultados:'No results', sem_alim:'No food added yet',
+    sem_alim_sistema:'No foods configured in the system.',
+    link_invalido:'Invalid link.<br>Ask your personal trainer for the correct link.',
+    acesso_nao:'Access not found.<br>Talk to your personal trainer.',
+    obj_prefix:'Goal: ', bora:"Let's train 💪",
+    stat_sessoes:'Sessions', stat_semanas:'Weeks', stat_dias:'Days',
+    sel_exercicio:'Select an exercise...', hist_treinos:'TRAINING HISTORY',
+    series:'sets', reps:'reps', done_pill:'✓ Done', carga_label:'Load used',
+    progress:(d,t)=>`${d} of ${t} exercise${t!==1?'s':''} completed`,
+    ntab_hoje:'TODAY', ntab_hist:'HISTORY', ntab_sug:'SUGGESTION',
+    btn_add_refei:'＋ LOG MEAL', modal_refei:'LOG MEAL', refei_actual:'CURRENT MEAL',
+    food_ph:'Search food...', btn_guardar_refei:'SAVE MEAL', cancelar:'Cancel',
+    fb_title:'HOW WAS YOUR WORKOUT?', fb_sub:'Your feedback helps me improve your plan',
+    fb_aval:'OVERALL RATING', fb_sentiste:'HOW DID YOU FEEL?', fb_esforco:'EFFORT LEVEL',
+    esforco_leve:'Light', esforco_mod:'Moderate', esforco_dif:'Hard', esforco_exaust:'Exhausting',
+    fb_ph:'Any notes? (optional)', fb_saltar:'Skip', fb_enviar:'SEND',
+    install_title:'Install as App', install_sub:'Access directly from home screen',
+    install_no:'Not now', install_sim:'INSTALL',
+    meal_tipos_labels:['Breakfast','Lunch','Snack','Dinner','Supper'],
+    cat_prot:'PROTEINS', cat_carbo:'CARBOHYDRATES', cat_fibra:'VEGETABLES & FIBER', cat_gord:'FATS',
+    sug_desc:'Check what you have available. The app calculates exact grams to hit your meal target.',
+    meta_por_refeicao:'per meal target', btn_gerar:'GENERATE SUGGESTION',
+    sug_title:'✦ MEAL SUGGESTION', sug_prot:'Protein', sug_carbo:'Carbohydrate', sug_gord:'Fat',
+    kcal_dia:'kcal/day', obj_label:'GOAL', deficit:'CALORIC DEFICIT', superavit:'CALORIC SURPLUS', manutencao:'MAINTENANCE',
+    macro_prot:'Prot', macro_carbo:'Carb', macro_gord:'Fat', personal_cargo:'Personal Trainer',
+    orient_aquec:'WARM-UP', orient_descanso:'REST BETWEEN SETS', orient_exec:'EXECUTION',
+    orient_prog:'LOAD PROGRESSION', orient_reg:'LOG YOUR LOADS', orient_duvidas:'QUESTIONS',
+    orient_aquec_txt:'Do <strong>5 to 10 minutes</strong> of warm-up before starting — treadmill, bike or elliptical at an easy pace. On the first exercise, do a light set with reduced load.',
+    orient_descanso_txt:'<strong>Heavy exercises</strong> (squat, leg press, deadlift): 60–90 sec.<br><strong>Isolation & machines</strong>: 45–60 sec. Long rest cools the stimulus.',
+    orient_exec_txt:'<strong>Controlled</strong> tempo: 2 seconds down, 1 up. No rushing, no swinging. The last rep should be hard — if it felt easy, increase the load.',
+    orient_prog_txt:'When you complete <strong>all sets at the top of the range</strong> with perfect technique, increase the load. That\'s how the body evolves — session by session.',
+    orient_reg_txt:'Always fill in the loads on the app before leaving the gym. No log, no progress — simple as that.',
+    orient_duvidas_txt:'Any questions about execution, load or discomfort — message on <strong>Instagram @ojo.silva</strong>.',
+  }
+};
+const T = (key, ...args) => {
+  const v = (LANG[currentLang] || LANG.pt)[key] ?? LANG.pt[key] ?? key;
+  return typeof v === 'function' ? v(...args) : v;
+};
+function setLang(l) {
+  currentLang = l;
+  localStorage.setItem('lang', l);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = T(el.dataset.i18n);
+    if (v !== el.dataset.i18n) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = T(el.dataset.i18nHtml);
+    if (v !== el.dataset.i18nHtml) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const v = T(el.dataset.i18nPh);
+    if (v !== el.dataset.i18nPh) el.placeholder = v;
+  });
+  const selEx = document.getElementById('evo-select');
+  if (selEx && selEx.options[0]) selEx.options[0].text = T('sel_exercicio');
+  const pt = document.getElementById('lang-pt'), en = document.getElementById('lang-en');
+  if (pt) { pt.style.color = l==='pt'?'var(--gold)':'var(--muted)'; pt.style.fontWeight = l==='pt'?'600':'400'; }
+  if (en) { en.style.color = l==='en'?'var(--gold)':'var(--muted)'; en.style.fontWeight = l==='en'?'600':'400'; }
+}
+
+const PARAMS = new URLSearchParams(location.search);
+const ALUNO_ID = PARAMS.get('id');
+
+/* ════════════════════════════════════════════════════════════
+   CONFIG · edita aqui · override via localStorage opcional
+   ════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  SB_URL: 'https://oelbocimyfwwzkzbyswg.supabase.co',
+  SB_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E',
+  VERSION: 'v2.0',
+};
+const SB_URL = CONFIG.SB_URL;
+const SB_KEY = CONFIG.SB_KEY;
+// Limpa eventuais credenciais antigas no localStorage que estariam a sobrescrever
+try { localStorage.removeItem('sb_url'); localStorage.removeItem('sb_key'); } catch(e){}
+
+/* ════ TEMA ════ */
+function setTema(t,m){
+  document.body.dataset.theme=t; document.body.dataset.mode=m;
+  localStorage.setItem('theme',t); localStorage.setItem('mode',m);
+}
+const PALETTES = {
+  gold:  ['#FFD96B', '#E5B23A', 'rgba(255,217,107,.14)'],
+  green: ['#5FE3D3', '#3EB8A8', 'rgba(95,227,211,.14)'],
+  red:   ['#FF6B6B', '#E54444', 'rgba(255,107,107,.14)'],
+  blue:  ['#5FA8FF', '#3E82E5', 'rgba(95,168,255,.14)'],
+};
+function setAccent(name){
+  const p = PALETTES[name]; if(!p) return;
+  const [c, c2, glow] = p;
+  const r = document.documentElement.style;
+  r.setProperty('--accent', c);  r.setProperty('--accent2', c2); r.setProperty('--accent3', glow);
+  r.setProperty('--gold', c);    r.setProperty('--gold2', c2);   r.setProperty('--gold3', glow);
+  document.querySelectorAll('.color-swatch').forEach(x => x.classList.toggle('on', x.dataset.accent === name));
+  try { localStorage.setItem('aluno_accent', name); } catch(e){}
+}
+setTema('gold','dark');
+setAccent(localStorage.getItem('aluno_accent') || 'gold');
+document.querySelectorAll('.color-swatch').forEach(s => {
+  s.addEventListener('click', () => setAccent(s.dataset.accent));
+});
+
+/* ════ GAMIFICAÇÃO ════ */
+const XP_RULES = { exercicio:10, sessao:50, streakDia:25, pr:100, avaliacao:50 };
+const BADGES_DEF = [
+  { slug:'first-session', test:s=>s.sessoes>=1 },
+  { slug:'iron-10',       test:s=>s.sessoes>=10 },
+  { slug:'iron-50',       test:s=>s.sessoes>=50 },
+  { slug:'iron-100',      test:s=>s.sessoes>=100 },
+  { slug:'streak-7',      test:s=>s.streak_recorde>=7 },
+  { slug:'streak-30',     test:s=>s.streak_recorde>=30 },
+  { slug:'pr-machine',    test:s=>s.prs>=5 },
+];
+const calcNivel = xp => Math.floor(Math.sqrt(xp/100))+1;
+async function gamiGet(alunoId){
+  const r = await sbFetch(`gamificacao?aluno_id=eq.${alunoId}&select=*`);
+  if(r && r[0]) return r[0];
+  const novo = await sbFetch('gamificacao',{method:'POST',body:JSON.stringify({aluno_id:alunoId})});
+  return novo?.[0] || {xp_total:0,nivel:1,streak_atual:0,streak_recorde:0,ultima_sessao:null,badges:[]};
+}
+function diffDias(a,b){return Math.round((new Date(b)-new Date(a))/86400000);}
+async function gamiRegistarSessao(alunoId, {exerciciosFeitos=0, prs=0}={}){
+  const g = await gamiGet(alunoId); if(!g) return null;
+  const hoje = new Date().toISOString().slice(0,10);
+  let streak = g.streak_atual;
+  if(!g.ultima_sessao) streak=1;
+  else if(g.ultima_sessao===hoje) streak=g.streak_atual;
+  else if(diffDias(g.ultima_sessao,hoje)===1) streak=g.streak_atual+1;
+  else streak=1;
+  const ganho = XP_RULES.sessao + exerciciosFeitos*XP_RULES.exercicio + prs*XP_RULES.pr + (streak>g.streak_atual?XP_RULES.streakDia:0);
+  const xpNovo = (g.xp_total||0)+ganho;
+  const recorde = Math.max(g.streak_recorde||0, streak);
+  const ses = await sbFetch(`sessoes?aluno_id=eq.${alunoId}&select=id`) || [];
+  const stats = { sessoes:ses.length+1, streak_recorde:recorde, prs };
+  const badgesAtuais = g.badges || [];
+  const badges = BADGES_DEF.filter(b=>b.test(stats)).map(b=>b.slug);
+  await sbFetch(`gamificacao?aluno_id=eq.${alunoId}`,{method:'PATCH',body:JSON.stringify({
+    xp_total:xpNovo, nivel:calcNivel(xpNovo), streak_atual:streak,
+    streak_recorde:recorde, ultima_sessao:hoje, badges,
+    atualizado_em:new Date().toISOString()
+  })});
+  return { ganho, xp:xpNovo, nivel:calcNivel(xpNovo), streak, badgesNovos:badges.filter(b=>!badgesAtuais.includes(b)) };
+}
+
+let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
+let cargas = {}, doneSet = new Set(), sessoes = [], chartInst = null;
+let alunoObjetivo = '', pesoCached = 0, alimentosList = [];
+
+// ── UTILS ──
+const toast = msg => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+};
+
+const lc = (k, d = null) => {
+  try { const v = localStorage.getItem('aluno_' + ALUNO_ID + '_' + k); return v ? JSON.parse(v) : d; } catch(e) { return d; }
+};
+const sc = (k, v) => {
+  try { localStorage.setItem('aluno_' + ALUNO_ID + '_' + k, JSON.stringify(v)); } catch(e) {}
+};
+
+const formatDate = d => {
+  if (!d) return '—';
+  const p = d.split('T')[0].split('-');
+  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+};
+
+// ── SUPABASE ──
+async function sbFetch(path, opts = {}) {
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/' + path, {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(opts.headers || {}) },
+      ...opts
+    });
+    if (!r.ok) return null;
+    const ct = r.headers.get('content-type');
+    return ct && ct.includes('json') ? await r.json() : [];
+  } catch(e) { return null; }
+}
+
+// ── NAVIGATION ──
+function goScreen(screen) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('screen-' + screen);
+  s.style.display = 'block'; s.classList.add('active');
+  document.getElementById('nav-' + screen).classList.add('active');
+  if (screen === 'evolucao') renderEvolucao();
+  if (screen === 'nutricao') renderNutricao();
+}
+
+// ── INIT ──
+async function init() {
+  if (!ALUNO_ID) {
+    document.getElementById('treino-loading').innerHTML = `<div class="empty"><div class="empty-icon">🔗</div>${T('link_invalido')}</div>`;
+    return;
+  }
+
+  cargas = lc('cargas', {});
+  doneSet = new Set(lc('done', []));
+
+  const alunos = await sbFetch(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo`) || [];
+  const aluno = alunos[0];
+
+  if (!aluno || !aluno.ativo) {
+    document.getElementById('treino-loading').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>${T('acesso_nao')}</div>`;
+    return;
+  }
+
+  alunoObjetivo = aluno.objetivo || '';
+  const firstName = aluno.nome.split(' ')[0];
+  document.getElementById('aluno-nome-top').textContent = firstName;
+  document.getElementById('hero-name').textContent = firstName.toUpperCase();
+  document.getElementById('hero-sub').textContent = aluno.objetivo ? `${T('obj_prefix')}${aluno.objetivo}` : T('bora');
+  document.title = firstName + ' · Jo Silva PT';
+
+  await loadTreinos();
+  sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
+}
+
+// ── TREINOS ──
+async function loadTreinos() {
+  treinos = await sbFetch(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`) || [];
+  document.getElementById('treino-loading').style.display = 'none';
+
+  if (!treinos.length) {
+    document.getElementById('treino-loading').innerHTML = `<div class="empty"><div class="empty-icon">📋</div>${T('sem_treinos')}</div>`;
+    document.getElementById('treino-loading').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('treino-hero').style.display = 'block';
+  document.getElementById('treino-header').style.display = 'block';
+  document.getElementById('register-wrap').style.display = 'block';
+
+  // Build selector
+  const sel = document.getElementById('treino-selector');
+  sel.style.display = 'flex';
+  sel.innerHTML = treinos.map((t, i) =>
+    `<button class="ttab${i === 0 ? ' active' : ''}" onclick="selectTreino('${t.id}', this)">${t.nome}</button>`
+  ).join('');
+
+  await selectTreinoById(treinos[0].id);
+}
+
+async function selectTreino(id, btn) {
+  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  await selectTreinoById(id);
+}
+
+async function selectTreinoById(id) {
+  currentTreinoId = id;
+  if (!exerciciosPorTreino[id]) {
+    exerciciosPorTreino[id] = await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
+  }
+  doneSet = new Set(lc('done_' + id, []));
+  renderTreino();
+}
+
+function renderTreino() {
+  const t = treinos.find(x => x.id === currentTreinoId);
+  const exs = exerciciosPorTreino[currentTreinoId] || [];
+  if (!t) return;
+
+  document.getElementById('t-dia').textContent = t.descricao || '';
+  document.getElementById('t-title').textContent = t.nome;
+  document.getElementById('t-count').textContent = `${exs.length} exercício${exs.length !== 1 ? 's' : ''}`;
+
+  updateProgress(exs);
+
+  const container = document.getElementById('ex-list');
+  if (!exs.length) {
+    container.innerHTML = `<div class="empty">${T('sem_ex')}</div>`;
+    return;
+  }
+
+  container.innerHTML = exs.map((ex, i) => {
+    const isDone = doneSet.has(ex.id);
+    const carga = cargas[ex.id] || 0;
+    return `
+    <div class="ex-card${isDone ? ' done' : ''}" id="ex-${ex.id}">
+      <div class="ex-card-top" onclick="toggleDone('${ex.id}')">
+        <div class="ex-number">${String(i + 1).padStart(2, '0')}</div>
+        <div class="ex-body">
+          <div class="ex-name">${ex.nome}</div>
+          ${ex.obs ? `<div class="ex-obs">${ex.obs}</div>` : ''}
+          <div class="ex-pills">
+            <div class="pill"><strong>${ex.series || '3'}</strong> ${T('series')}</div>
+            <div class="pill"><strong>${ex.reps || '10-12'}</strong> ${T('reps')}</div>
+            ${isDone ? `<div class="pill pill-done">${T('done_pill')}</div>` : ''}
+          </div>
+        </div>
+        <div class="ex-check">${isDone ? '✓' : ''}</div>
+      </div>
+      <div class="ex-carga">
+        <div class="carga-label">${T('carga_label')}</div>
+        <div class="carga-ctrl">
+          <button class="carga-btn" onclick="ajustarCarga('${ex.id}', -2.5)">−</button>
+          <div>
+            <div class="carga-value" id="carga-val-${ex.id}">${carga || '—'}</div>
+            <div class="carga-kg">${carga ? 'kg' : ''}</div>
+          </div>
+          <button class="carga-btn" onclick="ajustarCarga('${ex.id}', 2.5)">＋</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDone(exId) {
+  if (doneSet.has(exId)) { doneSet.delete(exId); } else { doneSet.add(exId); }
+  sc('done_' + currentTreinoId, [...doneSet]);
+  const card = document.getElementById('ex-' + exId);
+  const exs = exerciciosPorTreino[currentTreinoId] || [];
+  if (card) {
+    card.classList.toggle('done', doneSet.has(exId));
+    const check = card.querySelector('.ex-check');
+    if (check) check.textContent = doneSet.has(exId) ? '✓' : '';
+    const num = card.querySelector('.ex-number');
+    if (num) num.style.color = doneSet.has(exId) ? 'var(--green)' : 'var(--gold)';
+    const pills = card.querySelector('.ex-pills');
+    if (pills) {
+      const ex = exs.find(e => e.id === exId);
+      if (ex) {
+        const isDone = doneSet.has(exId);
+        pills.innerHTML = `
+          <div class="pill"><strong>${ex.series || '3'}</strong> ${T('series')}</div>
+          <div class="pill"><strong>${ex.reps || '10-12'}</strong> ${T('reps')}</div>
+          ${isDone ? `<div class="pill pill-done">${T('done_pill')}</div>` : ''}`;
+      }
+    }
+  }
+  updateProgress(exs);
+}
+
+function ajustarCarga(exId, delta) {
+  const atual = cargas[exId] || 0;
+  const novo = Math.max(0, Math.round((atual + delta) * 10) / 10);
+  cargas[exId] = novo;
+  sc('cargas', cargas);
+  const el = document.getElementById('carga-val-' + exId);
+  if (el) el.textContent = novo || '—';
+  const kgEl = el?.nextElementSibling;
+  if (kgEl) kgEl.textContent = novo ? 'kg' : '';
+}
+
+function updateProgress(exs) {
+  const done = exs.filter(e => doneSet.has(e.id)).length;
+  const total = exs.length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const fill = document.getElementById('progress-fill');
+  const text = document.getElementById('progress-text');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = T('progress', done, total);
+  const btn = document.getElementById('btn-register');
+  if (btn) btn.disabled = done === 0;
+  const miniRing = document.getElementById('mini-ring-fill');
+  const miniPct = document.getElementById('mini-ring-pct');
+  if (miniRing) requestAnimationFrame(() => { miniRing.style.strokeDashoffset = Math.round(138 * (1 - pct / 100)); });
+  if (miniPct) miniPct.textContent = pct + '%';
+}
+
+// ── REGISTAR SESSÃO ──
+async function registrar() {
+  const t = treinos.find(x => x.id === currentTreinoId);
+  const exs = exerciciosPorTreino[currentTreinoId] || [];
+  const btn = document.getElementById('btn-register');
+  btn.textContent = T('btn_guardando'); btn.disabled = true;
+
+  const sessaoData = {
+    aluno_id: ALUNO_ID, treino_id: currentTreinoId,
+    treino_nome: t?.nome || '', data: new Date().toISOString().split('T')[0]
+  };
+
+  const sesRes = await sbFetch('sessoes', { method: 'POST', body: JSON.stringify(sessaoData) });
+
+  if (sesRes && sesRes[0]) {
+    const sessaoId = sesRes[0].id;
+    const payload = exs
+      .filter(e => cargas[e.id])
+      .map(e => ({ sessao_id: sessaoId, exercicio_id: e.id, carga_kg: cargas[e.id] }));
+    if (payload.length) await sbFetch('sessao_cargas', { method: 'POST', body: JSON.stringify(payload) });
+    sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
+    /* GAMIFICAÇÃO */
+    try {
+      const exFeitos = exs.filter(e=>doneSet.has(e.id)).length;
+      const res = await gamiRegistarSessao(ALUNO_ID, { exerciciosFeitos: exFeitos });
+      if(res) toast(`+${res.ganho} XP · Nv ${res.nivel} · 🔥 ${res.streak}`);
+    } catch(e){ console.warn('gami', e); }
+    toast(T('t_sessao'));
+    setTimeout(() => openFeedback(sessaoId), 900);
+  } else {
+    // Offline fallback
+    const off = lc('offline', []) || [];
+    off.push({ ...sessaoData, ts: Date.now() });
+    sc('offline', off);
+    toast(T('t_offline'));
+  }
+
+  // Reset done
+  doneSet.clear(); sc('done_' + currentTreinoId, []);
+
+  // Show success
+  const banner = document.getElementById('success-banner');
+  banner.style.display = 'flex';
+  setTimeout(() => banner.style.display = 'none', 4000);
+
+  btn.textContent = T('btn_registar');
+  updateProgress(exs);
+  renderTreino();
+}
+
+// ── EVOLUÇÃO ──
+async function renderEvolucao() {
+  if (!sessoes.length) {
+    sessoes = await sbFetch(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=60`) || [];
+  }
+
+  const semanas = Math.ceil(sessoes.length / 3) || 0;
+  const dias = sessoes.length > 0
+    ? Math.ceil((new Date() - new Date(sessoes[sessoes.length - 1].data)) / 86400000)
+    : 0;
+
+  document.getElementById('evo-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">${T('stat_sessoes')}</div></div>
+    <div class="stat-card"><div class="stat-val">${semanas}</div><div class="stat-lbl">${T('stat_semanas')}</div></div>
+    <div class="stat-card"><div class="stat-val">${dias || '—'}</div><div class="stat-lbl">${T('stat_dias')}</div></div>`;
+
+  // Populate exercise selector
+  const sel = document.getElementById('evo-select');
+  if (sel.options.length === 1) {
+    for (const t of treinos) {
+      if (!exerciciosPorTreino[t.id]) {
+        exerciciosPorTreino[t.id] = await sbFetch(`exercicios?treino_id=eq.${t.id}&order=ordem.asc`) || [];
+      }
+    }
+    Object.values(exerciciosPorTreino).flat().forEach(ex => {
+      const o = document.createElement('option'); o.value = ex.id; o.textContent = ex.nome; sel.appendChild(o);
+    });
+  }
+
+  // History
+  const hist = document.getElementById('evo-hist');
+  if (!sessoes.length) { hist.innerHTML = `<div class="empty">${T('sem_sessoes')}</div>`; return; }
+  hist.innerHTML = `<div class="hist-card">` + sessoes.slice(0, 20).map(s => `
+    <div class="hist-item">
+      <div>
+        <div class="hist-nome">${s.treino_nome || 'Treino'}</div>
+        <div class="hist-data">${formatDate(s.data)}</div>
+      </div>
+      <div class="hist-val">✓</div>
+    </div>`).join('') + `</div>`;
+}
+
+async function renderChart() {
+  const exId = document.getElementById('evo-select').value; if (!exId) return;
+  const ids = sessoes.map(s => s.id);
+  if (!ids.length) return;
+  const data = await sbFetch(`sessao_cargas?exercicio_id=eq.${exId}&sessao_id=in.(${ids.join(',')})&select=*,sessoes(data)&order=sessoes(data).asc`) || [];
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  if (!data.length) return;
+  const ctx = document.getElementById('myChart').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(c => formatDate(c.sessoes?.data || '')),
+      datasets: [{ label: 'Carga (kg)', data: data.map(c => c.carga_kg), borderColor: '#C8A96E', backgroundColor: 'rgba(200,169,110,0.08)', pointBackgroundColor: '#C8A96E', pointRadius: 5, tension: 0.35, fill: true }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: '#1c1c1c' } }, y: { ticks: { color: '#666', font: { size: 10 }, callback: v => v + 'kg' }, grid: { color: '#1c1c1c' } } } }
+  });
+}
+
+// ── FEEDBACK ──
+let fbStar = 0, fbHumor = '', fbEsforco = '', fbSessaoId = null;
+
+function openFeedback(sessaoId) {
+  fbSessaoId = sessaoId; fbStar = 0; fbHumor = ''; fbEsforco = '';
+  document.getElementById('fb-msg').value = '';
+  document.querySelectorAll('.fb-star').forEach(s => { s.textContent = '☆'; s.classList.remove('on'); });
+  document.querySelectorAll('.humor-btn, .esforco-chip').forEach(b => b.classList.remove('active'));
+  const modal = document.getElementById('feedback-modal');
+  modal.style.display = 'flex';
+}
+
+function closeFeedback() {
+  document.getElementById('feedback-modal').style.display = 'none';
+}
+
+function setStar(v) {
+  fbStar = v;
+  document.querySelectorAll('.fb-star').forEach(s => {
+    const active = parseInt(s.dataset.v) <= v;
+    s.textContent = active ? '★' : '☆';
+    s.classList.toggle('on', active);
+  });
+}
+
+function setHumor(v) {
+  fbHumor = v;
+  document.querySelectorAll('.humor-btn').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+}
+
+function setEsforco(v) {
+  fbEsforco = v;
+  document.querySelectorAll('.esforco-chip').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+}
+
+async function submitFeedback() {
+  closeFeedback();
+  if (!fbSessaoId) return;
+  const payload = {
+    sessao_id: fbSessaoId,
+    aluno_id: ALUNO_ID,
+    estrelas: fbStar || null,
+    humor: fbHumor || null,
+    esforco: fbEsforco || null,
+    mensagem: document.getElementById('fb-msg').value.trim() || null,
+    data: new Date().toISOString().split('T')[0],
+    lido: false
+  };
+  await sbFetch('feedbacks', { method: 'POST', body: JSON.stringify(payload) });
+  toast(T('t_feedback'));
+}
+
+// ── NUTRIÇÃO ──
+const NUTRI_DASHARRAY = 264;
+let mealDraft = [], mealTipo = 'Almoço';
+
+async function renderNutricao() {
+  await loadPeso();
+  const hoje = new Date().toISOString().split('T')[0];
+  const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&data=eq.${hoje}&order=criado_em.asc`) || [];
+  const meta = pesoCached > 0 ? calcDailyKcal(pesoCached, alunoObjetivo) : 2000;
+
+  const kcal = refs.reduce((s,r) => s+(r.calorias||0), 0);
+  const prot = refs.reduce((s,r) => s+(parseFloat(r.proteina)||0), 0);
+  const carb = refs.reduce((s,r) => s+(parseFloat(r.carboidratos)||0), 0);
+  const gord = refs.reduce((s,r) => s+(parseFloat(r.gordura)||0), 0);
+  const over = kcal > meta;
+  const pct = Math.min(kcal / meta, 1);
+
+  const ring = document.getElementById('nutri-ring-fill');
+  const glow = document.getElementById('nutri-ring-glow');
+  if (ring) {
+    requestAnimationFrame(() => { ring.style.strokeDashoffset = Math.round(NUTRI_DASHARRAY * (1 - pct)); });
+    ring.style.stroke = over ? 'var(--red)' : 'var(--green)';
+    ring.style.fill = 'none';
+  }
+  if (glow) glow.style.stroke = over ? 'var(--red)' : 'var(--green)';
+
+  const kEl = document.getElementById('nutri-kcal-val');
+  const mEl = document.getElementById('nutri-kcal-meta');
+  if (kEl) { kEl.textContent = kcal; kEl.style.fill = over ? 'var(--red)' : '#5DCA9A'; }
+  if (mEl) mEl.textContent = '/ ' + meta + ' kcal';
+  const pEl = document.getElementById('nutri-prot'); if (pEl) pEl.textContent = prot.toFixed(0)+'g';
+  const cEl = document.getElementById('nutri-carb'); if (cEl) cEl.textContent = carb.toFixed(0)+'g';
+  const gEl = document.getElementById('nutri-gord'); if (gEl) gEl.textContent = gord.toFixed(0)+'g';
+
+  const el = document.getElementById('refeicoes-hoje');
+  if (!refs.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon" style="font-size:36px;opacity:.3">🥗</div>${T('sem_refei')}</div>`;
+    return;
+  }
+  el.innerHTML = refs.map((r, i) => {
+    const hora = r.criado_em ? new Date(r.criado_em).toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'}) : '';
+    const tipo = r.tipo_refeicao || '';
+    return `<div class="refei-card" style="animation:fadeUp .3s ease ${i*0.07}s both">
+      <div style="flex-shrink:0;padding-top:2px">
+        ${tipo ? `<div class="refei-tipo">${tipo}</div>` : ''}
+        <div class="refei-hora">${hora}</div>
+      </div>
+      <div class="refei-info">
+        <div class="refei-descr">${r.descricao_usuario || '—'}</div>
+        <div class="refei-macros-mini">P: ${(+r.proteina||0).toFixed(0)}g · C: ${(+r.carboidratos||0).toFixed(0)}g · G: ${(+r.gordura||0).toFixed(0)}g</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="refei-kcal">${r.calorias||'—'}</div>
+        <button onclick="deletarRefei('${r.id}')" style="color:var(--dim);font-size:16px;padding:4px;line-height:1">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function renderNutriHist() {
+  const refs = await sbFetch(`refeicoes?aluno_id=eq.${ALUNO_ID}&order=data.desc,criado_em.desc&limit=90`) || [];
+  const el = document.getElementById('refeicoes-hist');
+  if (!refs.length) { el.innerHTML = `<div class="empty">${T('sem_hist')}</div>`; return; }
+  const byDay = {};
+  refs.forEach(r => { if (!byDay[r.data]) byDay[r.data] = []; byDay[r.data].push(r); });
+  el.innerHTML = Object.entries(byDay).map(([data, rs]) => {
+    const totalKcal = rs.reduce((s,r) => s+(+r.calorias||0), 0);
+    const totalProt = rs.reduce((s,r) => s+(+r.proteina||0), 0);
+    const totalCarb = rs.reduce((s,r) => s+(+r.carboidratos||0), 0);
+    const totalGord = rs.reduce((s,r) => s+(+r.gordura||0), 0);
+    return `<div style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--muted);letter-spacing:1px">${formatDate(data)}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green)">${totalKcal} kcal</div>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:8px">P: ${totalProt.toFixed(0)}g · C: ${totalCarb.toFixed(0)}g · G: ${totalGord.toFixed(0)}g</div>
+      ${rs.map(r=>`<div class="refei-card">
+        <div style="flex-shrink:0">
+          ${r.tipo_refeicao?`<div class="refei-tipo">${r.tipo_refeicao}</div>`:''}
+        </div>
+        <div class="refei-info">
+          <div class="refei-descr">${r.descricao_usuario||'—'}</div>
+          <div class="refei-macros-mini">P: ${(+r.proteina||0).toFixed(0)}g · C: ${(+r.carboidratos||0).toFixed(0)}g · G: ${(+r.gordura||0).toFixed(0)}g</div>
+        </div>
+        <div class="refei-kcal">${r.calorias||'—'}</div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function nutriTab(tab) {
+  ['hoje','hist','sug'].forEach(t => {
+    document.getElementById('ntab-'+t).classList.toggle('active', t === tab);
+  });
+  document.getElementById('nutri-hoje-wrap').style.display = tab === 'hoje' ? 'block' : 'none';
+  document.getElementById('nutri-hist-wrap').style.display = tab === 'hist' ? 'block' : 'none';
+  document.getElementById('nutri-sug-wrap').style.display = tab === 'sug' ? 'block' : 'none';
+  if (tab === 'hist') renderNutriHist();
+  if (tab === 'sug') renderSugestaoPanel();
+}
+
+async function deletarRefei(id) {
+  await sbFetch(`refeicao_itens?refeicao_id=eq.${id}`, {method:'DELETE'});
+  await sbFetch(`refeicoes?id=eq.${id}`, {method:'DELETE'});
+  renderNutricao();
+}
+
+// ── REGISTO MANUAL REFEIÇÃO ──
+const MEAL_TIPOS = ['Pequeno-almoço','Almoço','Lanche','Jantar','Ceia'];
+const GRAM_DEFAULTS = {proteína:150, carbo:120, fibra:80, gordura:15};
+
+async function openAddRefeiModal() {
+  await loadAlimentos();
+  mealDraft = [];
+  mealTipo = 'Almoço';
+  document.getElementById('food-search').value = '';
+  renderMealTipos();
+  renderMealDraft();
+  renderFoodBrowser('');
+  document.getElementById('add-refei-modal').style.display = 'flex';
+}
+
+function closeAddRefeiModal() {
+  document.getElementById('add-refei-modal').style.display = 'none';
+}
+
+function setMealTipo(tipo) {
+  mealTipo = tipo;
+  renderMealTipos();
+}
+
+function renderMealTipos() {
+  const MEAL_TIPOS_PT = ['Pequeno-almoço','Almoço','Lanche','Jantar','Ceia'];
+  const labels = T('meal_tipos_labels');
+  document.getElementById('meal-tipos').innerHTML = MEAL_TIPOS_PT.map((t, i) =>
+    `<button class="meal-tipo-btn${t===mealTipo?' active':''}" onclick="setMealTipo('${t}')">${labels[i]}</button>`
+  ).join('');
+}
+
+function addToMeal(alimId) {
+  if (mealDraft.find(d => d.alimento_id === alimId)) return;
+  const a = alimentosList.find(x => x.id === alimId);
+  if (!a) return;
+  const gramas = GRAM_DEFAULTS[a.categoria] || 100;
+  mealDraft.push({
+    alimento_id: a.id, nome: a.nome, gramas,
+    cal100: +a.calorias_100g, prot100: +a.proteina_100g,
+    carb100: +a.carbo_100g, gord100: +a.gordura_100g
+  });
+  renderMealDraft();
+  renderFoodBrowser(document.getElementById('food-search').value);
+}
+
+function removeFromMeal(idx) {
+  mealDraft.splice(idx, 1);
+  renderMealDraft();
+  renderFoodBrowser(document.getElementById('food-search').value);
+}
+
+function updateGramas(idx, delta) {
+  mealDraft[idx].gramas = Math.max(10, Math.round((mealDraft[idx].gramas + delta) * 10) / 10);
+  renderMealDraft();
+}
+
+function setGramas(idx, val) {
+  const g = parseFloat(val);
+  if (!isNaN(g) && g >= 5) { mealDraft[idx].gramas = g; renderMealDraft(); }
+}
+
+function calcMealTotals() {
+  return mealDraft.reduce((acc, item) => {
+    const k = item.gramas / 100;
+    acc.kcal += item.cal100 * k;
+    acc.prot += item.prot100 * k;
+    acc.carb += item.carb100 * k;
+    acc.gord += item.gord100 * k;
+    return acc;
+  }, {kcal:0, prot:0, carb:0, gord:0});
+}
+
+function renderMealDraft() {
+  const draftEl = document.getElementById('meal-draft');
+  const totBar  = document.getElementById('meal-totals-bar');
+  const draftSec = document.getElementById('draft-section');
+  if (!mealDraft.length) {
+    draftEl.innerHTML = `<div style="padding:4px 0 6px;font-size:13px;color:var(--dim);text-align:center">${T('sem_alim')}</div>`;
+    totBar.style.display = 'none';
+    draftSec.style.borderColor = 'transparent';
+    return;
+  }
+  draftSec.style.borderColor = '';
+  draftEl.innerHTML = mealDraft.map((item, i) => {
+    const kcal = Math.round(item.cal100 * item.gramas / 100);
+    return `<div class="draft-item">
+      <div class="draft-item-nome">${item.nome}</div>
+      <div class="draft-item-ctrl">
+        <button class="gram-btn" onclick="updateGramas(${i},-10)">−</button>
+        <input class="gram-inp" type="number" value="${item.gramas}" min="5" step="5"
+               onchange="setGramas(${i},this.value)">
+        <span style="font-size:11px;color:var(--muted)">g</span>
+        <button class="gram-btn" onclick="updateGramas(${i},10)">＋</button>
+        <div class="draft-item-kcal">${kcal} kcal</div>
+        <button class="draft-del" onclick="removeFromMeal(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  const t = calcMealTotals();
+  totBar.style.display = 'block';
+  totBar.innerHTML = `
+    <div class="totals-kcal">${Math.round(t.kcal)} <span style="font-size:13px;color:var(--muted)">kcal</span></div>
+    <div class="totals-macros">
+      <span>P: <strong>${t.prot.toFixed(0)}g</strong></span>
+      <span>C: <strong>${t.carb.toFixed(0)}g</strong></span>
+      <span>G: <strong>${t.gord.toFixed(0)}g</strong></span>
+    </div>`;
+}
+
+function renderFoodBrowser(filter) {
+  const q = filter.trim().toLowerCase();
+  const visible = q ? alimentosList.filter(a => a.nome.toLowerCase().includes(q)) : alimentosList;
+  const el = document.getElementById('food-browser');
+  if (!visible.length) {
+    el.innerHTML = `<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px">${T('sem_resultados')}</div>`;
+    return;
+  }
+  const grupos = ['proteína','carbo','fibra','gordura'].map(cat => ({
+    label: catLabel(cat),
+    items: visible.filter(a => a.categoria === cat)
+  })).filter(g => g.items.length);
+  const inDraftIds = new Set(mealDraft.map(d => d.alimento_id));
+  el.innerHTML = grupos.map(g => `
+    <div style="margin-bottom:14px">
+      <div class="food-section-hdr">${g.label}</div>
+      ${g.items.map(a => {
+        const added = inDraftIds.has(a.id);
+        return `<div class="food-list-item" onclick="${added ? '' : `addToMeal('${a.id}')`}">
+          <div class="food-item-info">
+            <div class="food-item-nome">${a.nome}</div>
+            <div class="food-item-hint">${a.proteina_100g}g prot · ${a.carbo_100g}g carbo · ${a.calorias_100g} kcal/100g</div>
+          </div>
+          <div class="food-add-btn${added?' added':''}">
+            ${added ? '✓' : '＋'}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+async function guardarRefeicaoManual() {
+  if (!mealDraft.length) { toast(T('t_add_food')); return; }
+  const t = calcMealTotals();
+  const hoje = new Date().toISOString().split('T')[0];
+  const descricao = mealDraft.map(i => `${i.nome} ${i.gramas}g`).join(', ');
+  const res = await sbFetch('refeicoes', {
+    method: 'POST',
+    body: JSON.stringify({
+      aluno_id: ALUNO_ID, data: hoje,
+      tipo_refeicao: mealTipo, descricao_usuario: descricao,
+      calorias: Math.round(t.kcal),
+      proteina: +t.prot.toFixed(1),
+      carboidratos: +t.carb.toFixed(1),
+      gordura: +t.gord.toFixed(1)
+    })
+  });
+  if (!res || !res[0]) { toast(T('t_refei_err')); return; }
+  const refeiId = res[0].id;
+  const itens = mealDraft.map(item => ({
+    refeicao_id: refeiId, alimento_id: item.alimento_id, nome: item.nome,
+    gramas: item.gramas,
+    calorias: +(item.cal100  * item.gramas / 100).toFixed(1),
+    proteina: +(item.prot100 * item.gramas / 100).toFixed(1),
+    carbo:    +(item.carb100 * item.gramas / 100).toFixed(1),
+    gordura:  +(item.gord100 * item.gramas / 100).toFixed(1)
+  }));
+  await sbFetch('refeicao_itens', { method: 'POST', body: JSON.stringify(itens) });
+  toast(T('t_refei_ok'));
+  closeAddRefeiModal();
+  renderNutricao();
+}
+
+// ── SUGESTÃO DE REFEIÇÃO ──
+async function loadAlimentos() {
+  if (alimentosList.length) return;
+  alimentosList = await sbFetch('alimentos?order=categoria.asc,nome.asc') || [];
+}
+
+async function loadPeso() {
+  if (pesoCached) return pesoCached;
+  const res = await sbFetch(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=1&select=peso`) || [];
+  pesoCached = parseFloat(res[0]?.peso) || 70;
+  return pesoCached;
+}
+
+function calcDailyKcal(peso, objetivo) {
+  const f = {'Emagrecimento':25,'Hipertrofia':35,'Emagrecimento + Hipertrofia':28,'Condicionamento':30,'Reabilitação':28};
+  return Math.round(peso * (f[objetivo] || 30));
+}
+
+function catLabel(cat) {
+  return {proteína:T('cat_prot'),carbo:T('cat_carbo'),fibra:T('cat_fibra'),gordura:T('cat_gord')}[cat] || cat.toUpperCase();
+}
+
+async function renderSugestaoPanel() {
+  const el = document.getElementById('sug-inventario');
+  await loadAlimentos();
+  const peso = await loadPeso();
+  const daily = calcDailyKcal(peso, alunoObjetivo);
+  const mealKcal = Math.round(daily * 0.30);
+
+  if (!alimentosList.length) {
+    el.innerHTML = `<div class="empty">${T('sem_alim_sistema')}</div>`;
+    return;
+  }
+
+  const grupos = ['proteína','carbo','fibra'].map(cat => ({
+    cat, label: catLabel(cat),
+    items: alimentosList.filter(a => a.categoria === cat)
+  })).filter(g => g.items.length);
+
+  const tipoLabel = alunoObjetivo === 'Emagrecimento' ? T('deficit') :
+                    (alunoObjetivo === 'Hipertrofia' ? T('superavit') : T('manutencao'));
+
+  el.innerHTML = `
+    <div class="sug-meta-card">
+      <div>
+        <div class="sug-meta-obj">${alunoObjetivo||T('obj_label')} · ${tipoLabel}</div>
+        <div class="sug-meta-kcal">${mealKcal} kcal</div>
+        <div class="sug-meta-sub">${T('meta_por_refeicao')} · ${daily} ${T('kcal_dia')}</div>
+      </div>
+      <div class="sug-meta-badge">${peso} kg</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+      ${T('sug_desc')}
+    </div>
+    ${grupos.map(g => `
+      <div class="sug-grupo">
+        <div class="sug-grupo-titulo">${g.label}</div>
+        ${g.items.map(a => `
+          <label class="sug-check-item">
+            <input type="checkbox" class="sug-cb" value="${a.id}" data-cat="${a.categoria}">
+            <span class="sug-alim-nome">${a.nome}</span>
+            <span class="sug-alim-hint">${a.proteina_100g}g prot · ${a.calorias_100g} kcal</span>
+          </label>
+        `).join('')}
+      </div>
+    `).join('')}
+    <button class="btn-gerar-sug" onclick="calcularSugestao()">${T('btn_gerar')}</button>
+    <div id="sug-result"></div>
+  `;
+}
+
+function calcularSugestao() {
+  const peso = pesoCached || 70;
+  const daily = calcDailyKcal(peso, alunoObjetivo);
+  const mealKcal = Math.round(daily * 0.30);
+
+  const protTarget = Math.round((mealKcal * 0.30) / 4);
+  const carbTarget = Math.round((mealKcal * 0.45) / 4);
+
+  const checked = [...document.querySelectorAll('.sug-cb:checked')];
+  const prots  = checked.filter(c => c.dataset.cat === 'proteína').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
+  const carbs  = checked.filter(c => c.dataset.cat === 'carbo').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
+  const fibras = checked.filter(c => c.dataset.cat === 'fibra').map(c => alimentosList.find(a => a.id === c.value)).filter(Boolean);
+
+  if (!prots.length && !carbs.length) {
+    toast(T('t_select_food'));
+    return;
+  }
+
+  const result = [];
+  let totalKcal = 0, totalProt = 0, totalCarb = 0, totalGord = 0;
+
+  if (prots.length) {
+    const eachProt = protTarget / prots.length;
+    prots.forEach(p => {
+      if (!p.proteina_100g) return;
+      const grams = Math.max(30, Math.round(eachProt / (p.proteina_100g / 100)));
+      const k = grams / 100;
+      totalKcal += p.calorias_100g * k;
+      totalProt += p.proteina_100g * k;
+      totalCarb += p.carbo_100g * k;
+      totalGord += p.gordura_100g * k;
+      result.push({ nome: p.nome, grams });
+    });
+  }
+
+  if (carbs.length) {
+    const eachCarb = carbTarget / carbs.length;
+    carbs.forEach(c => {
+      if (!c.carbo_100g) return;
+      const grams = Math.max(30, Math.round(eachCarb / (c.carbo_100g / 100)));
+      const k = grams / 100;
+      totalKcal += c.calorias_100g * k;
+      totalProt += c.proteina_100g * k;
+      totalCarb += c.carbo_100g * k;
+      totalGord += c.gordura_100g * k;
+      result.push({ nome: c.nome, grams });
+    });
+  }
+
+  fibras.forEach(f => {
+    const grams = 80;
+    const k = grams / 100;
+    totalKcal += f.calorias_100g * k;
+    totalProt += f.proteina_100g * k;
+    totalCarb += f.carbo_100g * k;
+    totalGord += f.gordura_100g * k;
+    result.push({ nome: f.nome, grams });
+  });
+
+  const el = document.getElementById('sug-result');
+  el.innerHTML = `
+    <div class="sug-result-card">
+      <div class="sug-result-title">${T('sug_title')}</div>
+      ${result.map(r => `
+        <div class="sug-ingredient">
+          <div class="sug-ing-nome">${r.nome}</div>
+          <div class="sug-ing-grams">${r.grams}<span>g</span></div>
+        </div>
+      `).join('')}
+      <div class="sug-total-kcal">${Math.round(totalKcal)} <span style="font-size:16px;color:var(--muted)">kcal</span></div>
+      <div class="sug-total-row">
+        <div class="sug-total-item">
+          <div class="sug-total-val">${totalProt.toFixed(0)}g</div>
+          <div class="sug-total-lbl">${T('sug_prot')}</div>
+        </div>
+        <div class="sug-total-item">
+          <div class="sug-total-val">${totalCarb.toFixed(0)}g</div>
+          <div class="sug-total-lbl">${T('sug_carbo')}</div>
+        </div>
+        <div class="sug-total-item">
+          <div class="sug-total-val">${totalGord.toFixed(0)}g</div>
+          <div class="sug-total-lbl">${T('sug_gord')}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+setLang(localStorage.getItem('lang') || 'pt');
+init();
+
+// ── PWA / SERVICE WORKER ──
+let deferredPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+  });
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show banner only if not already installed and not dismissed
+  if (!localStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => {
+      document.getElementById('install-banner').style.display = 'flex';
+    }, 3000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').style.display = 'none';
+  deferredPrompt = null;
+  toast(T('t_app_inst'));
+});
+
+function installPWA() {
+  if (!deferredPrompt) {
+    // iOS fallback — show instructions
+    toast(T('t_ios_inst'));
+    dismissInstall();
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(choice => {
+    deferredPrompt = null;
+    document.getElementById('install-banner').style.display = 'none';
+  });
+}
+
+function dismissInstall() {
+  document.getElementById('install-banner').style.display = 'none';
+  localStorage.setItem('pwa-dismissed', '1');
+}
+
+</script>
+</body>
+</html>
