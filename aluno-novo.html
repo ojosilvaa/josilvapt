@@ -906,8 +906,10 @@ const CONFIG = {
   SB_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E',
   VERSION: 'v2.0',
 };
-const SB_URL = localStorage.getItem('sb_url') || CONFIG.SB_URL;
-const SB_KEY = localStorage.getItem('sb_key') || CONFIG.SB_KEY;
+const SB_URL = CONFIG.SB_URL;
+const SB_KEY = CONFIG.SB_KEY;
+// Limpa eventuais credenciais antigas no localStorage que estariam a sobrescrever
+try { localStorage.removeItem('sb_url'); localStorage.removeItem('sb_key'); } catch(e){}
 
 /* ════ TEMA ════ */
 function setTema(t,m){
