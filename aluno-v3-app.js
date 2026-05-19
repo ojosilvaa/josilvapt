@@ -167,12 +167,10 @@ async function init(){
   setupLangToggle();
   setupWaterDots();
 
-  // Carregar sessões e perimetria
   sessoes = await sb(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=200`) || [];
   perimetriaHist = await sb(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.asc&limit=20`) || [];
 
-  // Carregar histórico de cargas logo no arranque
-  // para que o delta apareça na aba Treino sem precisar ir à Evolução
+  // Carregar histórico de cargas no arranque
   if (sessoes.length) {
     const sids = sessoes.map(s => s.id);
     allCargasHist = await sb(
@@ -216,9 +214,23 @@ async function selectTreino(id){
   if (!exerciciosPorTreino[id]){
     exerciciosPorTreino[id] = await sb(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
   }
+
+  // ── PRÉ-PREENCHER cargas com o último valor registado
+  // Só preenche se o aluno ainda não tiver tocado naquele exercício nesta sessão
   for (const ex of exerciciosPorTreino[id]){
     if (!doneSet[ex.id]) doneSet[ex.id] = new Set();
+
+    // Se não há carga local guardada (ou é 0), preencher com a última do histórico
+    if (!cargas[ex.id]) {
+      const ultima = lastCargaFor(ex.id);
+      if (ultima) {
+        cargas[ex.id] = ultima;
+      }
+    }
   }
+  // Persistir cargas pré-preenchidas
+  sc('cargas', cargas);
+
   renderTreino();
 }
 
@@ -249,12 +261,12 @@ function renderTreino(){
 
   list.innerHTML = '';
   exs.forEach((ex, i) => {
-    const series = parseInt(ex.series) || 3;
-    const reps   = ex.reps || '10-12';
-    const c      = cargas[ex.id] || 0;
-    const prev   = lastCargaFor(ex.id);
-    const d      = (prev != null && c) ? +(c - prev).toFixed(1) : 0;
-    const done   = (doneSet[ex.id] || new Set()).size;
+    const series  = parseInt(ex.series) || 3;
+    const reps    = ex.reps || '10-12';
+    const c       = cargas[ex.id] || 0;
+    const prev    = lastCargaFor(ex.id);
+    const d       = (prev != null && c) ? +(c - prev).toFixed(1) : 0;
+    const done    = (doneSet[ex.id] || new Set()).size;
     const complete = done >= series;
 
     const el = document.createElement('div');
@@ -262,11 +274,17 @@ function renderTreino(){
     el.style.animationDelay = (.05 + i*.06) + 's';
 
     const cargaStr = c > 0 ? c : '—';
-    const deltaCls = d===0 ? 'flat' : (d<0 ? 'dn' : '');
-    const deltaTxt = (prev == null || c === 0)
-      ? (prev != null ? `Última: ${prev} kg` : '—')
-      : d===0 ? T('mantem')
-      : (d>0 ? '↑ +' : '↓ ') + Math.abs(d) + ' kg';
+    const deltaCls = d === 0 ? 'flat' : (d < 0 ? 'dn' : '');
+
+    // Delta: se a carga atual é igual à última → "mantém carga"
+    // se ainda não mexeu e há histórico → mostra "última: Xkg"
+    // se não há histórico → "—"
+    const deltaTxt = prev == null
+      ? '—'
+      : c === 0
+        ? `Última: ${prev} kg`
+        : d === 0 ? T('mantem')
+        : (d > 0 ? '↑ +' : '↓ ') + Math.abs(d) + ' kg';
 
     el.innerHTML = `
       <div class="ex-head">
@@ -280,7 +298,7 @@ function renderTreino(){
       <div class="carga-block">
         <button class="carga-btn" data-act="-" data-id="${ex.id}">−</button>
         <div class="carga-mid">
-          <div class="carga-val">${cargaStr}${c>0?'<span class="kg">kg</span>':''}</div>
+          <div class="carga-val">${cargaStr}${c > 0 ? '<span class="kg">kg</span>' : ''}</div>
           <div class="carga-delta ${deltaCls}">${deltaTxt}</div>
         </div>
         <button class="carga-btn" data-act="+" data-id="${ex.id}">+</button>
@@ -376,7 +394,7 @@ async function registrar(){
       await sb('sessao_cargas', { method:'POST', body: JSON.stringify(payload) });
     }
     sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
-    // Recarregar histórico para delta ficar atualizado após registar
+    // Recarregar histórico para delta ficar atualizado
     const sids = sessoes.map(s => s.id);
     allCargasHist = await sb(
       `sessao_cargas?sessao_id=in.(${sids.join(',')})&select=*,sessoes(data)&order=sessoes(data).desc`
@@ -386,6 +404,7 @@ async function registrar(){
     toast('Sem conexão — vamos tentar mais tarde.');
   }
 
+  // Reset séries feitas mas manter as cargas para a próxima sessão
   exs.forEach(e => doneSet[e.id] = new Set());
   const out = {};
   Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
