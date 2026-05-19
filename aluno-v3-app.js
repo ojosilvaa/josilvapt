@@ -90,7 +90,7 @@ function T(k){ return I18N[LANG][k] !== undefined ? I18N[LANG][k] : k; }
 // ── STATE ────────────────────────────────────────────────
 let aluno = null, alunoObjetivo = '';
 let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
-let cargas = {}, doneSet = {}; // doneSet[exId] = Set of set indices
+let cargas = {}, doneSet = {};
 let sessoes = [], allCargasHist = null;
 let pesoCached = 0, perimetriaHist = [];
 
@@ -147,7 +147,6 @@ async function init(){
     return;
   }
 
-  // load aluno
   const arr = await sb(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo`);
   aluno = arr && arr[0];
   if (!aluno || !aluno.ativo) {
@@ -159,24 +158,19 @@ async function init(){
   document.title = aluno.nome.split(' ')[0] + ' · Jo Silva PT';
 
   cargas  = lc('cargas', {});
-  // doneSet: restore as object of Sets
   const stored = lc('doneSet', {});
   doneSet = {};
   Object.keys(stored).forEach(k => doneSet[k] = new Set(stored[k]));
 
-  // bind global UI
   setupNav();
   setupAccentPicker();
   setupLangToggle();
   setupWaterDots();
 
   await loadTreinos();
-  // load sessões in background for evolução
   sessoes = await sb(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=200`) || [];
-  // load perimetria for body comp
   perimetriaHist = await sb(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.asc&limit=20`) || [];
 
-  // render perfil + heatmap right away so they're ready on tab switch
   renderPerfil();
 }
 
@@ -192,7 +186,6 @@ async function loadTreinos(){
   }
   loading.style.display = 'none';
 
-  // render chips
   const chips = document.getElementById('treino-chips');
   chips.innerHTML = treinos.map((t,i) =>
     `<button class="chip${i===0?' on':''}" data-tid="${t.id}">${t.nome}</button>`
@@ -211,7 +204,6 @@ async function selectTreino(id){
   if (!exerciciosPorTreino[id]){
     exerciciosPorTreino[id] = await sb(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
   }
-  // Ensure doneSet entry per exercise
   for (const ex of exerciciosPorTreino[id]){
     if (!doneSet[ex.id]) doneSet[ex.id] = new Set();
   }
@@ -288,7 +280,6 @@ function renderTreino(){
     list.appendChild(el);
   });
 
-  // delegated handlers (rebind safe — we replaced innerHTML, but list element itself persists)
   if (!list.dataset.bound){
     list.addEventListener('click', onExListClick);
     list.dataset.bound = '1';
@@ -314,7 +305,6 @@ function onExListClick(ev){
     if (!doneSet[id]) doneSet[id] = new Set();
     if (doneSet[id].has(k)) doneSet[id].delete(k);
     else doneSet[id].add(k);
-    // persist
     const out = {};
     Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
     sc('doneSet', out);
@@ -326,7 +316,6 @@ function lastCargaFor(exId){
   if (!allCargasHist) return null;
   const rows = allCargasHist.filter(r => r.exercicio_id === exId);
   if (!rows.length) return null;
-  // already sorted desc by data
   return parseFloat(rows[0].carga_kg) || null;
 }
 
@@ -375,19 +364,17 @@ async function registrar(){
       await sb('sessao_cargas', { method:'POST', body: JSON.stringify(payload) });
     }
     sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
-    allCargasHist = null; // invalidate
+    allCargasHist = null;
     toast(T('sucesso'));
   } else {
     toast('Sem conexão — vamos tentar mais tarde.');
   }
 
-  // reset done state for this treino
   exs.forEach(e => doneSet[e.id] = new Set());
   const out = {};
   Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
   sc('doneSet', out);
 
-  // banner
   const banner = document.getElementById('success-banner');
   banner.classList.add('show');
   setTimeout(() => banner.classList.remove('show'), 4500);
@@ -400,7 +387,6 @@ async function registrar(){
 //  EVOLUÇÃO
 // ═══════════════════════════════════════════════════════════
 async function renderEvolucao(){
-  // KPIs
   document.getElementById('kpi-sessoes').textContent = sessoes.length;
   const last30 = sessoes.filter(s => daysAgo(s.data) <= 30).length;
   document.getElementById('kpi-sessoes-d').textContent = `+${last30} ${LANG==='pt'?'em 30 dias':'in 30 days'}`;
@@ -409,7 +395,6 @@ async function renderEvolucao(){
   document.getElementById('kpi-streak').textContent = streak;
   document.getElementById('kpi-streak-d').textContent = streak > 0 ? T('recorde') : '—';
 
-  // Volume (sum carga_kg per session)
   if (!allCargasHist){
     const sids = sessoes.map(s => s.id);
     if (sids.length){
@@ -422,10 +407,8 @@ async function renderEvolucao(){
   document.getElementById('kpi-volume').textContent = Math.round(vol).toLocaleString('pt-PT');
   document.getElementById('kpi-volume-d').textContent = `${allCargasHist.length} ${LANG==='pt'?'registos':'records'}`;
 
-  // populate exercise selector
   const sel = document.getElementById('evo-select');
   if (sel.options.length <= 1){
-    // ensure all treinos' exercicios loaded
     for (const t of treinos){
       if (!exerciciosPorTreino[t.id]){
         exerciciosPorTreino[t.id] = await sb(`exercicios?treino_id=eq.${t.id}&order=ordem.asc`) || [];
@@ -436,7 +419,6 @@ async function renderEvolucao(){
       o.value = ex.id; o.textContent = ex.nome; sel.appendChild(o);
     });
     sel.addEventListener('change', () => buildChart(sel.value));
-    // auto-pick first exercise with history
     const withHist = Object.values(exerciciosPorTreino).flat().find(ex =>
       allCargasHist.some(c => c.exercicio_id === ex.id)
     );
@@ -445,13 +427,7 @@ async function renderEvolucao(){
     buildChart(sel.value);
   }
 
-  // PRs
   renderPRs();
-
-  // Body comp (perimetria)
-  renderBodyComp();
-
-  // Heatmap
   renderHeatmap();
 }
 
@@ -461,7 +437,6 @@ function renderPRs(){
     el.innerHTML = `<div class="empty">${T('evo_no_pr')}</div>`;
     return;
   }
-  // group by exercicio, find max and previous max
   const groups = {};
   allCargasHist.forEach(c => {
     if (!groups[c.exercicio_id]) groups[c.exercicio_id] = [];
@@ -501,40 +476,8 @@ function renderPRs(){
     </div>`).join('');
 }
 
-function renderBodyComp(){
-  const sec = document.getElementById('cmp-section');
-  const list = document.getElementById('cmp-list');
-  if (!perimetriaHist.length){ sec.style.display = 'none'; return; }
-  sec.style.display = '';
-  const first = perimetriaHist[0], last = perimetriaHist[perimetriaHist.length - 1];
-  const fields = [
-    { k:'peso',    lbl: LANG==='pt'?'Peso':'Weight', u:'kg' },
-    { k:'cintura', lbl: LANG==='pt'?'Cintura':'Waist', u:'cm' },
-    { k:'peito',   lbl: LANG==='pt'?'Peito':'Chest', u:'cm' },
-    { k:'braco',   lbl: LANG==='pt'?'Braço':'Arm', u:'cm' },
-    { k:'coxa',    lbl: LANG==='pt'?'Coxa':'Thigh', u:'cm' },
-    { k:'quadril', lbl: LANG==='pt'?'Quadril':'Hip', u:'cm' },
-  ];
-  const rows = fields.map(f => {
-    const a = parseFloat(first?.[f.k]), b = parseFloat(last?.[f.k]);
-    if (isNaN(a) || isNaN(b) || a === b) return null;
-    const diff = +(b - a).toFixed(1);
-    const pct = Math.min(100, Math.abs(diff/a)*100*4); // visual scale
-    const sign = diff > 0 ? '+' : '−';
-    return `
-      <div class="cmp-bar">
-        <span class="cmp-label">${f.lbl}</span>
-        <div class="cmp-track"><div class="cmp-fill" style="width:${pct}%"></div></div>
-        <span class="cmp-val">${sign}${Math.abs(diff)} ${f.u}</span>
-      </div>`;
-  }).filter(Boolean);
-  if (!rows.length){ sec.style.display = 'none'; return; }
-  list.innerHTML = rows.join('');
-}
-
 function renderHeatmap(){
   const grid = document.getElementById('heat-grid');
-  // 13 weeks × 7 days = 91 cells, ending today
   const cells = 13 * 7;
   const today = new Date(); today.setHours(0,0,0,0);
   const dayCount = {};
@@ -593,7 +536,6 @@ function buildChart(exId){
     pathLine.style.strokeDashoffset = 0;
   });
 
-  // dots
   g.innerHTML = '';
   const accentCol = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#FFD96B';
   xs.forEach((x,i) => {
@@ -606,7 +548,6 @@ function buildChart(exId){
     g.appendChild(c);
   });
 
-  // x axis: show every 2nd label
   const labels = rows.map(r => {
     const dt = new Date(r.sessoes.data);
     return `${dt.getDate()}/${dt.getMonth()+1}`;
@@ -614,7 +555,6 @@ function buildChart(exId){
   const step = Math.max(1, Math.ceil(labels.length/6));
   ax.innerHTML = labels.map((l,i) => (i%step===0 || i===labels.length-1) ? `<span>${l}</span>` : '<span></span>').join('');
 
-  // stats
   document.getElementById('chart-val').textContent = d[d.length-1];
   const delta = +(d[d.length-1] - d[0]).toFixed(1);
   const dEl = document.getElementById('chart-delta');
@@ -632,7 +572,6 @@ function buildChart(exId){
 
 function computeStreak(){
   if (!sessoes.length) return 0;
-  // unique session dates desc
   const dates = [...new Set(sessoes.map(s => s.data))].sort().reverse();
   let streak = 0;
   let d = new Date(); d.setHours(0,0,0,0);
@@ -640,7 +579,7 @@ function computeStreak(){
     const sd = new Date(dates[i]); sd.setHours(0,0,0,0);
     const diff = Math.round((d - sd) / 86400000);
     if (diff <= 1){ streak++; d = new Date(sd); d.setDate(d.getDate() - 1); }
-    else if (diff <= 2 && i === 0){ /* allow rest day */ continue; }
+    else if (diff <= 2 && i === 0){ continue; }
     else break;
   }
   return streak;
@@ -652,14 +591,12 @@ function computeStreak(){
 async function renderNutricao(){
   const hoje = todayISO();
   const refs = await sb(`refeicoes?aluno_id=eq.${ALUNO_ID}&data=eq.${hoje}&order=criado_em.asc`) || [];
-  // meta kcal
   const peso = parseFloat(perimetriaHist[perimetriaHist.length-1]?.peso) || 70;
   const meta = calcDailyKcal(peso, alunoObjetivo);
   const metaP = Math.round(peso * 1.8);
   const metaC = Math.round(meta * 0.45 / 4);
   const metaG = Math.round(meta * 0.25 / 9);
 
-  // totals
   const kcal = refs.reduce((s,r) => s + (+r.calorias||0), 0);
   const prot = refs.reduce((s,r) => s + (parseFloat(r.proteina)||0), 0);
   const carb = refs.reduce((s,r) => s + (parseFloat(r.carboidratos)||0), 0);
@@ -681,7 +618,6 @@ async function renderNutricao(){
   document.getElementById('n-gord').textContent   = Math.round(gord);
   document.getElementById('n-gord-m').textContent = metaG;
 
-  // animate macro rings
   const C = 276.5;
   const setR = (id, val) => {
     const el = document.getElementById(id);
@@ -696,7 +632,6 @@ async function renderNutricao(){
   setR('m-c', carb/metaC);
   setR('m-g', gord/metaG);
 
-  // meals
   const ml = document.getElementById('meals-list');
   if (!refs.length){
     ml.innerHTML = `<div class="empty">${T('n_no_meal')}</div>`;
@@ -722,7 +657,6 @@ async function renderNutricao(){
 }
 
 function calcDailyKcal(peso, obj){
-  // simple Mifflin-style approximation; refined elsewhere if needed
   const base = peso * 30;
   if (/secar|cut|emagre/i.test(obj || '')) return Math.round(base * 0.85 / 50) * 50;
   if (/hipertrof|bulk|massa/i.test(obj || '')) return Math.round(base * 1.15 / 50) * 50;
@@ -741,10 +675,12 @@ function renderPerfil(){
     : (LANG==='pt'?'Em treino com Jo Silva':'Training with Jo Silva');
   document.getElementById('pf-meta').innerHTML = meta;
 
-  // gamification: XP = sessões * 50
+  // ── Biometria ──────────────────────────────────────────
+  renderBiometria();
+
+  // Gamification
   const total = sessoes.length;
   const xp = total * 50;
-  // level curve: lvl n requires 200*(n-1) XP cumulative; max lvl computed
   let lvl = 1, cumul = 0;
   while (xp >= cumul + 200*lvl){ cumul += 200*lvl; lvl++; }
   const intoLvl  = xp - cumul;
@@ -756,7 +692,6 @@ function renderPerfil(){
   document.getElementById('lvl-to').textContent     = (LANG==='pt'?'Nv ':'Lv ') + (lvl+1);
   document.getElementById('lvl-to-sub').textContent =
     `${(lvlReq - intoLvl).toLocaleString('pt-PT')} XP ${LANG==='pt'?'para':'to'} ${(LANG==='pt'?'Nv ':'Lv ')}${lvl+1}`;
-  // animate xp fill
   const xpFill = document.getElementById('xp-fill');
   xpFill.style.transition = 'none'; xpFill.style.width = '0%';
   requestAnimationFrame(() => {
@@ -764,25 +699,18 @@ function renderPerfil(){
     xpFill.style.width = (intoLvl / lvlReq * 100).toFixed(1) + '%';
   });
 
-  // streak
+  // Streak
   const streak = computeStreak();
   document.getElementById('streak-days').textContent = streak;
   document.getElementById('streak-sub').innerHTML = streak >= 7
     ? `${T('streak_active')} · <b>${LANG==='pt'?'em chamas':'on fire'}</b>`
     : (streak ? T('streak_active') : (LANG==='pt'?'Começa hoje':'Start today'));
 
-  // badges
+  // Badges
   const last30 = sessoes.filter(s => daysAgo(s.data) <= 30).length;
   const unlocked = [
-    streak >= 7,
-    total >= 10,
-    total >= 50,
-    total >= 100,
-    streak >= 14,
-    streak >= 30,
-    false, // PR x 3 — would require sessao_cargas analysis
-    false,
-    last30 >= 12,
+    streak >= 7, total >= 10, total >= 50, total >= 100,
+    streak >= 14, streak >= 30, false, false, last30 >= 12,
   ];
   const grid = document.getElementById('badge-grid');
   grid.innerHTML = T('badges').map((b,i) => `
@@ -792,16 +720,118 @@ function renderPerfil(){
       <div class="badge-sub">${unlocked[i] ? (LANG==='pt'?'desbloqueado':'unlocked') : b.u}</div>
     </div>
   `).join('');
-  document.getElementById('badges-count').textContent =
-    unlocked.filter(Boolean).length + ' / 9';
+  document.getElementById('badges-count').textContent = unlocked.filter(Boolean).length + ' / 9';
 
-  // orientations (static defaults — could be wired to a 'orientacoes' table later)
+  // Orientações
   document.getElementById('orient-list').innerHTML = T('orient_default').map(([title, txt], i) => `
     <div class="orient-row">
       <div class="orient-num">${String(i+1).padStart(2,'0')}</div>
       <div class="orient-text"><b>${title}:</b> ${txt}</div>
     </div>
   `).join('');
+}
+
+// ── BIOMETRIA ─────────────────────────────────────────────
+function renderBiometria(){
+  const old = document.getElementById('bio-card');
+  if (old) old.remove();
+
+  const p = perimetriaHist.length ? perimetriaHist[perimetriaHist.length - 1] : null;
+  if (!p) return;
+
+  const m          = p.medidas || {};
+  const peso       = parseFloat(p.peso)         || 0;
+  const gordura    = parseFloat(p.gordura)       || 0;
+  const massaMagra = parseFloat(p.massa_magra)   || 0;
+  const altura     = m.altura_cm                 || 0;
+  const imc        = m.imc || (altura ? +(peso / ((altura/100)**2)).toFixed(1) : 0);
+  const massaGorda = m.massa_gorda_kg            || +(peso * gordura / 100).toFixed(1);
+  const tmb        = m.tmb_kcal                  || 0;
+  const visceralNivel = m.gordura_visceral_nivel || 0;
+
+  const imcLabel = imc < 18.5
+    ? (LANG==='pt'?'Abaixo peso':'Underweight')
+    : imc < 25 ? (LANG==='pt'?'Normal':'Normal')
+    : imc < 30 ? (LANG==='pt'?'Sobrepeso':'Overweight')
+    : (LANG==='pt'?'Obesidade':'Obese');
+
+  const dataFmt = p.data ? (() => {
+    const [y,mo,d] = p.data.split('-');
+    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    return `${d} ${months[+mo-1]} ${y}`;
+  })() : '—';
+
+  const pt = LANG === 'pt';
+
+  const card = document.createElement('div');
+  card.id = 'bio-card';
+  card.className = 'bio-card in';
+  card.style.animationDelay = '.04s';
+
+  card.innerHTML = `
+    <div class="bio-title">${pt?'Avaliação física':'Physical assessment'} · <span style="color:var(--gold)">${dataFmt}</span></div>
+
+    <div class="bio-kpis">
+      <div class="bio-kpi accent">
+        <div class="bio-kpi-v">${peso}<span>kg</span></div>
+        <div class="bio-kpi-l">${pt?'Peso':'Weight'}</div>
+      </div>
+      <div class="bio-kpi">
+        <div class="bio-kpi-v">${altura}<span>cm</span></div>
+        <div class="bio-kpi-l">${pt?'Altura':'Height'}</div>
+      </div>
+      <div class="bio-kpi">
+        <div class="bio-kpi-v">${imc}</div>
+        <div class="bio-kpi-l">IMC · ${imcLabel}</div>
+      </div>
+    </div>
+
+    <div class="bio-divider">${pt?'Composição corporal':'Body composition'}</div>
+    <div class="bio-row">
+      <span class="bio-row-l">${pt?'Gordura corporal':'Body fat'}</span>
+      <span class="bio-row-r">${gordura}%</span>
+    </div>
+    <div class="bio-row">
+      <span class="bio-row-l">${pt?'Massa magra':'Lean mass'}</span>
+      <span class="bio-row-r">${massaMagra} kg</span>
+    </div>
+    <div class="bio-row">
+      <span class="bio-row-l">${pt?'Massa gorda':'Fat mass'}</span>
+      <span class="bio-row-r">${massaGorda} kg</span>
+    </div>
+    ${tmb ? `<div class="bio-row">
+      <span class="bio-row-l">TMB</span>
+      <span class="bio-row-r">${tmb} kcal</span>
+    </div>` : ''}
+    ${visceralNivel ? `<div class="bio-row">
+      <span class="bio-row-l">${pt?'Gordura visceral':'Visceral fat'}</span>
+      <span class="bio-row-r">${pt?'Nível':'Level'} ${visceralNivel}</span>
+    </div>` : ''}
+
+    <div class="bio-divider">${pt?'Perímetros (cm)':'Measurements (cm)'}</div>
+    <div class="bio-grid">
+      ${[
+        [pt?'Ombro':'Shoulder',       m.ombro_cm],
+        [pt?'Peito':'Chest',          m.peito_cm],
+        [pt?'Cintura':'Waist',        m.cintura_cm],
+        [pt?'Abdómen':'Abdomen',      m.abdomen_cm],
+        [pt?'Quadril':'Hip',          m.quadril_cm],
+        [pt?'Braço (rel.)':'Arm rel.',m.braco_relaxado_dir_cm],
+        [pt?'Braço (cont.)':'Arm cont.',m.braco_contraido_dir_cm],
+        [pt?'Coxa D':'Thigh R',       m.coxa_dir_cm],
+        [pt?'Coxa E':'Thigh L',       m.coxa_esq_cm],
+        [pt?'Panturrilha':'Calf',     m.panturrilha_dir_cm],
+      ].filter(([,v]) => v != null).map(([l,v]) => `
+        <div class="bio-row">
+          <span class="bio-row-l">${l}</span>
+          <span class="bio-row-r">${v}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  const levelCard = document.querySelector('.level-card');
+  levelCard.parentNode.insertBefore(card, levelCard);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -843,14 +873,11 @@ function setAccent(name){
   document.documentElement.style.setProperty('--gold', c1);
   document.documentElement.style.setProperty('--gold-2', c2);
   document.documentElement.style.setProperty('--gold-glow', glow);
-  // re-tint chart dots
   document.querySelectorAll('#chart-dots circle').forEach((c, i, arr) => {
     c.setAttribute('fill', c1);
     if (i === arr.length - 1) c.setAttribute('filter', `drop-shadow(0 0 6px ${c1})`);
   });
-  // re-tint area gradient
   document.querySelectorAll('#g-area stop').forEach(s => s.setAttribute('stop-color', c1));
-  // active swatch
   document.querySelectorAll('.color-swatch').forEach(x =>
     x.classList.toggle('on', x.dataset.accent === name));
   try { localStorage.setItem('alunoV3_accent', name); } catch(e){}
@@ -870,7 +897,6 @@ function setupLangToggle(){
       LANG = l.dataset.lang;
       try { localStorage.setItem('aluno_lang', LANG); } catch(e){}
       applyI18n();
-      // re-render visible
       renderTreino();
       renderPerfil();
       if (currentScreen === 'evolucao') renderEvolucao();
@@ -889,7 +915,6 @@ function applyI18n(){
 }
 
 function setupWaterDots(){
-  // restore from today's storage
   const today = todayISO();
   const stored = lc('water_' + today, 0);
   const dots = document.querySelectorAll('#water-dots .water-dot');
@@ -899,7 +924,6 @@ function setupWaterDots(){
     const d = ev.target.closest('.water-dot'); if (!d) return;
     const idx = [...dots].indexOf(d);
     const wasOn = d.classList.contains('on');
-    // if tapping an "on" one, fill up to (idx); else fill up to idx+1
     const target = wasOn ? idx : (idx + 1);
     dots.forEach((dd,i) => dd.classList.toggle('on', i < target));
     document.getElementById('water-count').textContent = target;
