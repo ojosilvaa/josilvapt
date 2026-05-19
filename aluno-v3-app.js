@@ -116,6 +116,15 @@ const daysAgo = isoDate => {
   const ms = new Date() - new Date(isoDate);
   return Math.floor(ms / 86400000);
 };
+const calcIdade = dataNasc => {
+  if (!dataNasc) return null;
+  const hoje = new Date();
+  const nasc = new Date(dataNasc);
+  let idade = hoje.getFullYear() - nasc.getFullYear();
+  const m = hoje.getMonth() - nasc.getMonth();
+  if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+  return idade;
+};
 
 // ── SUPABASE ─────────────────────────────────────────────
 async function sb(path, opts = {}) {
@@ -147,7 +156,8 @@ async function init(){
     return;
   }
 
-  const arr = await sb(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo`);
+  // Incluir data_nascimento no select
+  const arr = await sb(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo,data_nascimento`);
   aluno = arr && arr[0];
   if (!aluno || !aluno.ativo) {
     document.getElementById('treino-loading').innerHTML =
@@ -170,7 +180,6 @@ async function init(){
   sessoes = await sb(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=200`) || [];
   perimetriaHist = await sb(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.asc&limit=20`) || [];
 
-  // Carregar histórico de cargas no arranque
   if (sessoes.length) {
     const sids = sessoes.map(s => s.id);
     allCargasHist = await sb(
@@ -215,22 +224,14 @@ async function selectTreino(id){
     exerciciosPorTreino[id] = await sb(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
   }
 
-  // ── PRÉ-PREENCHER cargas com o último valor registado
-  // Só preenche se o aluno ainda não tiver tocado naquele exercício nesta sessão
   for (const ex of exerciciosPorTreino[id]){
     if (!doneSet[ex.id]) doneSet[ex.id] = new Set();
-
-    // Se não há carga local guardada (ou é 0), preencher com a última do histórico
     if (!cargas[ex.id]) {
       const ultima = lastCargaFor(ex.id);
-      if (ultima) {
-        cargas[ex.id] = ultima;
-      }
+      if (ultima) cargas[ex.id] = ultima;
     }
   }
-  // Persistir cargas pré-preenchidas
   sc('cargas', cargas);
-
   renderTreino();
 }
 
@@ -275,10 +276,6 @@ function renderTreino(){
 
     const cargaStr = c > 0 ? c : '—';
     const deltaCls = d === 0 ? 'flat' : (d < 0 ? 'dn' : '');
-
-    // Delta: se a carga atual é igual à última → "mantém carga"
-    // se ainda não mexeu e há histórico → mostra "última: Xkg"
-    // se não há histórico → "—"
     const deltaTxt = prev == null
       ? '—'
       : c === 0
@@ -394,7 +391,6 @@ async function registrar(){
       await sb('sessao_cargas', { method:'POST', body: JSON.stringify(payload) });
     }
     sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
-    // Recarregar histórico para delta ficar atualizado
     const sids = sessoes.map(s => s.id);
     allCargasHist = await sb(
       `sessao_cargas?sessao_id=in.(${sids.join(',')})&select=*,sessoes(data)&order=sessoes(data).desc`
@@ -404,7 +400,6 @@ async function registrar(){
     toast('Sem conexão — vamos tentar mais tarde.');
   }
 
-  // Reset séries feitas mas manter as cargas para a próxima sessão
   exs.forEach(e => doneSet[e.id] = new Set());
   const out = {};
   Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
@@ -523,7 +518,6 @@ function renderHeatmap(){
   grid.innerHTML = html;
 }
 
-// ── chart ────────────────────────────────────────────────
 function buildChart(exId){
   if (!exId || !allCargasHist) return;
   const rows = allCargasHist
@@ -697,10 +691,14 @@ function renderPerfil(){
   if (!aluno) return;
   document.getElementById('pf-avatar').textContent = initials(aluno.nome);
   document.getElementById('pf-name').textContent   = aluno.nome;
-  const meta = alunoObjetivo
-    ? `${LANG==='pt'?'Plano':'Plan'} · <em>${escapeHTML(alunoObjetivo)}</em>`
-    : (LANG==='pt'?'Em treino com Jo Silva':'Training with Jo Silva');
-  document.getElementById('pf-meta').innerHTML = meta;
+
+  // Idade + objetivo no subtítulo do perfil
+  const idade = calcIdade(aluno.data_nascimento);
+  const idadeStr = idade ? `${idade} ${LANG==='pt'?'anos':'years old'} · ` : '';
+  const metaStr = alunoObjetivo
+    ? `${idadeStr}<em>${escapeHTML(alunoObjetivo)}</em>`
+    : `${idadeStr}${LANG==='pt'?'Em treino com Jo Silva':'Training with Jo Silva'}`;
+  document.getElementById('pf-meta').innerHTML = metaStr;
 
   renderBiometria();
 
