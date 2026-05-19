@@ -167,10 +167,22 @@ async function init(){
   setupLangToggle();
   setupWaterDots();
 
-  await loadTreinos();
+  // Carregar sessões e perimetria
   sessoes = await sb(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=200`) || [];
   perimetriaHist = await sb(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.asc&limit=20`) || [];
 
+  // Carregar histórico de cargas logo no arranque
+  // para que o delta apareça na aba Treino sem precisar ir à Evolução
+  if (sessoes.length) {
+    const sids = sessoes.map(s => s.id);
+    allCargasHist = await sb(
+      `sessao_cargas?sessao_id=in.(${sids.join(',')})&select=*,sessoes(data)&order=sessoes(data).desc`
+    ) || [];
+  } else {
+    allCargasHist = [];
+  }
+
+  await loadTreinos();
   renderPerfil();
 }
 
@@ -252,7 +264,7 @@ function renderTreino(){
     const cargaStr = c > 0 ? c : '—';
     const deltaCls = d===0 ? 'flat' : (d<0 ? 'dn' : '');
     const deltaTxt = (prev == null || c === 0)
-      ? '—'
+      ? (prev != null ? `Última: ${prev} kg` : '—')
       : d===0 ? T('mantem')
       : (d>0 ? '↑ +' : '↓ ') + Math.abs(d) + ' kg';
 
@@ -364,7 +376,11 @@ async function registrar(){
       await sb('sessao_cargas', { method:'POST', body: JSON.stringify(payload) });
     }
     sessoes.unshift({ ...sesRes[0], treino_nome: t?.nome });
-    allCargasHist = null;
+    // Recarregar histórico para delta ficar atualizado após registar
+    const sids = sessoes.map(s => s.id);
+    allCargasHist = await sb(
+      `sessao_cargas?sessao_id=in.(${sids.join(',')})&select=*,sessoes(data)&order=sessoes(data).desc`
+    ) || [];
     toast(T('sucesso'));
   } else {
     toast('Sem conexão — vamos tentar mais tarde.');
@@ -395,14 +411,6 @@ async function renderEvolucao(){
   document.getElementById('kpi-streak').textContent = streak;
   document.getElementById('kpi-streak-d').textContent = streak > 0 ? T('recorde') : '—';
 
-  if (!allCargasHist){
-    const sids = sessoes.map(s => s.id);
-    if (sids.length){
-      allCargasHist = await sb(
-        `sessao_cargas?sessao_id=in.(${sids.join(',')})&select=*,sessoes(data)&order=sessoes(data).desc`
-      ) || [];
-    } else allCargasHist = [];
-  }
   const vol = allCargasHist.reduce((s,c) => s + (parseFloat(c.carga_kg)||0), 0);
   document.getElementById('kpi-volume').textContent = Math.round(vol).toLocaleString('pt-PT');
   document.getElementById('kpi-volume-d').textContent = `${allCargasHist.length} ${LANG==='pt'?'registos':'records'}`;
@@ -675,10 +683,8 @@ function renderPerfil(){
     : (LANG==='pt'?'Em treino com Jo Silva':'Training with Jo Silva');
   document.getElementById('pf-meta').innerHTML = meta;
 
-  // ── Biometria ──────────────────────────────────────────
   renderBiometria();
 
-  // Gamification
   const total = sessoes.length;
   const xp = total * 50;
   let lvl = 1, cumul = 0;
@@ -699,14 +705,12 @@ function renderPerfil(){
     xpFill.style.width = (intoLvl / lvlReq * 100).toFixed(1) + '%';
   });
 
-  // Streak
   const streak = computeStreak();
   document.getElementById('streak-days').textContent = streak;
   document.getElementById('streak-sub').innerHTML = streak >= 7
     ? `${T('streak_active')} · <b>${LANG==='pt'?'em chamas':'on fire'}</b>`
     : (streak ? T('streak_active') : (LANG==='pt'?'Começa hoje':'Start today'));
 
-  // Badges
   const last30 = sessoes.filter(s => daysAgo(s.data) <= 30).length;
   const unlocked = [
     streak >= 7, total >= 10, total >= 50, total >= 100,
@@ -722,7 +726,6 @@ function renderPerfil(){
   `).join('');
   document.getElementById('badges-count').textContent = unlocked.filter(Boolean).length + ' / 9';
 
-  // Orientações
   document.getElementById('orient-list').innerHTML = T('orient_default').map(([title, txt], i) => `
     <div class="orient-row">
       <div class="orient-num">${String(i+1).padStart(2,'0')}</div>
@@ -770,7 +773,6 @@ function renderBiometria(){
 
   card.innerHTML = `
     <div class="bio-title">${pt?'Avaliação física':'Physical assessment'} · <span style="color:var(--gold)">${dataFmt}</span></div>
-
     <div class="bio-kpis">
       <div class="bio-kpi accent">
         <div class="bio-kpi-v">${peso}<span>kg</span></div>
@@ -785,7 +787,6 @@ function renderBiometria(){
         <div class="bio-kpi-l">IMC · ${imcLabel}</div>
       </div>
     </div>
-
     <div class="bio-divider">${pt?'Composição corporal':'Body composition'}</div>
     <div class="bio-row">
       <span class="bio-row-l">${pt?'Gordura corporal':'Body fat'}</span>
@@ -807,20 +808,19 @@ function renderBiometria(){
       <span class="bio-row-l">${pt?'Gordura visceral':'Visceral fat'}</span>
       <span class="bio-row-r">${pt?'Nível':'Level'} ${visceralNivel}</span>
     </div>` : ''}
-
     <div class="bio-divider">${pt?'Perímetros (cm)':'Measurements (cm)'}</div>
     <div class="bio-grid">
       ${[
-        [pt?'Ombro':'Shoulder',       m.ombro_cm],
-        [pt?'Peito':'Chest',          m.peito_cm],
-        [pt?'Cintura':'Waist',        m.cintura_cm],
-        [pt?'Abdómen':'Abdomen',      m.abdomen_cm],
-        [pt?'Quadril':'Hip',          m.quadril_cm],
-        [pt?'Braço (rel.)':'Arm rel.',m.braco_relaxado_dir_cm],
-        [pt?'Braço (cont.)':'Arm cont.',m.braco_contraido_dir_cm],
-        [pt?'Coxa D':'Thigh R',       m.coxa_dir_cm],
-        [pt?'Coxa E':'Thigh L',       m.coxa_esq_cm],
-        [pt?'Panturrilha':'Calf',     m.panturrilha_dir_cm],
+        [pt?'Ombro':'Shoulder',          m.ombro_cm],
+        [pt?'Peito':'Chest',             m.peito_cm],
+        [pt?'Cintura':'Waist',           m.cintura_cm],
+        [pt?'Abdómen':'Abdomen',         m.abdomen_cm],
+        [pt?'Quadril':'Hip',             m.quadril_cm],
+        [pt?'Braço (rel.)':'Arm rel.',   m.braco_relaxado_dir_cm],
+        [pt?'Braço (cont.)':'Arm cont.', m.braco_contraido_dir_cm],
+        [pt?'Coxa D':'Thigh R',          m.coxa_dir_cm],
+        [pt?'Coxa E':'Thigh L',          m.coxa_esq_cm],
+        [pt?'Panturrilha':'Calf',        m.panturrilha_dir_cm],
       ].filter(([,v]) => v != null).map(([l,v]) => `
         <div class="bio-row">
           <span class="bio-row-l">${l}</span>
@@ -931,10 +931,8 @@ function setupWaterDots(){
   });
 }
 
-// ── utility ───────────────────────────────────────────────
 function escapeHTML(s){
   return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
-// ── boot ─────────────────────────────────────────────────
 init();
