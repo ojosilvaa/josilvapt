@@ -44,14 +44,12 @@
 html,body{background:#000;color:var(--text);font-family:var(--font);min-height:100vh;font-feature-settings:'ss01','cv11';-webkit-font-smoothing:antialiased;overflow-x:hidden}
 button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit;border:0;background:none;cursor:pointer}
 
-/* ── APP CONTAINER (fills viewport, no phone bezel) ───── */
 .app{
   position:relative;width:100vw;min-height:100vh;
   max-width:600px;margin:0 auto;background:#000;
   display:flex;flex-direction:column;
 }
 
-/* topbar */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 20px 10px;gap:12px;flex-shrink:0;
@@ -75,10 +73,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .color-swatch:hover{transform:scale(1.1);border-color:rgba(255,255,255,.36)}
 .color-swatch.on{border-color:#fff;transform:scale(1.2);box-shadow:0 0 10px var(--c)}
 
-/* screen container */
 .screen-wrap{flex:1;position:relative;overflow:hidden;min-height:calc(100vh - 56px)}
 
-/* ── SCREEN TRANSITIONS ──────────────────────────────────── */
 .screen{
   position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
   transition:transform var(--t),opacity var(--t),filter var(--t);
@@ -91,7 +87,6 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .screen[data-state="prev"]{transform:translateX(-22%) scale(.96);opacity:0;filter:blur(8px);pointer-events:none}
 .screen[data-state="next"]{transform:translateX(22%) scale(.96);opacity:0;filter:blur(8px);pointer-events:none}
 
-/* ── BOTTOM NAV ─────────────────────────────────────────── */
 .bnav{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;z-index:100;
   background:rgba(20,20,22,.78);backdrop-filter:blur(28px) saturate(150%);
@@ -110,7 +105,6 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .bnav-item.on{color:var(--gold)}
 .bnav-item.on::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:18px;height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 12px var(--gold-glow)}
 
-/* ── COMMON ─────────────────────────────────────────────── */
 .hero{padding:18px 22px 4px;display:flex;flex-direction:column;gap:6px}
 .hero-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
 .hero-title{font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.05;color:#fff}
@@ -139,7 +133,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
 .loading{padding:48px 20px;text-align:center;color:var(--text-3);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
 
-/* ════════════════════════════════════════════════════════ TREINO */
+/* ════ TREINO */
 .treino-hero{padding:16px 22px 18px}
 .hero-row{display:flex;gap:18px;align-items:center}
 .hero-row .ring{flex:0 0 auto}
@@ -227,7 +221,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .btn-register.ready{box-shadow:0 0 30px var(--gold-glow);animation:pulse 1.8s ease infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 20px var(--gold-glow)}50%{box-shadow:0 0 40px var(--gold-glow)}}
 
-/* ════════════════════════════════════════════════════════ EVOLUÇÃO */
+/* ════ EVOLUÇÃO */
 .evo-hero{padding:16px 22px 8px}
 .kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px}
 .kpi{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:12px}
@@ -294,7 +288,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .heat-legend .swatch.l3{background:rgba(255,217,107,.52)}
 .heat-legend .swatch.l4{background:var(--gold)}
 
-/* ════════════════════════════════════════════════════════ NUTRIÇÃO */
+/* ════ NUTRIÇÃO */
 .macro-rings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px 6px}
 .m-ring{
   background:var(--surface-1);border:1px solid var(--hairline);
@@ -333,7 +327,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .meal-macros{display:flex;gap:14px;font-family:var(--mono);font-size:10px;color:var(--text-2);font-weight:600;letter-spacing:.04em;padding-left:62px;flex-wrap:wrap}
 .meal-macros span b{color:var(--text);font-weight:700}
 
-/* ════════════════════════════════════════════════════════ PERFIL */
+/* ════ PERFIL */
 .profile-hero{padding:24px 22px 12px;text-align:center}
 .avatar-big{
   width:96px;height:96px;border-radius:28px;
@@ -351,6 +345,25 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .profile-name{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
 .profile-meta{font-size:13px;color:var(--text-2);margin-top:6px;font-weight:500}
 .profile-meta em{font-style:normal;color:var(--gold);font-weight:700}
+
+/* ── BIOMETRIA ── */
+.bio-card{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
+.bio-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:14px}
+.bio-kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.bio-kpi{background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;padding:10px 10px 8px;text-align:center}
+.bio-kpi-v{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
+.bio-kpi-v span{font-size:11px;color:var(--text-2);font-weight:500;letter-spacing:0}
+.bio-kpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-top:4px}
+.bio-kpi.accent .bio-kpi-v{color:var(--gold)}
+.bio-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--hairline)}
+.bio-row:first-of-type{border-top:0}
+.bio-row-l{font-size:13px;color:var(--text-2);font-weight:500}
+.bio-row-r{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);letter-spacing:-.01em}
+.bio-divider{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;padding:10px 0 4px;border-top:1px solid var(--hairline);margin-top:4px}
+.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.bio-grid .bio-row{padding:8px 0}
+.bio-grid .bio-row:nth-child(odd){padding-right:10px}
+.bio-grid .bio-row:nth-child(even){padding-left:10px;border-left:1px solid var(--hairline)}
 
 .level-card{margin:14px 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
 .level-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
@@ -408,11 +421,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .orient-text{font-size:13px;color:var(--text-2);line-height:1.55;font-weight:500}
 .orient-text b{color:#fff;font-weight:700}
 
-/* ── TOAST ──────────────────────────────────────────────── */
 .toast{position:fixed;bottom:calc(96px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:rgba(28,28,30,.95);border:1px solid var(--hairline-strong);backdrop-filter:blur(20px);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;padding:12px 24px;border-radius:30px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .toast.show{opacity:1}
 
-/* ── SUCCESS BANNER ─────────────────────────────────────── */
 .success-banner{background:rgba(95,227,211,.08);border:1.5px solid rgba(95,227,211,.3);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
 .success-banner.show{display:flex}
 .success-icon{font-size:24px}
@@ -424,7 +435,6 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 <div class="app">
 
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="brand">JO SILVA PT</div>
     <div class="topbar-r">
@@ -469,9 +479,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
       </div>
 
       <div class="chips" id="treino-chips"></div>
-
       <div id="ex-list"></div>
-
       <div id="treino-loading" class="loading" data-i18n="loading">A CARREGAR…</div>
 
       <div id="success-banner" class="success-banner">
@@ -547,11 +555,6 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
           </div>
           <div class="x-axis" id="x-axis"></div>
         </div>
-      </div>
-
-      <div class="section in" style="animation-delay:.32s" id="cmp-section" style="display:none">
-        <div class="sec-header"><div class="sec-title" data-i18n="evo_cmp">Composição corporal</div></div>
-        <div class="card cmp" id="cmp-list"></div>
       </div>
 
       <div class="section in" style="animation-delay:.4s">
@@ -667,6 +670,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         <div class="profile-name" id="pf-name">A carregar…</div>
         <div class="profile-meta" id="pf-meta"></div>
       </div>
+
+      <!-- bio-card inserido aqui pelo JS -->
 
       <div class="level-card in" style="animation-delay:.08s">
         <div class="level-row">
