@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Meu Treino · Jo Silva PT</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD96B">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Jo Silva PT">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#000;
+  --surface-1:rgba(255,255,255,.04);
+  --surface-2:rgba(255,255,255,.06);
+  --surface-3:rgba(255,255,255,.08);
+  --hairline:rgba(255,255,255,.08);
+  --hairline-strong:rgba(255,255,255,.14);
+  --text:#fff;
+  --text-2:rgba(255,255,255,.62);
+  --text-3:rgba(255,255,255,.38);
+  --gold:#FFD96B;
+  --gold-2:#E5B23A;
+  --gold-glow:rgba(255,217,107,.35);
+  --coral:#FF6B6B;
+  --aqua:#5FE3D3;
+  --violet:#A78BFA;
+  --font:'Inter',-apple-system,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --t-fast:.24s cubic-bezier(.4,0,.2,1);
+  --t:.42s cubic-bezier(.4,0,.2,1);
+  --t-slow:.72s cubic-bezier(.4,0,.2,1);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+html,body{background:#000;color:var(--text);font-family:var(--font);min-height:100vh;font-feature-settings:'ss01','cv11';-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit;border:0;background:none;cursor:pointer}
+
+.app{
+  position:relative;width:100vw;min-height:100vh;
+  max-width:600px;margin:0 auto;background:#000;
+  display:flex;flex-direction:column;
+}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px 10px;gap:12px;flex-shrink:0;
+  border-bottom:1px solid var(--hairline);
+  background:rgba(0,0,0,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  position:sticky;top:0;z-index:50;
+}
+.brand{font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--gold);transition:color var(--t-fast)}
+.topbar-r{display:flex;align-items:center;gap:14px}
+.lang-toggle{display:flex;gap:6px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.05em;align-items:center}
+.lang-toggle span{color:var(--text-3);cursor:pointer;transition:color var(--t-fast);padding:2px 1px}
+.lang-toggle span.on{color:var(--gold)}
+.lang-sep{color:var(--text-3);opacity:.5;cursor:default}
+.color-picker{display:flex;gap:6px;align-items:center}
+.color-swatch{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--c);border:1.5px solid rgba(255,255,255,.16);
+  cursor:pointer;transition:transform var(--t-fast),box-shadow var(--t-fast),border-color var(--t-fast);
+  padding:0;
+}
+.color-swatch:hover{transform:scale(1.1);border-color:rgba(255,255,255,.36)}
+.color-swatch.on{border-color:#fff;transform:scale(1.2);box-shadow:0 0 10px var(--c)}
+
+.screen-wrap{flex:1;position:relative;overflow:hidden;min-height:calc(100vh - 56px)}
+
+.screen{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  transition:transform var(--t),opacity var(--t),filter var(--t);
+  will-change:transform,opacity;
+  padding-bottom:calc(110px + var(--safe-bottom));
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.screen::-webkit-scrollbar{display:none}
+.screen[data-state="active"]{transform:translateX(0);opacity:1;filter:blur(0);pointer-events:auto}
+.screen[data-state="prev"]{transform:translateX(-22%) scale(.96);opacity:0;filter:blur(8px);pointer-events:none}
+.screen[data-state="next"]{transform:translateX(22%) scale(.96);opacity:0;filter:blur(8px);pointer-events:none}
+
+.bnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;z-index:100;
+  background:rgba(20,20,22,.78);backdrop-filter:blur(28px) saturate(150%);
+  -webkit-backdrop-filter:blur(28px) saturate(150%);
+  border-top:1px solid var(--hairline);
+  display:flex;padding:10px 8px;padding-bottom:calc(14px + var(--safe-bottom));gap:2px;
+}
+.bnav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px 4px;color:var(--text-3);transition:color var(--t-fast);position:relative;
+  border-radius:10px;
+}
+.bnav-icon{width:24px;height:24px}
+.bnav-icon svg{width:100%;height:100%;display:block;stroke:currentColor}
+.bnav-lbl{font-size:10px;font-weight:600;letter-spacing:-.005em}
+.bnav-item.on{color:var(--gold)}
+.bnav-item.on::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:18px;height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 12px var(--gold-glow)}
+
+.hero{padding:18px 22px 4px;display:flex;flex-direction:column;gap:6px}
+.hero-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.hero-title{font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.05;color:#fff}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-sub{font-size:14px;color:var(--text-2);font-weight:500}
+
+.section{padding:18px 16px 0}
+.sec-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;padding:0 6px}
+.sec-title{font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.14em}
+.sec-link{font-size:13px;color:var(--gold);font-weight:600;letter-spacing:-.01em;cursor:pointer}
+
+.card{
+  background:var(--surface-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--hairline);border-radius:18px;padding:16px;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,transparent 40%);
+}
+
+.in{animation:revealUp .55s cubic-bezier(.4,0,.2,1) both}
+@keyframes revealUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.empty{padding:48px 20px;text-align:center;color:var(--text-3);font-size:14px}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
+.loading{padding:48px 20px;text-align:center;color:var(--text-3);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+
+/* ════ TREINO */
+.treino-hero{padding:16px 22px 18px}
+.hero-row{display:flex;gap:18px;align-items:center}
+.hero-row .ring{flex:0 0 auto}
+
+.ring{position:relative;width:120px;height:120px}
+.ring svg{transform:rotate(-90deg);overflow:visible}
+.ring-track{fill:none;stroke:var(--surface-3);stroke-width:9}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:9;stroke-linecap:round;filter:drop-shadow(0 0 8px var(--gold-glow));transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
+.ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring-pct{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
+.ring-sub{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin-top:4px;font-weight:600}
+
+.hero-info{flex:1;min-width:0}
+.hero-info .label{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.hero-info .name{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:4px;line-height:1.1}
+.hero-info .meta{font-size:13px;color:var(--text-2);margin-top:6px;display:flex;gap:14px;flex-wrap:wrap}
+.hero-info .meta-item{display:flex;align-items:center;gap:5px;font-weight:500}
+.meta-num{color:var(--gold);font-weight:700}
+
+.chips{display:flex;gap:8px;padding:14px 16px 4px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;padding:8px 14px;border-radius:99px;
+  background:var(--surface-1);border:1px solid var(--hairline);
+  color:var(--text-2);font-size:13px;font-weight:600;letter-spacing:-.01em;
+  transition:all var(--t-fast);white-space:nowrap;
+}
+.chip.on{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 0 20px rgba(255,217,107,.18)}
+
+.ex{
+  margin:10px 16px 0;background:var(--surface-1);border:1px solid var(--hairline);
+  border-radius:20px;padding:16px;position:relative;overflow:hidden;
+  transition:all var(--t-fast);
+}
+.ex.done{border-color:rgba(95,227,211,.4);background:rgba(95,227,211,.04)}
+.ex.done::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--aqua);box-shadow:0 0 12px rgba(95,227,211,.6)}
+
+.ex-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.ex-num{
+  flex-shrink:0;width:34px;height:34px;border-radius:10px;
+  background:var(--surface-2);border:1px solid var(--hairline);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text-2);letter-spacing:-.02em;
+}
+.ex.done .ex-num{background:var(--aqua);color:#000;border-color:var(--aqua)}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-size:16px;font-weight:700;letter-spacing:-.015em;line-height:1.2}
+.ex-meta{font-size:12px;color:var(--text-2);margin-top:4px;font-weight:500}
+.ex-obs{font-size:12px;color:var(--text-3);margin-top:6px;font-style:italic;line-height:1.4}
+
+.carga-block{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface-2);border-radius:14px;padding:10px 14px;margin-bottom:10px;
+}
+.carga-btn{
+  width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);
+  border:1px solid var(--hairline);font-size:18px;font-weight:600;color:#fff;
+  display:flex;align-items:center;justify-content:center;transition:all var(--t-fast);
+}
+.carga-btn:active{transform:scale(.92);background:var(--gold);color:#000}
+.carga-mid{text-align:center}
+.carga-val{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
+.carga-val .kg{font-size:13px;color:var(--text-2);font-weight:500;letter-spacing:0;margin-left:3px}
+.carga-delta{font-family:var(--mono);font-size:10px;color:var(--aqua);margin-top:4px;font-weight:600;letter-spacing:.04em}
+.carga-delta.flat{color:var(--text-3)}
+.carga-delta.dn{color:var(--coral)}
+
+.sets{display:flex;gap:6px}
+.set-pip{
+  flex:1;height:36px;border-radius:10px;background:var(--surface-2);
+  border:1px solid var(--hairline);color:var(--text-2);
+  font-size:13px;font-weight:700;letter-spacing:-.02em;
+  transition:all var(--t-fast);
+}
+.set-pip:hover{border-color:var(--hairline-strong);color:#fff}
+.set-pip.on{background:var(--aqua);color:#000;border-color:var(--aqua);box-shadow:0 0 12px rgba(95,227,211,.4)}
+
+.btn-register{
+  width:calc(100% - 32px);margin:18px 16px 0;padding:17px;
+  background:var(--gold);color:#000;border-radius:16px;
+  font-size:15px;font-weight:700;letter-spacing:-.01em;
+  transition:all var(--t-fast);position:relative;overflow:hidden;
+}
+.btn-register:disabled{background:var(--surface-2);color:var(--text-3)}
+.btn-register.ready{box-shadow:0 0 30px var(--gold-glow);animation:pulse 1.8s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px var(--gold-glow)}50%{box-shadow:0 0 40px var(--gold-glow)}}
+
+/* ════ EVOLUÇÃO */
+.evo-hero{padding:16px 22px 8px}
+.kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px}
+.kpi{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:12px}
+.kpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.kpi-v{font-size:24px;font-weight:800;letter-spacing:-.025em;margin-top:6px;line-height:1;color:#fff}
+.kpi-d{font-family:var(--mono);font-size:10px;color:var(--aqua);margin-top:4px;font-weight:600;letter-spacing:.02em}
+.kpi-d.dn{color:var(--coral)}
+.kpi-d.flat{color:var(--text-3)}
+
+.chart-card{margin:6px 16px 12px}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:10px}
+.chart-select{
+  background:var(--surface-2);border:1px solid var(--hairline);
+  border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text);font-weight:600;
+  outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;max-width:200px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'><path d='M0 0l4 6 4-6z' fill='%23999'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:24px;
+}
+.chart-stat{display:flex;align-items:baseline;gap:8px;margin:6px 0 14px;flex-wrap:wrap}
+.chart-stat-v{font-size:42px;font-weight:800;letter-spacing:-.035em;line-height:1;color:#fff;font-feature-settings:'tnum'}
+.chart-stat-u{font-size:14px;color:var(--text-2);font-weight:600}
+.chart-stat-d{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;
+  color:var(--aqua);margin-left:auto;align-self:center;
+  background:rgba(95,227,211,.1);border-radius:6px;padding:3px 8px;
+}
+.chart-stat-d.dn{color:var(--coral);background:rgba(255,107,107,.1)}
+.chart-stat-d.flat{color:var(--text-3);background:var(--surface-2)}
+
+.chart-wrap{position:relative;height:140px;margin:8px -4px 0}
+.chart-wrap svg{width:100%;height:100%;overflow:visible}
+.chart-line-styled{stroke:var(--gold);filter:drop-shadow(0 2px 8px var(--gold-glow))}
+.x-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:8px;padding:0 4px;letter-spacing:.04em;font-weight:600}
+
+.cmp{margin:6px 16px 12px}
+.cmp-bar{display:grid;grid-template-columns:84px 1fr 70px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--hairline)}
+.cmp-bar:first-of-type{border-top:0}
+.cmp-label{font-size:13px;color:var(--text);font-weight:500;letter-spacing:-.01em}
+.cmp-track{position:relative;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.cmp-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--gold-2),var(--gold));border-radius:4px;transition:width 1.4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--gold-glow)}
+.cmp-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--gold);text-align:right;letter-spacing:-.02em}
+
+.pr-list{margin:0 16px}
+.pr-row{display:flex;align-items:center;gap:14px;padding:14px 4px;border-top:1px solid var(--hairline)}
+.pr-row:first-of-type{border-top:0}
+.pr-ico{width:36px;height:36px;border-radius:11px;background:rgba(255,217,107,.12);border:1px solid rgba(255,217,107,.24);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:16px;flex-shrink:0}
+.pr-mid{flex:1;min-width:0}
+.pr-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-.01em}
+.pr-date{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px;font-weight:600;letter-spacing:.04em}
+.pr-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--gold);text-align:right}
+.pr-delta{font-family:var(--mono);font-size:10px;color:var(--aqua);font-weight:600;margin-top:2px;text-align:right}
+
+.heat-card{margin:6px 16px 12px;padding:16px}
+.heat-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:12px}
+.heat-cell{aspect-ratio:1;border-radius:3px;background:var(--surface-2);transition:transform .2s}
+.heat-cell.l1{background:rgba(255,217,107,.16)}
+.heat-cell.l2{background:rgba(255,217,107,.32)}
+.heat-cell.l3{background:rgba(255,217,107,.52)}
+.heat-cell.l4{background:var(--gold);box-shadow:0 0 6px var(--gold-glow)}
+.heat-legend{display:flex;align-items:center;gap:5px;margin-top:10px;font-family:var(--mono);font-size:9px;color:var(--text-3);font-weight:600;letter-spacing:.04em}
+.heat-legend .swatch{width:10px;height:10px;border-radius:2px;background:var(--surface-2)}
+.heat-legend .swatch.l1{background:rgba(255,217,107,.16)}
+.heat-legend .swatch.l2{background:rgba(255,217,107,.32)}
+.heat-legend .swatch.l3{background:rgba(255,217,107,.52)}
+.heat-legend .swatch.l4{background:var(--gold)}
+
+/* ════ NUTRIÇÃO */
+.macro-rings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px 6px}
+.m-ring{
+  background:var(--surface-1);border:1px solid var(--hairline);
+  border-radius:18px;padding:14px 10px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.m-ring-wrap{position:relative;width:88px;height:88px;margin:0 auto}
+.m-ring-wrap svg{transform:rotate(-90deg);overflow:visible}
+.m-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.m-num{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;font-feature-settings:'tnum'}
+.m-unit{font-family:var(--mono);font-size:9px;color:var(--text-3);font-weight:600;margin-top:2px;letter-spacing:.04em}
+.m-label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2);font-weight:600;margin-top:10px}
+
+.water{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface-1);border:1px solid var(--hairline);
+  border-radius:18px;padding:14px 16px;margin:6px 16px 12px;
+}
+.water-left{flex-shrink:0}
+.water-val{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--aqua);font-feature-settings:'tnum'}
+.water-unit{font-size:13px;color:var(--text-2);font-weight:500;margin-top:2px}
+.water-dots{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.water-dot{
+  flex:1;min-width:18px;height:30px;border-radius:7px;
+  background:var(--surface-2);border:1px solid var(--hairline);
+  transition:all var(--t-fast);cursor:pointer;
+}
+.water-dot.on{background:rgba(95,227,211,.2);border-color:rgba(95,227,211,.4);box-shadow:0 0 8px rgba(95,227,211,.3)}
+
+.meal{margin:0 16px 8px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:14px 16px}
+.meal-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.meal-time{flex-shrink:0;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--gold);letter-spacing:.04em;width:50px}
+.meal-name{flex:1;font-size:15px;font-weight:700;letter-spacing:-.015em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meal-kcal{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;letter-spacing:-.02em;flex-shrink:0}
+.meal-kcal small{color:var(--text-3);font-weight:500;margin-left:3px;font-size:10px}
+.meal-macros{display:flex;gap:14px;font-family:var(--mono);font-size:10px;color:var(--text-2);font-weight:600;letter-spacing:.04em;padding-left:62px;flex-wrap:wrap}
+.meal-macros span b{color:var(--text);font-weight:700}
+
+/* ════ PERFIL */
+.profile-hero{padding:24px 22px 12px;text-align:center}
+.avatar-big{
+  width:96px;height:96px;border-radius:28px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  display:flex;align-items:center;justify-content:center;
+  color:#000;font-size:38px;font-weight:900;letter-spacing:-.04em;
+  margin:0 auto 14px;
+  box-shadow:0 12px 40px rgba(255,217,107,.3);position:relative;
+}
+.avatar-big::after{
+  content:'';position:absolute;inset:-3px;border-radius:31px;
+  background:linear-gradient(135deg,rgba(255,217,107,.5),transparent 60%);
+  z-index:-1;filter:blur(8px);
+}
+.profile-name{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.profile-meta{font-size:13px;color:var(--text-2);margin-top:6px;font-weight:500}
+.profile-meta em{font-style:normal;color:var(--gold);font-weight:700}
+
+/* ── BIOMETRIA ── */
+.bio-card{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
+.bio-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:14px}
+.bio-kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.bio-kpi{background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;padding:10px 10px 8px;text-align:center}
+.bio-kpi-v{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
+.bio-kpi-v span{font-size:11px;color:var(--text-2);font-weight:500;letter-spacing:0}
+.bio-kpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-top:4px}
+.bio-kpi.accent .bio-kpi-v{color:var(--gold)}
+.bio-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--hairline)}
+.bio-row:first-of-type{border-top:0}
+.bio-row-l{font-size:13px;color:var(--text-2);font-weight:500}
+.bio-row-r{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);letter-spacing:-.01em}
+.bio-divider{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;padding:10px 0 4px;border-top:1px solid var(--hairline);margin-top:4px}
+.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.bio-grid .bio-row{padding:8px 0}
+.bio-grid .bio-row:nth-child(odd){padding-right:10px}
+.bio-grid .bio-row:nth-child(even){padding-left:10px;border-left:1px solid var(--hairline)}
+
+.level-card{margin:14px 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
+.level-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.level-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.level-num{font-size:32px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.level-num em{font-style:normal;color:var(--gold)}
+.level-xp{font-family:var(--mono);font-size:12px;color:var(--text-2);font-weight:600}
+.level-xp b{color:var(--gold);font-weight:700}
+.xp-bar{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;position:relative}
+.xp-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold-2),var(--gold));border-radius:5px;transition:width 1.6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px var(--gold-glow);position:relative}
+.xp-fill::after{
+  content:'';position:absolute;inset:0;border-radius:5px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+  animation:shimmer 2.4s ease infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.level-footer{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.04em}
+
+.streak-card{margin:0 16px 12px;background:linear-gradient(135deg,rgba(255,107,107,.12),rgba(255,217,107,.06));border:1px solid rgba(255,107,107,.24);border-radius:18px;padding:16px;display:flex;align-items:center;gap:16px;overflow:hidden;position:relative}
+.streak-card::before{content:'🔥';position:absolute;right:-14px;bottom:-24px;font-size:120px;opacity:.08;pointer-events:none}
+.streak-icon{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#FF6B6B,#FFD96B);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 8px 20px rgba(255,107,107,.3)}
+.streak-mid{flex:1;min-width:0;z-index:1}
+.streak-num{font-size:36px;font-weight:900;letter-spacing:-.03em;line-height:1;color:#fff}
+.streak-num small{font-size:14px;color:var(--text-2);font-weight:600;margin-left:4px;letter-spacing:-.01em}
+.streak-sub{font-size:12px;color:var(--text-2);margin-top:4px;font-weight:500}
+.streak-sub b{color:#FF6B6B;font-weight:700}
+
+.badges{padding:6px 16px 12px}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.badge{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:14px 8px;text-align:center;transition:all var(--t-fast);position:relative}
+.badge.on{background:linear-gradient(180deg,rgba(255,217,107,.1),var(--surface-1));border-color:rgba(255,217,107,.32)}
+.badge.locked{opacity:.42}
+.badge-ico{width:42px;height:42px;border-radius:13px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--hairline);font-size:18px;color:var(--text-3)}
+.badge.on .badge-ico{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#000;border-color:transparent;box-shadow:0 4px 14px rgba(255,217,107,.4)}
+.badge-lbl{font-size:11px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.badge-sub{font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:3px;font-weight:600;letter-spacing:.04em}
+.badge.on .badge-sub{color:var(--gold)}
+
+.pt-card{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.pt-row{display:flex;align-items:center;gap:14px}
+.pt-avatar{width:54px;height:54px;border-radius:16px;flex-shrink:0;background:linear-gradient(135deg,#A78BFA,#5FE3D3);display:flex;align-items:center;justify-content:center;color:#000;font-size:18px;font-weight:900;letter-spacing:-.02em}
+.pt-info{flex:1;min-width:0}
+.pt-name{font-size:16px;font-weight:700;letter-spacing:-.015em}
+.pt-cargo{font-family:var(--mono);font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+.pt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pt-btn{padding:11px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;font-size:13px;font-weight:600;color:#fff;letter-spacing:-.01em;transition:all var(--t-fast);text-decoration:none;display:flex;align-items:center;justify-content:center;text-align:center}
+.pt-btn:hover{border-color:var(--hairline-strong);background:var(--surface-3)}
+.pt-btn.primary{background:var(--gold);color:#000;border-color:var(--gold)}
+
+.orient{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:18px}
+.orient-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:14px}
+.orient-row{display:flex;gap:14px;padding:12px 0;border-top:1px solid var(--hairline)}
+.orient-row:first-of-type{border-top:0;padding-top:0}
+.orient-num{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:rgba(255,217,107,.12);border:1px solid rgba(255,217,107,.24);font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);display:flex;align-items:center;justify-content:center}
+.orient-text{font-size:13px;color:var(--text-2);line-height:1.55;font-weight:500}
+.orient-text b{color:#fff;font-weight:700}
+
+.toast{position:fixed;bottom:calc(96px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:rgba(28,28,30,.95);border:1px solid var(--hairline-strong);backdrop-filter:blur(20px);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;padding:12px 24px;border-radius:30px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.show{opacity:1}
+
+.success-banner{background:rgba(95,227,211,.08);border:1.5px solid rgba(95,227,211,.3);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
+.success-banner.show{display:flex}
+.success-icon{font-size:24px}
+.success-text{font-size:14px;color:var(--aqua);font-weight:600}
+.success-sub{font-size:12px;color:var(--text-2);margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">JO SILVA PT</div>
+    <div class="topbar-r">
+      <div class="lang-toggle">
+        <span class="on" data-lang="pt">PT</span>
+        <span class="lang-sep">|</span>
+        <span data-lang="en">EN</span>
+      </div>
+      <div class="color-picker" role="radiogroup" aria-label="Esquema de cores">
+        <button class="color-swatch on" data-accent="gold"  style="--c:#FFD96B" aria-label="Dourado"></button>
+        <button class="color-swatch"     data-accent="green" style="--c:#5FE3D3" aria-label="Verde"></button>
+        <button class="color-swatch"     data-accent="red"   style="--c:#FF6B6B" aria-label="Vermelho"></button>
+        <button class="color-swatch"     data-accent="blue"  style="--c:#5FA8FF" aria-label="Azul"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap" id="screen-wrap">
+
+    <!-- ════ TREINO ════ -->
+    <div class="screen" data-screen="treino" data-state="active">
+      <div class="hero treino-hero">
+        <div class="hero-kicker" id="t-kicker">Hoje</div>
+        <div class="hero-row">
+          <div class="ring">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-track" cx="50" cy="50" r="44"/>
+              <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="44"
+                      stroke-dasharray="276.5" stroke-dashoffset="276.5"/>
+            </svg>
+            <div class="ring-text">
+              <div class="ring-pct" id="ring-pct">0%</div>
+              <div class="ring-sub" data-i18n="ring-sub">Sessão</div>
+            </div>
+          </div>
+          <div class="hero-info">
+            <div class="label" id="t-label">—</div>
+            <div class="name" id="t-name">A carregar…</div>
+            <div class="meta" id="t-meta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chips" id="treino-chips"></div>
+      <div id="ex-list"></div>
+      <div id="treino-loading" class="loading" data-i18n="loading">A CARREGAR…</div>
+
+      <div id="success-banner" class="success-banner">
+        <div class="success-icon">🏆</div>
+        <div>
+          <div class="success-text" data-i18n="sucesso">Sessão registada!</div>
+          <div class="success-sub" data-i18n="sucesso_sub">Excelente trabalho. Até ao próximo treino!</div>
+        </div>
+      </div>
+
+      <button class="btn-register" id="btn-reg" disabled data-i18n="reg_start">Marca uma série para começar</button>
+    </div>
+
+    <!-- ════ EVOLUÇÃO ════ -->
+    <div class="screen" data-screen="evolucao" data-state="next">
+      <div class="hero evo-hero">
+        <div class="hero-kicker" data-i18n="evo_kicker">Resumo · 90 dias</div>
+        <div class="hero-title" data-i18n="evo_title">A tua evolução,<br><em>visualizada.</em></div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi in" style="animation-delay:.06s">
+          <div class="kpi-l" data-i18n="kpi_sessoes">Sessões</div>
+          <div class="kpi-v" id="kpi-sessoes">0</div>
+          <div class="kpi-d" id="kpi-sessoes-d">—</div>
+        </div>
+        <div class="kpi in" style="animation-delay:.12s">
+          <div class="kpi-l" data-i18n="kpi_streak">Streak</div>
+          <div class="kpi-v" id="kpi-streak">0</div>
+          <div class="kpi-d" id="kpi-streak-d" data-i18n="recorde">recorde</div>
+        </div>
+        <div class="kpi in" style="animation-delay:.18s">
+          <div class="kpi-l" data-i18n="kpi_volume">Volume kg</div>
+          <div class="kpi-v" id="kpi-volume">0</div>
+          <div class="kpi-d" id="kpi-volume-d">—</div>
+        </div>
+      </div>
+
+      <div class="section in" style="animation-delay:.24s">
+        <div class="sec-header"><div class="sec-title" data-i18n="evo_chart_title">Progressão de carga</div></div>
+        <div class="card chart-card">
+          <div class="chart-head">
+            <select class="chart-select" id="evo-select">
+              <option value="" data-i18n="sel_ex">Selecione um exercício…</option>
+            </select>
+          </div>
+          <div class="chart-stat">
+            <span class="chart-stat-v" id="chart-val">—</span>
+            <span class="chart-stat-u">kg</span>
+            <span class="chart-stat-d flat" id="chart-delta">—</span>
+          </div>
+          <div class="chart-wrap">
+            <svg viewBox="0 0 320 140" preserveAspectRatio="none" id="chart-svg">
+              <defs>
+                <linearGradient id="g-area" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#FFD96B" stop-opacity=".5"/>
+                  <stop offset="100%" stop-color="#FFD96B" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <g stroke="rgba(255,255,255,.06)" stroke-dasharray="2 3">
+                <line x1="0" y1="35" x2="320" y2="35"/>
+                <line x1="0" y1="70" x2="320" y2="70"/>
+                <line x1="0" y1="105" x2="320" y2="105"/>
+              </g>
+              <path id="chart-area" fill="url(#g-area)" d=""/>
+              <path id="chart-line" class="chart-line-styled" fill="none" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round"
+                    stroke-dasharray="2000" stroke-dashoffset="2000"
+                    style="transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)"
+                    d=""/>
+              <g id="chart-dots"></g>
+            </svg>
+          </div>
+          <div class="x-axis" id="x-axis"></div>
+        </div>
+      </div>
+
+      <div class="section in" style="animation-delay:.4s">
+        <div class="sec-header"><div class="sec-title" data-i18n="evo_pr">Recordes pessoais</div></div>
+        <div class="card">
+          <div class="pr-list" id="pr-list">
+            <div class="empty" data-i18n="evo_no_pr">Ainda sem recordes. Treina mais sessões!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section in" style="animation-delay:.48s">
+        <div class="sec-header"><div class="sec-title" data-i18n="evo_heat">Atividade · 13 semanas</div></div>
+        <div class="card heat-card">
+          <div class="heat-grid" id="heat-grid"></div>
+          <div class="heat-legend">
+            <span data-i18n="heat_less">Menos</span>
+            <span class="swatch"></span>
+            <span class="swatch l1"></span>
+            <span class="swatch l2"></span>
+            <span class="swatch l3"></span>
+            <span class="swatch l4"></span>
+            <span data-i18n="heat_more">Mais</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ NUTRIÇÃO ════ -->
+    <div class="screen" data-screen="nutricao" data-state="next">
+      <div class="hero">
+        <div class="hero-kicker" id="n-kicker">Hoje</div>
+        <div class="hero-title">
+          <span id="n-kcal">0</span>
+          <span style="font-size:18px;color:var(--text-2);font-weight:600;letter-spacing:-.01em">/ <span id="n-kcal-meta">2 000</span> kcal</span>
+        </div>
+        <div class="hero-sub"><em id="n-pct" style="color:var(--aqua);font-style:normal;font-weight:700">0%</em> <span data-i18n="n_meta_sub">da tua meta</span></div>
+      </div>
+
+      <div class="macro-rings">
+        <div class="m-ring in" style="animation-delay:.06s">
+          <div class="m-ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="9"/>
+              <circle id="m-p" cx="50" cy="50" r="44" fill="none" stroke="#FFD96B" stroke-width="9"
+                      stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"
+                      style="filter:drop-shadow(0 0 6px rgba(255,217,107,.5));transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)"/>
+            </svg>
+            <div class="m-ring-text">
+              <div class="m-num" id="n-prot">0</div>
+              <div class="m-unit">/<span id="n-prot-m">160</span>g</div>
+            </div>
+          </div>
+          <div class="m-label" data-i18n="n_prot">Proteína</div>
+        </div>
+        <div class="m-ring in" style="animation-delay:.12s">
+          <div class="m-ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="9"/>
+              <circle id="m-c" cx="50" cy="50" r="44" fill="none" stroke="#5FE3D3" stroke-width="9"
+                      stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"
+                      style="filter:drop-shadow(0 0 6px rgba(95,227,211,.5));transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)"/>
+            </svg>
+            <div class="m-ring-text">
+              <div class="m-num" id="n-carb">0</div>
+              <div class="m-unit">/<span id="n-carb-m">240</span>g</div>
+            </div>
+          </div>
+          <div class="m-label" data-i18n="n_carb">Carbo</div>
+        </div>
+        <div class="m-ring in" style="animation-delay:.18s">
+          <div class="m-ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="9"/>
+              <circle id="m-g" cx="50" cy="50" r="44" fill="none" stroke="#A78BFA" stroke-width="9"
+                      stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"
+                      style="filter:drop-shadow(0 0 6px rgba(167,139,250,.5));transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)"/>
+            </svg>
+            <div class="m-ring-text">
+              <div class="m-num" id="n-gord">0</div>
+              <div class="m-unit">/<span id="n-gord-m">75</span>g</div>
+            </div>
+          </div>
+          <div class="m-label" data-i18n="n_gord">Gordura</div>
+        </div>
+      </div>
+
+      <div class="water">
+        <div class="water-left">
+          <div class="water-val"><span id="water-count">0</span><span style="font-size:14px;color:var(--text-2);font-weight:500;margin-left:3px">/8</span></div>
+          <div class="water-unit" data-i18n="water">copos água</div>
+        </div>
+        <div class="water-dots" id="water-dots">
+          <div class="water-dot"></div><div class="water-dot"></div>
+          <div class="water-dot"></div><div class="water-dot"></div>
+          <div class="water-dot"></div><div class="water-dot"></div>
+          <div class="water-dot"></div><div class="water-dot"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-header"><div class="sec-title" data-i18n="n_meals">Refeições</div></div>
+      </div>
+      <div id="meals-list">
+        <div class="empty" data-i18n="n_no_meal">Sem refeições hoje. Adiciona pela app principal.</div>
+      </div>
+    </div>
+
+    <!-- ════ PERFIL ════ -->
+    <div class="screen" data-screen="perfil" data-state="next">
+      <div class="profile-hero">
+        <div class="avatar-big" id="pf-avatar">—</div>
+        <div class="profile-name" id="pf-name">A carregar…</div>
+        <div class="profile-meta" id="pf-meta"></div>
+      </div>
+
+      <!-- bio-card inserido aqui pelo JS -->
+
+      <div class="level-card in" style="animation-delay:.08s">
+        <div class="level-row">
+          <div>
+            <div class="level-l" data-i18n="pf_level">Nível atual</div>
+            <div class="level-num"><em id="pf-lvl">1</em></div>
+          </div>
+          <div style="text-align:right">
+            <div class="level-l">XP</div>
+            <div class="level-xp"><b id="pf-xp">0</b> / <span id="pf-xp-max">100</span></div>
+          </div>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+        <div class="level-footer">
+          <span id="lvl-from">Nv 1</span>
+          <span id="lvl-to-sub">— XP para próximo nível</span>
+          <span id="lvl-to">Nv 2</span>
+        </div>
+      </div>
+
+      <div class="streak-card in" style="animation-delay:.16s">
+        <div class="streak-icon">🔥</div>
+        <div class="streak-mid">
+          <div class="streak-num"><span id="streak-days">0</span><small data-i18n="streak_days">dias</small></div>
+          <div class="streak-sub" id="streak-sub" data-i18n="streak_active">streak ativo</div>
+        </div>
+      </div>
+
+      <div class="badges in" style="animation-delay:.24s">
+        <div class="sec-header"><div class="sec-title" data-i18n="pf_conquistas">Conquistas</div><div class="sec-link" id="badges-count">0 / 9</div></div>
+        <div class="badge-grid" id="badge-grid"></div>
+      </div>
+
+      <div class="pt-card in" style="animation-delay:.32s">
+        <div class="pt-row">
+          <div class="pt-avatar">JS</div>
+          <div class="pt-info">
+            <div class="pt-name">Jo Silva</div>
+            <div class="pt-cargo">Personal Trainer · CPT</div>
+          </div>
+        </div>
+        <div class="pt-actions">
+          <a class="pt-btn primary" id="pt-msg" href="#" data-i18n="pt_msg">Mensagem</a>
+          <a class="pt-btn" id="pt-call" href="#" data-i18n="pt_call">Ligar</a>
+        </div>
+      </div>
+
+      <div class="orient in" style="animation-delay:.4s">
+        <div class="orient-title" data-i18n="pf_orient">Orientações da semana</div>
+        <div id="orient-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bnav">
+    <button class="bnav-item on" data-screen="treino">
+      <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11"/></svg></div>
+      <div class="bnav-lbl" data-i18n="nav_treino">Treino</div>
+    </button>
+    <button class="bnav-item" data-screen="evolucao">
+      <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 18l4-6 4 2 5-8 5 4"/><path d="M3 21h18"/></svg></div>
+      <div class="bnav-lbl" data-i18n="nav_evolucao">Evolução</div>
+    </button>
+    <button class="bnav-item" data-screen="nutricao">
+      <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 4c-3 0-5 2-5 5 0 6 5 11 5 11s5-5 5-11c0-3-2-5-5-5z"/><circle cx="12" cy="9" r="1.5"/></svg></div>
+      <div class="bnav-lbl" data-i18n="nav_nutricao">Nutrição</div>
+    </button>
+    <button class="bnav-item" data-screen="perfil">
+      <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
+      <div class="bnav-lbl" data-i18n="nav_perfil">Perfil</div>
+    </button>
+  </nav>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="aluno-dev-app.js"></script>
+</body>
+</html>
