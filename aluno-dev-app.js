@@ -969,16 +969,16 @@ async function renderNutricao(){
     });
   }
 
-  // macro values + percentage text
-  document.getElementById('n-val-prot').textContent = Math.round(prot) + 'g';
-  document.getElementById('n-pct-prot').textContent = metaP ? Math.round(prot/metaP*100) + '%' : '0%';
-  document.getElementById('n-val-carb').textContent = Math.round(carb) + 'g';
-  document.getElementById('n-pct-carb').textContent = metaC ? Math.round(carb/metaC*100) + '%' : '0%';
-  document.getElementById('n-val-gord').textContent = Math.round(gord) + 'g';
-  document.getElementById('n-pct-gord').textContent = metaG ? Math.round(gord/metaG*100) + '%' : '0%';
+  // macro values + goal text
+  document.getElementById('n-prot').textContent   = Math.round(prot);
+  document.getElementById('n-prot-m').textContent = metaP;
+  document.getElementById('n-carb').textContent   = Math.round(carb);
+  document.getElementById('n-carb-m').textContent = metaC;
+  document.getElementById('n-gord').textContent   = Math.round(gord);
+  document.getElementById('n-gord-m').textContent = metaG;
 
-  // mini rings (C = 2π×22 ≈ 138)
-  const C = 138;
+  // macro rings (C = 2π×44 ≈ 276.5)
+  const C = 276.5;
   const setR = (id, val) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -989,11 +989,11 @@ async function renderNutricao(){
       el.style.strokeDashoffset = C * (1 - Math.min(1, val));
     });
   };
-  setR('n-ring-prot', metaP ? prot/metaP : 0);
-  setR('n-ring-carb', metaC ? carb/metaC : 0);
-  setR('n-ring-gord', metaG ? gord/metaG : 0);
+  setR('m-p', metaP ? prot/metaP : 0);
+  setR('m-c', metaC ? carb/metaC : 0);
+  setR('m-g', metaG ? gord/metaG : 0);
 
-  const ml = document.getElementById('meal-list');
+  const ml = document.getElementById('meals-list');
   if (!refs.length){
     ml.innerHTML = `<div class="empty">${T('n_no_meal')}</div>`;
   } else {
