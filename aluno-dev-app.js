@@ -1316,7 +1316,7 @@ function setupNav(){
   // FAB nutrição — mostrar/ocultar conforme screen
   document.querySelectorAll('.bnav-item').forEach(b =>
     b.addEventListener('click', () => {
-      const fab = document.getElementById('nut-fab');
+      const fab = document.getElementById('nutri-fab');
       if (fab) fab.style.display = b.dataset.screen === 'nutricao' ? 'flex' : 'none';
     }));
 }

@@ -46,7 +46,8 @@ button,input,select{font-family:inherit;color:inherit;font-size:inherit;border:0
 
 /* SCREENS */
 #app-wrap{flex:1;position:relative;overflow:hidden}
-.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(72px + var(--sb))}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(72px + var(--sb));scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
 .screen[data-state=active]{transform:translateX(0);z-index:2}
 .screen[data-state=prev]{transform:translateX(-100%);z-index:1}
 .screen[data-state=next]{transform:translateX(100%);z-index:1}
@@ -110,7 +111,7 @@ button,input,select{font-family:inherit;color:inherit;font-size:inherit;border:0
 .carga-delta.flat{color:var(--t3)}
 .carga-delta.dn{color:var(--coral)}
 .sets{display:flex;gap:6px;flex-wrap:wrap}
-.set-pip{width:34px;height:34px;border-radius:9px;background:var(--s2);border:1.5px solid var(--hl);font-size:.75rem;font-weight:700;color:var(--t3);transition:all var(--tf)}
+.set-pip{width:44px;height:44px;border-radius:10px;background:var(--s2);border:1.5px solid var(--hl);font-size:.8rem;font-weight:700;color:var(--t3);transition:all var(--tf)}
 .set-pip.on{background:var(--aqua);border-color:var(--aqua);color:#000}
 
 /* Botão registar */
