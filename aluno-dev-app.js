@@ -1139,11 +1139,10 @@ async function nutGuardar(){
     aluno_id:     ALUNO_ID,
     data:         todayISO(),
     tipo:         dados.nome,
-    calorias:     dados.kcal,
+    calorias:     Math.round(dados.kcal),
     proteina:     dados.prot,
     carboidratos: dados.carb,
     gordura:      dados.gord,
-    dados:        dados,
   };
   const res = await sb('refeicoes', { method:'POST', body: JSON.stringify(payload) });
   if (res?.[0]){
