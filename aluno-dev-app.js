@@ -479,7 +479,13 @@ async function init(){
   applyI18n();
   applyAccentFromStorage();
 
+  const hideLoader = () => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) { ls.style.transition = 'opacity .4s'; ls.style.opacity = '0'; setTimeout(() => ls.style.display = 'none', 420); }
+  };
+
   if (!ALUNO_ID) {
+    hideLoader();
     document.getElementById('treino-loading').innerHTML =
       '<div class="empty"><div class="empty-icon">🔗</div>Link inválido. Pede ao teu PT o link correto.</div>';
     return;
@@ -488,6 +494,7 @@ async function init(){
   const arr = await sb(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo,data_nascimento`);
   aluno = arr && arr[0];
   if (!aluno || !aluno.ativo) {
+    hideLoader();
     document.getElementById('treino-loading').innerHTML =
       '<div class="empty"><div class="empty-icon">⚠️</div>Acesso indisponível. Fala com o teu PT.</div>';
     return;
@@ -519,6 +526,7 @@ async function init(){
 
   await loadTreinos();
   renderPerfil();
+  hideLoader();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -949,28 +957,43 @@ async function renderNutricao(){
   const pct = meta ? Math.round((kcal/meta)*100) : 0;
   document.getElementById('n-pct').textContent       = pct + '%';
 
-  document.getElementById('n-prot').textContent   = Math.round(prot);
-  document.getElementById('n-prot-m').textContent = metaP;
-  document.getElementById('n-carb').textContent   = Math.round(carb);
-  document.getElementById('n-carb-m').textContent = metaC;
-  document.getElementById('n-gord').textContent   = Math.round(gord);
-  document.getElementById('n-gord-m').textContent = metaG;
+  // main kcal ring
+  const mainRing = document.getElementById('n-ring-progress');
+  if (mainRing) {
+    const DA = 264;
+    mainRing.style.transition = 'none';
+    mainRing.style.strokeDashoffset = DA;
+    requestAnimationFrame(() => {
+      mainRing.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)';
+      mainRing.style.strokeDashoffset = DA * (1 - Math.min(1, meta ? kcal/meta : 0));
+    });
+  }
 
-  const C = 276.5;
+  // macro values + percentage text
+  document.getElementById('n-val-prot').textContent = Math.round(prot) + 'g';
+  document.getElementById('n-pct-prot').textContent = metaP ? Math.round(prot/metaP*100) + '%' : '0%';
+  document.getElementById('n-val-carb').textContent = Math.round(carb) + 'g';
+  document.getElementById('n-pct-carb').textContent = metaC ? Math.round(carb/metaC*100) + '%' : '0%';
+  document.getElementById('n-val-gord').textContent = Math.round(gord) + 'g';
+  document.getElementById('n-pct-gord').textContent = metaG ? Math.round(gord/metaG*100) + '%' : '0%';
+
+  // mini rings (C = 2π×22 ≈ 138)
+  const C = 138;
   const setR = (id, val) => {
     const el = document.getElementById(id);
+    if (!el) return;
     el.style.transition = 'none';
     el.style.strokeDashoffset = C;
     requestAnimationFrame(() => {
-      el.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)';
+      el.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
       el.style.strokeDashoffset = C * (1 - Math.min(1, val));
     });
   };
-  setR('m-p', prot/metaP);
-  setR('m-c', carb/metaC);
-  setR('m-g', gord/metaG);
+  setR('n-ring-prot', metaP ? prot/metaP : 0);
+  setR('n-ring-carb', metaC ? carb/metaC : 0);
+  setR('n-ring-gord', metaG ? gord/metaG : 0);
 
-  const ml = document.getElementById('meals-list');
+  const ml = document.getElementById('meal-list');
   if (!refs.length){
     ml.innerHTML = `<div class="empty">${T('n_no_meal')}</div>`;
   } else {
@@ -1032,7 +1055,7 @@ function renderNutModal(){
         <input class="nut-qty-inp" type="number" value="${g}" min="1" max="2000"
           oninput="nutQty=parseInt(this.value)||0;renderNutModal()">
         <button class="nut-adj" onclick="nutAdj(10)">+10g</button>
-        <span style="color:var(--text-2);font-size:.85rem">g</span>
+        <span style="color:var(--t2);font-size:.85rem">g</span>
       </div>
       <div class="nut-macros-preview">
         <div class="nmp"><span>${Math.round(calcN(f,g,'kcal'))}</span><em>kcal</em></div>
@@ -1327,17 +1350,18 @@ function setupAccentPicker(){
     s.addEventListener('click', () => setAccent(s.dataset.accent)));
 }
 
+function setLang(lang){
+  LANG = lang;
+  try { localStorage.setItem('aluno_lang', LANG); } catch(e){}
+  applyI18n();
+  renderTreino();
+  renderPerfil();
+  if (currentScreen === 'evolucao') renderEvolucao();
+  if (currentScreen === 'nutricao') renderNutricao();
+}
 function setupLangToggle(){
   document.querySelectorAll('.lang-toggle [data-lang]').forEach(l =>
-    l.addEventListener('click', () => {
-      LANG = l.dataset.lang;
-      try { localStorage.setItem('aluno_lang', LANG); } catch(e){}
-      applyI18n();
-      renderTreino();
-      renderPerfil();
-      if (currentScreen === 'evolucao') renderEvolucao();
-      if (currentScreen === 'nutricao') renderNutricao();
-    }));
+    l.addEventListener('click', () => setLang(l.dataset.lang)));
 }
 function applyI18n(){
   document.documentElement.lang = LANG === 'en' ? 'en' : 'pt-PT';
