@@ -623,6 +623,16 @@ button,input,select{font-family:inherit;color:inherit;font-size:inherit;border:0
 
 <div id="toast"></div>
 
-<script src="aluno-dev-app.js"></script>
+<script src="aluno-dev-app.js?v=2"></script>
+<script>
+  // safety: hide loading screen after 12s if JS init fails silently
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    if (ls && ls.style.display !== 'none' && ls.style.opacity !== '0') {
+      ls.style.transition = 'opacity .4s'; ls.style.opacity = '0';
+      setTimeout(() => ls.style.display = 'none', 420);
+    }
+  }, 12000);
+</script>
 </body>
 </html>
