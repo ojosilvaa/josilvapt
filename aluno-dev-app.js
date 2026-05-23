@@ -941,7 +941,7 @@ async function renderNutricao(){
     const map = {kcal:'calorias', prot:'proteina', carb:'carboidratos', gord:'gordura'};
     return parseFloat(r[map[campo]] || r[campo]) || 0;
   };
-  const getNome = r => r.dados?.nome || r.tipo || (LANG==='pt'?'Refeição':'Meal');
+  const getNome = r => r.descricao_usuario || (LANG==='pt'?'Refeição':'Meal');
 
   const kcal = refs.reduce((s,r) => s + getVal(r,'kcal'), 0);
   const prot = refs.reduce((s,r) => s + getVal(r,'prot'), 0);
@@ -1136,13 +1136,14 @@ async function nutGuardar(){
   };
   // Guardar com colunas compatíveis com schema existente + dados JSON
   const payload = {
-    aluno_id:     ALUNO_ID,
-    data:         todayISO(),
-    tipo:         dados.nome,
-    calorias:     Math.round(dados.kcal),
-    proteina:     dados.prot,
-    carboidratos: dados.carb,
-    gordura:      dados.gord,
+    aluno_id:          ALUNO_ID,
+    data:              todayISO(),
+    tipo:              'texto',
+    descricao_usuario: dados.nome,
+    calorias:          Math.round(dados.kcal),
+    proteina:          dados.prot,
+    carboidratos:      dados.carb,
+    gordura:           dados.gord,
   };
   const res = await sb('refeicoes', { method:'POST', body: JSON.stringify(payload) });
   if (res?.[0]){
