@@ -1077,7 +1077,7 @@ function renderNutModal(){
   if (!nutTerm){
     const cats = [...new Set(ALIMENTOS_DB.map(a => a.cat))];
     resList.innerHTML = cats.map(c =>
-      `<div class="nut-cat" onclick="nutSearchCat('${c.replace(/'/g,"\\'")}'">${c} <span>›</span></div>`
+      `<div class="nut-cat" data-cat="${escapeHTML(c)}">${escapeHTML(c)} <span>›</span></div>`
     ).join('');
   } else {
     const term = nutTerm.toLowerCase();
@@ -1085,11 +1085,21 @@ function renderNutModal(){
       a.nome.toLowerCase().includes(term) || a.cat.toLowerCase().includes(term)
     ).slice(0, 40);
     resList.innerHTML = res.length
-      ? res.map(a => `<div class="nut-item" onclick="nutEscolher('${escapeHTML(a.nome).replace(/'/g,"\\'")}')">
+      ? res.map(a => `<div class="nut-item" data-nome="${escapeHTML(a.nome)}">
           <span>${escapeHTML(a.nome)}</span>
           <span class="nut-item-kcal">${a.kcal} kcal/100g</span>
         </div>`).join('')
       : `<div class="empty" style="padding:16px">Nenhum resultado.</div>`;
+  }
+
+  if (!resList.dataset.bound) {
+    resList.dataset.bound = '1';
+    resList.addEventListener('click', ev => {
+      const cat = ev.target.closest('[data-cat]');
+      if (cat) { nutSearchCat(cat.dataset.cat); return; }
+      const item = ev.target.closest('[data-nome]');
+      if (item) nutEscolher(item.dataset.nome);
+    });
   }
 }
 
