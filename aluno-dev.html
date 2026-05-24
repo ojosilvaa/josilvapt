@@ -257,13 +257,27 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 .chart-card{margin:6px 16px 12px}
 .chart-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:10px}
-.chart-select{
+.chart-select{display:none} /* substituído por dropdown custom */
+.chart-sel{position:relative;flex-shrink:0}
+.chart-sel-btn{display:flex;align-items:center;gap:8px;
   background:var(--surface-2);border:1px solid var(--hairline);
-  border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text);font-weight:600;
-  outline:none;-webkit-appearance:none;appearance:none;cursor:pointer;max-width:200px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'><path d='M0 0l4 6 4-6z' fill='%23999'/></svg>");
-  background-repeat:no-repeat;background-position:right 10px center;padding-right:24px;
-}
+  border-radius:8px;padding:7px 12px;font-size:12px;color:var(--text);font-weight:600;
+  cursor:pointer;max-width:220px;text-align:left;transition:border-color var(--t-fast)}
+.chart-sel-btn:hover{border-color:var(--hairline-strong)}
+.chart-sel-lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chart-sel-arr{flex-shrink:0;color:var(--text-3);transition:transform .2s}
+.chart-sel-btn.open .chart-sel-arr{transform:rotate(180deg)}
+.chart-sel-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:100%;
+  background:var(--surface-3);border:1px solid var(--hairline-strong);
+  border-radius:12px;z-index:500;overflow:hidden;max-height:0;
+  transition:max-height .22s cubic-bezier(.4,0,.2,1);overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.chart-sel-menu.open{max-height:240px}
+.chart-sel-opt{padding:11px 14px;font-size:13px;font-weight:500;color:var(--text-2);
+  cursor:pointer;transition:background var(--t-fast),color var(--t-fast);white-space:nowrap}
+.chart-sel-opt:hover{background:var(--surface-4);color:#fff}
+.chart-sel-opt.on{color:var(--gold);background:var(--gold-subtle)}
+
 .chart-stat{display:flex;align-items:baseline;gap:8px;margin:6px 0 14px;flex-wrap:wrap}
 .chart-stat-v{font-size:42px;font-weight:800;letter-spacing:-.035em;line-height:1;color:#fff;font-feature-settings:'tnum'}
 .chart-stat-u{font-size:14px;color:var(--text-2);font-weight:600}
@@ -595,9 +609,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
           <div class="kpi-d" id="kpi-sessoes-d">—</div>
         </div>
         <div class="kpi in" style="animation-delay:.12s">
-          <div class="kpi-l" data-i18n="kpi_streak">Streak</div>
-          <div class="kpi-v" id="kpi-streak">0</div>
-          <div class="kpi-d" id="kpi-streak-d" data-i18n="recorde">recorde</div>
+          <div class="kpi-l" data-i18n="kpi_freq">Frequência</div>
+          <div class="kpi-v" id="kpi-freq">—</div>
+          <div class="kpi-d flat" id="kpi-freq-d">/ semana</div>
         </div>
         <div class="kpi in" style="animation-delay:.18s">
           <div class="kpi-l" data-i18n="kpi_volume">Volume kg</div>
@@ -610,9 +624,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         <div class="sec-header"><div class="sec-title" data-i18n="evo_chart_title">Progressão de carga</div></div>
         <div class="card chart-card">
           <div class="chart-head">
-            <select class="chart-select" id="evo-select">
-              <option value="" data-i18n="sel_ex">Selecione um exercício…</option>
-            </select>
+            <div class="chart-sel" id="evo-sel">
+              <button class="chart-sel-btn" id="evo-sel-btn" type="button">
+                <span class="chart-sel-lbl" id="evo-sel-lbl" data-i18n="sel_ex">Selecione um exercício…</span>
+                <svg class="chart-sel-arr" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chart-sel-menu" id="evo-sel-menu"></div>
+            </div>
           </div>
           <div class="chart-stat">
             <span class="chart-stat-v" id="chart-val">—</span>

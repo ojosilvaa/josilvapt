@@ -13,7 +13,7 @@ const I18N = {
     'loading':'A CARREGAR…','ring-sub':'Sessão','reg_start':'Marca uma série para começar',
     'sucesso':'Sessão registada!','sucesso_sub':'Excelente trabalho. Até ao próximo treino!',
     'evo_kicker':'Resumo · 90 dias','evo_title':'A tua evolução,<br><em>visualizada.</em>',
-    'kpi_sessoes':'Sessões','kpi_streak':'Streak','kpi_volume':'Volume kg','recorde':'recorde',
+    'kpi_sessoes':'Sessões','kpi_freq':'Frequência','kpi_volume':'Volume kg',
     'evo_chart_title':'Progressão de carga','sel_ex':'Selecione um exercício…',
     'evo_cmp':'Composição corporal','evo_pr':'Recordes pessoais','evo_no_pr':'Ainda sem recordes. Treina mais sessões!',
     'evo_heat':'Atividade · 13 semanas','heat_less':'Menos','heat_more':'Mais',
@@ -51,7 +51,7 @@ const I18N = {
     'loading':'LOADING…','ring-sub':'Session','reg_start':'Tap a set to start',
     'sucesso':'Session saved!','sucesso_sub':'Great work. See you next time!',
     'evo_kicker':'Summary · 90 days','evo_title':'Your evolution,<br><em>visualised.</em>',
-    'kpi_sessoes':'Sessions','kpi_streak':'Streak','kpi_volume':'Volume kg','recorde':'record',
+    'kpi_sessoes':'Sessions','kpi_freq':'Frequency','kpi_volume':'Volume kg',
     'evo_chart_title':'Load progression','sel_ex':'Select an exercise…',
     'evo_cmp':'Body composition','evo_pr':'Personal records','evo_no_pr':'No records yet. Train more!',
     'evo_heat':'Activity · 13 weeks','heat_less':'Less','heat_more':'More',
@@ -824,32 +824,72 @@ async function renderEvolucao(){
   const last30 = sessoes.filter(s => daysAgo(s.data) <= 30).length;
   document.getElementById('kpi-sessoes-d').textContent = `+${last30} ${LANG==='pt'?'em 30 dias':'in 30 days'}`;
 
-  const streak = computeStreak();
-  document.getElementById('kpi-streak').textContent = streak;
-  document.getElementById('kpi-streak-d').textContent = streak > 0 ? T('recorde') : '—';
+  const s90 = sessoes.filter(s => daysAgo(s.data) <= 90).length;
+  const freq = s90 > 0 ? (s90 / (90/7)).toFixed(1) : '0.0';
+  document.getElementById('kpi-freq').textContent = freq + '×';
+  document.getElementById('kpi-freq-d').textContent = LANG==='pt' ? '/ semana' : '/ week';
 
   const vol = allCargasHist.reduce((s,c) => s + (parseFloat(c.carga_kg)||0), 0);
   document.getElementById('kpi-volume').textContent = Math.round(vol).toLocaleString('pt-PT');
   document.getElementById('kpi-volume-d').textContent = `${allCargasHist.length} ${LANG==='pt'?'registos':'records'}`;
 
-  const sel = document.getElementById('evo-select');
-  if (sel.options.length <= 1){
-    for (const t of treinos){
-      if (!exerciciosPorTreino[t.id]){
-        exerciciosPorTreino[t.id] = await sb(`exercicios?treino_id=eq.${t.id}&order=ordem.asc`) || [];
-      }
+  // carrega exercícios se necessário
+  for (const t of treinos){
+    if (!exerciciosPorTreino[t.id]){
+      exerciciosPorTreino[t.id] = await sb(`exercicios?treino_id=eq.${t.id}&order=ordem.asc`) || [];
     }
-    Object.values(exerciciosPorTreino).flat().forEach(ex => {
-      const o = document.createElement('option');
-      o.value = ex.id; o.textContent = ex.nome; sel.appendChild(o);
+  }
+
+  const selBtn  = document.getElementById('evo-sel-btn');
+  const selMenu = document.getElementById('evo-sel-menu');
+  const selLbl  = document.getElementById('evo-sel-lbl');
+
+  // fecha o menu ao clicar fora
+  if (!selMenu.dataset.bound){
+    selBtn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      selBtn.classList.toggle('open');
+      selMenu.classList.toggle('open');
     });
-    sel.addEventListener('change', () => buildChart(sel.value));
-    const withHist = Object.values(exerciciosPorTreino).flat().find(ex =>
-      allCargasHist.some(c => c.exercicio_id === ex.id)
-    );
-    if (withHist){ sel.value = withHist.id; buildChart(withHist.id); }
-  } else if (sel.value){
-    buildChart(sel.value);
+    document.addEventListener('click', () => {
+      selBtn.classList.remove('open');
+      selMenu.classList.remove('open');
+    });
+    selMenu.dataset.bound = '1';
+  }
+
+  // popula opções (só uma vez)
+  if (!selMenu.children.length){
+    const allExs = Object.values(exerciciosPorTreino).flat();
+    allExs.forEach(ex => {
+      const opt = document.createElement('div');
+      opt.className = 'chart-sel-opt';
+      opt.dataset.exId = ex.id;
+      opt.textContent = ex.nome;
+      opt.addEventListener('click', ev => {
+        ev.stopPropagation();
+        selMenu.querySelectorAll('.chart-sel-opt').forEach(o => o.classList.remove('on'));
+        opt.classList.add('on');
+        selLbl.textContent = ex.nome;
+        selBtn.classList.remove('open');
+        selMenu.classList.remove('open');
+        buildChart(ex.id);
+      });
+      selMenu.appendChild(opt);
+    });
+
+    // auto-seleciona o primeiro com histórico
+    const withHist = allExs.find(ex => allCargasHist.some(c => c.exercicio_id === ex.id));
+    const pick = withHist || allExs[0];
+    if (pick){
+      const opt = selMenu.querySelector(`[data-ex-id="${pick.id}"]`);
+      if (opt){ opt.classList.add('on'); selLbl.textContent = pick.nome; }
+      buildChart(pick.id);
+    }
+  } else {
+    // re-render só o gráfico com a seleção atual
+    const on = selMenu.querySelector('.chart-sel-opt.on');
+    if (on) buildChart(on.dataset.exId);
   }
 
   renderPRs();
@@ -1457,17 +1497,28 @@ function applyI18n(){
 
 function setupWaterDots(){
   const today = todayISO();
-  const stored = lc('water_' + today, 0);
-  const dots = document.querySelectorAll('#water-dots .water-dot');
-  dots.forEach((d,i) => d.classList.toggle('on', i < stored));
-  document.getElementById('water-count').textContent = stored;
-  document.getElementById('water-dots').addEventListener('click', ev => {
-    const d = ev.target.closest('.water-dot'); if (!d) return;
-    const idx = [...dots].indexOf(d);
-    const wasOn = d.classList.contains('on');
-    const target = wasOn ? idx : (idx + 1);
-    dots.forEach((dd,i) => dd.classList.toggle('on', i < target));
-    document.getElementById('water-count').textContent = target;
+
+  function applyWater(n){
+    document.querySelectorAll('#water-dots .water-dot')
+      .forEach((d,i) => d.classList.toggle('on', i < n));
+    const el = document.getElementById('water-count');
+    if (el) el.textContent = n;
+  }
+
+  applyWater(lc('water_' + today, 0));
+
+  const container = document.getElementById('water-dots');
+  if (!container || container.dataset.bound) return;
+  container.dataset.bound = '1';
+
+  container.addEventListener('click', ev => {
+    const dot = ev.target.closest('.water-dot');
+    if (!dot) return;
+    const all = [...document.querySelectorAll('#water-dots .water-dot')];
+    const idx = all.indexOf(dot);
+    if (idx === -1) return;
+    const target = dot.classList.contains('on') ? idx : idx + 1;
+    applyWater(target);
     sc('water_' + today, target);
   });
 }
