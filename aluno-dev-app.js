@@ -1400,16 +1400,17 @@ function setupNav(){
 }
 
 const PALETTES = {
-  gold:  ['#FFD96B', '#E5B23A', 'rgba(255,217,107,.35)'],
-  green: ['#5FE3D3', '#3EB8A8', 'rgba(95,227,211,.4)'],
-  red:   ['#FF6B6B', '#E54444', 'rgba(255,107,107,.4)'],
-  blue:  ['#5FA8FF', '#3E82E5', 'rgba(95,168,255,.4)'],
+  gold:  ['#FFD96B', '#E5B23A', 'rgba(255,217,107,.35)', 'rgba(255,217,107,.07)'],
+  green: ['#5FE3D3', '#3EB8A8', 'rgba(95,227,211,.4)',   'rgba(95,227,211,.07)'],
+  red:   ['#FF6B6B', '#E54444', 'rgba(255,107,107,.4)',  'rgba(255,107,107,.07)'],
+  blue:  ['#5FA8FF', '#3E82E5', 'rgba(95,168,255,.4)',   'rgba(95,168,255,.07)'],
 };
 function setAccent(name){
-  const [c1, c2, glow] = PALETTES[name] || PALETTES.gold;
+  const [c1, c2, glow, subtle] = PALETTES[name] || PALETTES.gold;
   document.documentElement.style.setProperty('--gold', c1);
   document.documentElement.style.setProperty('--gold-2', c2);
   document.documentElement.style.setProperty('--gold-glow', glow);
+  document.documentElement.style.setProperty('--gold-subtle', subtle || 'rgba(255,217,107,.07)');
   document.querySelectorAll('#chart-dots circle').forEach((c, i, arr) => {
     c.setAttribute('fill', c1);
     if (i === arr.length - 1) c.setAttribute('filter', `drop-shadow(0 0 6px ${c1})`);

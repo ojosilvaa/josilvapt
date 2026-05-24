@@ -45,6 +45,7 @@
   --gold:#FFD96B;
   --gold-2:#E5B23A;
   --gold-glow:rgba(255,217,107,.35);
+  --gold-subtle:rgba(255,217,107,.07);
   --coral:#FF6B6B;
   --aqua:#5FE3D3;
   --violet:#A78BFA;
@@ -183,8 +184,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   border-radius:20px;padding:16px;position:relative;overflow:hidden;
   transition:all var(--t-fast);
 }
-.ex.done{border-color:rgba(95,227,211,.4);background:rgba(95,227,211,.04)}
-.ex.done::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--aqua);box-shadow:0 0 12px rgba(95,227,211,.6)}
+.ex.done{border-color:var(--gold-glow);background:var(--gold-subtle)}
+.ex.done::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);box-shadow:0 0 12px var(--gold-glow)}
 
 .ex-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
 .ex-num{
@@ -193,7 +194,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   display:flex;align-items:center;justify-content:center;
   font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text-2);letter-spacing:-.02em;
 }
-.ex.done .ex-num{background:var(--aqua);color:#000;border-color:var(--aqua)}
+.ex.done .ex-num{background:var(--gold);color:#000;border-color:var(--gold)}
 .ex-info{flex:1;min-width:0}
 .ex-name{font-size:16px;font-weight:700;letter-spacing:-.015em;line-height:1.2}
 .ex-meta{font-size:12px;color:var(--text-2);margin-top:4px;font-weight:500}
@@ -219,8 +220,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .carga-inp:focus{color:var(--gold);border-bottom-color:var(--gold)}
 .carga-inp::placeholder{color:var(--text-3);font-size:20px;font-weight:400}
 .carga-val .kg{font-size:13px;color:var(--text-2);font-weight:500;letter-spacing:0;margin-left:1px}
-.carga-delta{font-family:var(--mono);font-size:10px;color:var(--aqua);margin-top:4px;font-weight:600;letter-spacing:.04em}
+.carga-delta{font-family:var(--mono);font-size:10px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.04em}
 .carga-delta.flat{color:var(--text-3)}
+.carga-delta.dn{color:var(--coral)}
 .carga-delta.dn{color:var(--coral)}
 
 .sets{display:flex;gap:6px}
@@ -231,7 +233,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   transition:all var(--t-fast);
 }
 .set-pip:hover{border-color:var(--hairline-strong);color:#fff}
-.set-pip.on{background:var(--aqua);color:#000;border-color:var(--aqua);box-shadow:0 0 12px rgba(95,227,211,.4)}
+.set-pip.on{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 0 12px var(--gold-glow)}
 
 .btn-register{
   width:calc(100% - 32px);margin:18px 16px 0;padding:17px;
@@ -249,7 +251,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .kpi{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:12px}
 .kpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
 .kpi-v{font-size:24px;font-weight:800;letter-spacing:-.025em;margin-top:6px;line-height:1;color:#fff}
-.kpi-d{font-family:var(--mono);font-size:10px;color:var(--aqua);margin-top:4px;font-weight:600;letter-spacing:.02em}
+.kpi-d{font-family:var(--mono);font-size:10px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.02em}
 .kpi-d.dn{color:var(--coral)}
 .kpi-d.flat{color:var(--text-3)}
 
@@ -267,8 +269,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .chart-stat-u{font-size:14px;color:var(--text-2);font-weight:600}
 .chart-stat-d{
   font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;
-  color:var(--aqua);margin-left:auto;align-self:center;
-  background:rgba(95,227,211,.1);border-radius:6px;padding:3px 8px;
+  color:var(--gold);margin-left:auto;align-self:center;
+  background:var(--gold-subtle);border-radius:6px;padding:3px 8px;
 }
 .chart-stat-d.dn{color:var(--coral);background:rgba(255,107,107,.1)}
 .chart-stat-d.flat{color:var(--text-3);background:var(--surface-2)}
@@ -294,7 +296,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .pr-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-.01em}
 .pr-date{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px;font-weight:600;letter-spacing:.04em}
 .pr-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--gold);text-align:right}
-.pr-delta{font-family:var(--mono);font-size:10px;color:var(--aqua);font-weight:600;margin-top:2px;text-align:right}
+.pr-delta{font-family:var(--mono);font-size:10px;color:var(--gold);font-weight:600;margin-top:2px;text-align:right}
 
 .heat-card{margin:6px 16px 12px;padding:16px}
 .heat-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:12px}
@@ -453,10 +455,10 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 #install-bar .ib-text b{color:#fff;font-weight:700}
 #install-bar .ib-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--text-3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
-.success-banner{background:rgba(95,227,211,.08);border:1.5px solid rgba(95,227,211,.3);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
+.success-banner{background:var(--gold-subtle);border:1.5px solid var(--gold-glow);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
 .success-banner.show{display:flex}
 .success-icon{font-size:24px}
-.success-text{font-size:14px;color:var(--aqua);font-weight:600}
+.success-text{font-size:14px;color:var(--gold);font-weight:600}
 .success-sub{font-size:12px;color:var(--text-2);margin-top:2px}
 
 /* ════ CRONÓMETRO */
@@ -676,7 +678,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
           <span id="n-kcal">0</span>
           <span style="font-size:18px;color:var(--text-2);font-weight:600;letter-spacing:-.01em">/ <span id="n-kcal-meta">2 000</span> kcal</span>
         </div>
-        <div class="hero-sub"><em id="n-pct" style="color:var(--aqua);font-style:normal;font-weight:700">0%</em> <span data-i18n="n_meta_sub">da tua meta</span></div>
+        <div class="hero-sub"><em id="n-pct" style="color:var(--gold);font-style:normal;font-weight:700">0%</em> <span data-i18n="n_meta_sub">da tua meta</span></div>
       </div>
 
       <div class="macro-rings">
