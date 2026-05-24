@@ -492,8 +492,27 @@ async function init(){
 
   if (!ALUNO_ID) {
     hideLoader();
-    document.getElementById('treino-loading').innerHTML =
-      '<div class="empty"><div class="empty-icon">🔗</div>Link inválido. Pede ao teu PT o link correto.</div>';
+    document.getElementById('treino-loading').innerHTML = `
+      <div style="padding:32px 24px;text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">🔗</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">Primeiro acesso</div>
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:24px;line-height:1.5">
+          Cola o link que o teu PT te enviou para activar a app.
+        </div>
+        <input id="first-link-inp" type="url" inputmode="url"
+          style="width:100%;background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;
+                 padding:14px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px"
+          placeholder="https://josilvapt.vercel.app/aluno-v3.html?id=...">
+        <button onclick="
+          var v=document.getElementById('first-link-inp').value.trim();
+          var m=v.match(/[?&]id=([a-f0-9-]{36})/i);
+          if(m){try{localStorage.setItem('josilvaPT_id',m[1]);}catch(e){}location.replace('aluno-v3.html?id='+m[1]);}
+          else{document.getElementById('first-link-inp').style.borderColor='var(--coral)';}"
+          style="width:100%;background:var(--gold);color:#000;font-weight:700;font-size:16px;
+                 padding:14px;border-radius:12px;border:none">
+          ACTIVAR APP
+        </button>
+      </div>`;
     return;
   }
 
