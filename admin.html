@@ -695,7 +695,7 @@ const LANG={
     lbl_exercicios:'EXERCÍCIOS',btn_add_ex:'＋ Adicionar',
     btn_salvar:'SALVAR',btn_cancelar:'CANCELAR',btn_editar:'EDITAR',btn_excluir:'EXCLUIR',
     ex_nenhum:'Nenhum exercício adicionado ainda.',
-    ph_ex_nome:'Nome do exercício',ph_ex_obs:'Observações (opcional)',
+    ph_ex_nome:'Nome do exercício',ph_ex_obs:'Observações (opcional)',ph_ex_video:'Link do vídeo (YouTube, opcional)',
     lbl_series:'Séries',lbl_reps:'Reps',ev_sel_ex:'Selecione exercício...',
     ev_maior_carga:'Maior carga',ev_hist_sessoes:'HISTÓRICO DE SESSÕES',
     ev_nenhuma:'Nenhuma sessão registrada.',ev_sem_sessoes:'Nenhuma sessão registrada ainda.',
@@ -771,7 +771,7 @@ const LANG={
     lbl_exercicios:'EXERCISES',btn_add_ex:'＋ Add',
     btn_salvar:'SAVE',btn_cancelar:'CANCEL',btn_editar:'EDIT',btn_excluir:'DELETE',
     ex_nenhum:'No exercises added yet.',
-    ph_ex_nome:'Exercise name',ph_ex_obs:'Notes (optional)',
+    ph_ex_nome:'Exercise name',ph_ex_obs:'Notes (optional)',ph_ex_video:'Video link (YouTube, optional)',
     lbl_series:'Sets',lbl_reps:'Reps',ev_sel_ex:'Select exercise...',
     ev_maior_carga:'Top load',ev_hist_sessoes:'SESSION HISTORY',
     ev_nenhuma:'No sessions logged.',ev_sem_sessoes:'No sessions logged yet.',
@@ -1102,7 +1102,7 @@ function showNovoTreino(){
 function cancelarTreino(){document.getElementById('novo-treino-form').style.display='none';currentTreinoId=null;}
 
 function addExercicio(){
-  exerciciosList.push({nome:'',obs:'',series:'3',reps:'10-12'});
+  exerciciosList.push({nome:'',obs:'',series:'3',reps:'10-12',video_url:''});
   renderExList();
 }
 
@@ -1119,6 +1119,7 @@ function renderExList(){
         <div><label class="form-label">${T('lbl_reps')}</label><input class="form-inp" placeholder="10-12" value="${ex.reps||'10-12'}" oninput="exerciciosList[${i}].reps=this.value"></div>
       </div>
       <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="${T('ph_ex_obs')}" value="${ex.obs||''}" oninput="exerciciosList[${i}].obs=this.value"></div>
+      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="${T('ph_ex_video')}" value="${ex.video_url||''}" oninput="exerciciosList[${i}].video_url=this.value"></div>
     </div>`).join('');
 }
 
@@ -1139,7 +1140,7 @@ async function salvarTreino(){
     treinoId=res[0].id;
   }
   for(let i=0;i<exValidos.length;i++){
-    await sbFetch('exercicios',{method:'POST',body:JSON.stringify({treino_id:treinoId,ordem:i+1,nome:exValidos[i].nome.trim(),obs:exValidos[i].obs||'',series:exValidos[i].series,reps:exValidos[i].reps})});
+    await sbFetch('exercicios',{method:'POST',body:JSON.stringify({treino_id:treinoId,ordem:i+1,nome:exValidos[i].nome.trim(),obs:exValidos[i].obs||'',series:exValidos[i].series,reps:exValidos[i].reps,video_url:exValidos[i].video_url||null})});
   }
   toast(T('t_treino_salvo')); cancelarTreino(); renderTreinos();
 }
@@ -1168,7 +1169,7 @@ async function editarTreino(id){
   document.getElementById('form-treino-title').textContent=T('editar_treino');
   document.getElementById('nt-nome').value=t.nome;
   document.getElementById('nt-desc').value=t.descricao||'';
-  exerciciosList=exs.map(e=>({nome:e.nome,obs:e.obs||'',series:e.series||'3',reps:e.reps||'10-12'}));
+  exerciciosList=exs.map(e=>({nome:e.nome,obs:e.obs||'',series:e.series||'3',reps:e.reps||'10-12',video_url:e.video_url||''}));
   renderExList();
   document.getElementById('novo-treino-form').scrollIntoView({behavior:'smooth'});
 }

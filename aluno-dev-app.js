@@ -668,7 +668,14 @@ function renderTreino(){
           <div class="ex-meta">${series} ${LANG==='pt'?'séries':'sets'} · ${reps} reps</div>
           ${ex.obs ? `<div class="ex-obs">${escapeHTML(ex.obs)}</div>` : ''}
         </div>
+        ${ex.video_url ? `<button class="ex-video-btn" data-video="${ex.id}" title="Ver vídeo do exercício">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="5" width="13" height="14" rx="2"/>
+            <path d="M15 9l5-2.5v9L15 13" stroke-linejoin="round"/>
+          </svg>
+        </button>` : ''}
       </div>
+      ${ex.video_url ? `<div class="ex-video-wrap" id="vid-${ex.id}"></div>` : ''}
       <div class="carga-block">
         <button class="carga-btn" data-act="-" data-id="${ex.id}">−</button>
         <div class="carga-mid">
@@ -702,7 +709,42 @@ function renderTreino(){
   updateRing();
 }
 
+function exVideoEmbedUrl(url){
+  if (!url) return null;
+  // youtu.be/ID
+  let m = url.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}?playsinline=1&rel=0`;
+  // youtube.com/watch?v=ID
+  m = url.match(/[?&]v=([A-Za-z0-9_-]{11})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}?playsinline=1&rel=0`;
+  // youtube.com/shorts/ID
+  m = url.match(/\/shorts\/([A-Za-z0-9_-]{11})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}?playsinline=1&rel=0`;
+  // URL directa de vídeo
+  return url;
+}
+
 function onExListClick(ev){
+  // toggle vídeo
+  const vidBtn = ev.target.closest('[data-video]');
+  if (vidBtn){
+    const id = vidBtn.dataset.video;
+    const wrap = document.getElementById('vid-' + id);
+    if (!wrap) return;
+    const opening = !wrap.classList.contains('open');
+    wrap.classList.toggle('open', opening);
+    vidBtn.classList.toggle('active', opening);
+    if (opening && !wrap.dataset.loaded){
+      const ex = (exerciciosPorTreino[currentTreinoId] || []).find(x => x.id === id);
+      const embedUrl = ex ? exVideoEmbedUrl(ex.video_url) : null;
+      if (embedUrl){
+        wrap.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+        wrap.dataset.loaded = '1';
+      }
+    }
+    return;
+  }
+
   const btn = ev.target.closest('[data-act]');
   if (btn){
     const id = btn.dataset.id;
