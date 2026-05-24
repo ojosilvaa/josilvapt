@@ -542,6 +542,11 @@ async function init(){
 // ═══════════════════════════════════════════════════════════
 async function loadTreinos(){
   treinos = await sb(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`) || [];
+  treinos.sort((a, b) => {
+    const na = parseInt(a.nome) || 999;
+    const nb = parseInt(b.nome) || 999;
+    return na - nb;
+  });
   const loading = document.getElementById('treino-loading');
   if (!treinos.length){
     loading.innerHTML = `<div class="empty"><div class="empty-icon">📋</div>${T('sem_treinos')}</div>`;
@@ -1107,8 +1112,10 @@ function computeStreak(){
 async function renderNutricao(){
   const hoje = todayISO();
   const refs = await sb(`refeicoes?aluno_id=eq.${ALUNO_ID}&data=eq.${hoje}&order=criado_em.asc`) || [];
-  const peso = parseFloat(perimetriaHist[perimetriaHist.length-1]?.peso) || 70;
-  const meta = calcDailyKcal(peso, alunoObjetivo);
+  const lastP = perimetriaHist[perimetriaHist.length - 1];
+  const peso = parseFloat(lastP?.peso) || 70;
+  const gorduraPct = parseFloat(lastP?.gordura) || null;
+  const meta = calcDailyKcal(peso, alunoObjetivo, gorduraPct);
   const metaP = Math.round(peso * 1.8);
   const metaC = Math.round(meta * 0.45 / 4);
   const metaG = Math.round(meta * 0.25 / 9);
@@ -1200,8 +1207,13 @@ async function renderNutricao(){
   }
 }
 
-function calcDailyKcal(peso, obj){
-  const base = peso * 30;
+function calcDailyKcal(peso, obj, gorduraPct = null){
+  let pesoCalc = peso;
+  if (gorduraPct && gorduraPct > 20) {
+    const lean = peso * (1 - gorduraPct / 100);
+    pesoCalc = (lean + lean * 1.2) / 2;
+  }
+  const base = pesoCalc * 30;
   if (/secar|cut|emagre/i.test(obj || '')) return Math.round(base * 0.85 / 50) * 50;
   if (/hipertrof|bulk|massa/i.test(obj || '')) return Math.round(base * 1.15 / 50) * 50;
   return Math.round(base / 50) * 50;
@@ -1355,7 +1367,15 @@ function renderPerfil(){
   if (!aluno) return;
 
   // Hero
-  document.getElementById('pf-avatar').textContent = initials(aluno.nome);
+  const av = document.getElementById('pf-avatar');
+  const savedPhoto = lc('profilePhoto');
+  if (savedPhoto) {
+    av.style.cssText = 'background-image:url(' + savedPhoto + ');background-size:cover;background-position:center;';
+    av.textContent = '';
+  } else {
+    av.style.cssText = '';
+    av.textContent = initials(aluno.nome);
+  }
   document.getElementById('pf-name').textContent   = aluno.nome;
   const idade = calcIdade(aluno.data_nascimento);
   const idadeStr = idade ? `${idade} ${LANG==='pt'?'anos':'years old'} · ` : '';
@@ -1674,6 +1694,25 @@ function go(name){
 function ptFloatToggle(){
   const s = document.getElementById('pt-float-sheet');
   if (s) s.classList.toggle('open');
+}
+
+function handlePfPhoto(inp){
+  const f = inp.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 200; canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      const s = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 200, 200);
+      sc('profilePhoto', canvas.toDataURL('image/jpeg', 0.82));
+      renderPerfil();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(f);
 }
 
 function setupNav(){
