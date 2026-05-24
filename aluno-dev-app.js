@@ -1023,7 +1023,9 @@ async function renderNutricao(){
   document.getElementById('n-kcal').textContent      = Math.round(kcal).toLocaleString('pt-PT');
   document.getElementById('n-kcal-meta').textContent = meta.toLocaleString('pt-PT');
   const pct = meta ? Math.round((kcal/meta)*100) : 0;
-  document.getElementById('n-pct').textContent       = pct + '%';
+  const pctEl = document.getElementById('n-pct');
+  pctEl.textContent = pct + '%';
+  pctEl.style.color = pct === 0 ? 'var(--text-3)' : pct > 100 ? 'var(--coral)' : 'var(--green)';
 
   // main kcal ring
   const mainRing = document.getElementById('n-ring-progress');
