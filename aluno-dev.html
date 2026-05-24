@@ -633,8 +633,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   overflow:hidden;cursor:pointer;z-index:120;
   box-shadow:0 2px 14px rgba(0,0,0,.22);
   transition:transform var(--t-fast),box-shadow var(--t-fast);
-  background:#fff;
-  color:#1c1c1c;font-weight:900;font-size:14px;
+  background:#3a3733;
+  color:#fff;font-weight:900;font-size:14px;
 }
 #pt-float:active{transform:scale(.92)}
 #pt-float-sheet{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:0;transition:opacity .22s}
@@ -1298,22 +1298,23 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 <!-- PT Float Button -->
 <button id="pt-float" onclick="ptFloatToggle()" title="Contactar Jo Silva">
   <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-    <circle cx="50" cy="50" r="44" stroke="#1c1c1c" stroke-width="5"/>
-    <circle cx="50" cy="50" r="33" stroke="#1c1c1c" stroke-width="4.5"/>
-    <line x1="53" y1="18" x2="53" y2="57" stroke="#1c1c1c" stroke-width="8" stroke-linecap="round"/>
-    <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#1c1c1c" stroke-width="8" stroke-linecap="round"/>
+    <rect width="100" height="100" fill="#3a3733"/>
+    <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
+    <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
+    <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+    <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
   </svg>
 </button>
 <div id="pt-float-sheet">
   <div class="ptfs-backdrop" onclick="ptFloatToggle()"></div>
   <div class="ptfs-panel">
     <div class="ptfs-header">
-      <div class="ptfs-avatar" style="width:42px;height:42px;border-radius:12px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <div class="ptfs-avatar" style="width:42px;height:42px;border-radius:12px;background:#3a3733;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg viewBox="0 0 100 100" fill="none" style="width:38px;height:38px">
-          <circle cx="50" cy="50" r="44" stroke="#1c1c1c" stroke-width="5"/>
-          <circle cx="50" cy="50" r="33" stroke="#1c1c1c" stroke-width="4.5"/>
-          <line x1="53" y1="18" x2="53" y2="57" stroke="#1c1c1c" stroke-width="8" stroke-linecap="round"/>
-          <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#1c1c1c" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
+          <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
+          <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+          <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
         </svg>
       </div>
       <div><div class="ptfs-name">Jo Silva</div><div class="ptfs-role">Personal Trainer · CPT</div></div>
