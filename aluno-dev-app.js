@@ -19,7 +19,7 @@ const I18N = {
     'evo_cmp':'Composição corporal','evo_pr':'Recordes pessoais','evo_no_pr':'Ainda sem recordes. Treina mais sessões!',
     'evo_heat':'Atividade · 13 semanas','heat_less':'Menos','heat_more':'Mais',
     'n_meta_sub':'da tua meta','n_prot':'Proteína','n_carb':'Carbo','n_gord':'Gordura',
-    'water':'copos água','n_meals':'Refeições','n_no_meal':'Sem refeições hoje.',
+    'water':'copos água','water_save':'Guardar','n_meals':'Refeições','n_no_meal':'Sem refeições hoje.',
     'timer_label':'Treino em curso',
     'pf_level':'Nível atual','streak_days':'dias','streak_active':'streak ativo',
     'pf_conquistas':'Conquistas','pt_msg':'Mensagem','pt_call':'Ligar','pf_orient':'Orientações da semana',
@@ -58,7 +58,7 @@ const I18N = {
     'evo_cmp':'Body composition','evo_pr':'Personal records','evo_no_pr':'No records yet. Train more!',
     'evo_heat':'Activity · 13 weeks','heat_less':'Less','heat_more':'More',
     'n_meta_sub':'of your goal','n_prot':'Protein','n_carb':'Carb','n_gord':'Fat',
-    'water':'water cups','n_meals':'Meals','n_no_meal':'No meals today.',
+    'water':'water cups','water_save':'Save','n_meals':'Meals','n_no_meal':'No meals today.',
     'timer_label':'Workout in progress',
     'pf_level':'Current level','streak_days':'days','streak_active':'active streak',
     'pf_conquistas':'Achievements','pt_msg':'Message','pt_call':'Call','pf_orient':'Week guidelines',
@@ -1223,17 +1223,26 @@ function renderNutModal(){
     const res = ALIMENTOS_DB.filter(a =>
       a.nome.toLowerCase().includes(term) || a.cat.toLowerCase().includes(term)
     ).slice(0, 40);
-    resList.innerHTML = res.length
+    const backLbl = LANG === 'pt' ? '← Categorias' : '← Categories';
+    const backBtn = `<button class="nut-back" data-nut-back>${backLbl} · <em>${escapeHTML(nutTerm)}</em></button>`;
+    resList.innerHTML = backBtn + (res.length
       ? res.map(a => `<div class="nut-item" data-nome="${escapeHTML(a.nome)}">
           <span>${escapeHTML(a.nome)}</span>
           <span class="nut-item-kcal">${a.kcal} kcal/100g</span>
         </div>`).join('')
-      : `<div class="empty" style="padding:16px">Nenhum resultado.</div>`;
+      : `<div class="empty" style="padding:16px">${LANG==='pt'?'Nenhum resultado.':'No results.'}</div>`);
   }
 
   if (!resList.dataset.bound) {
     resList.dataset.bound = '1';
     resList.addEventListener('click', ev => {
+      if (ev.target.closest('[data-nut-back]')) {
+        nutTerm = '';
+        const inp = document.getElementById('nut-search-inp');
+        if (inp) inp.value = '';
+        renderNutModal();
+        return;
+      }
       const cat = ev.target.closest('[data-cat]');
       if (cat) { nutSearchCat(cat.dataset.cat); return; }
       const item = ev.target.closest('[data-nome]');
@@ -1479,23 +1488,27 @@ function renderBiometria(){
     ${p.obs ? `<div class="bio-obs">${escapeHTML(p.obs)}</div>` : ''}
 
     <div class="bio-divider">${pt?'Perímetros (cm)':'Measurements (cm)'}</div>
-    <div class="bio-grid-2">
-      ${row(pt?'Ombro':'Shoulder', m.ombro)}
-      ${row(pt?'Tórax':'Chest', m.torax)}
-      ${row(pt?'Cintura':'Waist', m.cintura)}
-      ${row(pt?'Abdómen':'Abdomen', m.abdomen)}
-      ${row(pt?'Quadril':'Hip', m.quadril)}
-      ${row(pt?'Braço D (relax.)':'Arm R (relax.)', m.braco_d)}
-      ${row(pt?'Braço E (relax.)':'Arm L (relax.)', m.braco_e)}
-      ${row(pt?'Braço D (flex.)':'Arm R (flex.)', m.braco_flex_d)}
-      ${row(pt?'Braço E (flex.)':'Arm L (flex.)', m.braco_flex_e)}
-      ${row(pt?'Antebraço D':'Forearm R', m.antebraco_d)}
-      ${row(pt?'Antebraço E':'Forearm L', m.antebraco_e)}
-      ${row(pt?'Coxa D':'Thigh R', m.coxa_d)}
-      ${row(pt?'Coxa E':'Thigh L', m.coxa_e)}
-      ${row(pt?'Panturrilha D':'Calf R', m.panturrilha_d)}
-      ${row(pt?'Panturrilha E':'Calf L', m.panturrilha_e)}
-    </div>
+    ${(() => {
+      const cell = (l, v) => v != null && v !== 0 && v !== ''
+        ? `<div class="bio-cell"><span class="bio-cell-l">${l}</span><span class="bio-cell-r">${v}</span></div>`
+        : `<div class="bio-cell empty"></div>`;
+      const pair = (lL, vL, lR, vR) => {
+        const hasL = vL != null && vL !== 0 && vL !== '';
+        const hasR = vR != null && vR !== 0 && vR !== '';
+        if (!hasL && !hasR) return '';
+        return `<div class="bio-pair">${cell(lL,vL)}${cell(lR,vR)}</div>`;
+      };
+      return `
+        ${pair(pt?'Ombro':'Shoulder', m.ombro, pt?'Tórax':'Chest', m.torax)}
+        ${pair(pt?'Cintura':'Waist', m.cintura, pt?'Abdómen':'Abdomen', m.abdomen)}
+        ${pair(pt?'Quadril':'Hip', m.quadril, '', null)}
+        ${pair(pt?'Braço E (relax.)':'Arm L (relax.)', m.braco_e, pt?'Braço D (relax.)':'Arm R (relax.)', m.braco_d)}
+        ${pair(pt?'Braço E (flex.)':'Arm L (flex.)', m.braco_flex_e, pt?'Braço D (flex.)':'Arm R (flex.)', m.braco_flex_d)}
+        ${pair(pt?'Antebraço E':'Forearm L', m.antebraco_e, pt?'Antebraço D':'Forearm R', m.antebraco_d)}
+        ${pair(pt?'Coxa E':'Thigh L', m.coxa_e, pt?'Coxa D':'Thigh R', m.coxa_d)}
+        ${pair(pt?'Panturrilha E':'Calf L', m.panturrilha_e, pt?'Panturrilha D':'Calf R', m.panturrilha_d)}
+      `;
+    })()}
 
     ${an && Object.keys(an).length ? `
     <div class="bio-divider">${pt?'Dados da anamnese':'Anamnesis'}</div>
@@ -1585,7 +1598,44 @@ function setTheme(name){
   });
   document.querySelectorAll('#g-area stop').forEach(s => s.setAttribute('stop-color', t.gold));
   document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('on', b.dataset.theme === name));
+  applyThemeFX(name);
   try { localStorage.setItem('josilvaPT_theme', name); } catch(e){}
+}
+
+function applyThemeFX(name){
+  const fx = document.getElementById('theme-fx');
+  if (!fx) return;
+  fx.innerHTML = '';
+  const rand = (a,b) => Math.random() * (b - a) + a;
+  const specs = {
+    ice:   { cls:'fx-snow fx-p',   chars:['❄','✻','❅','❆','*'], n:18, dur:[7,16],  delay:[0,12] },
+    rain:  { cls:'fx-rain fx-p',   chars:[''],                    n:32, dur:[.6,1.4], delay:[0,2.5] },
+    fire:  { cls:'fx-ember fx-p',  chars:[''],                    n:22, dur:[2.5,5], delay:[0,5] },
+    happy: { cls:'fx-bubble fx-p', chars:[''],                    n:14, dur:[5,11],  delay:[0,9] },
+    moon:  { cls:'fx-star fx-p',   chars:[''],                    n:28, dur:[2,5],   delay:[0,4], static:true },
+    sun:   { cls:'fx-ray fx-p',    chars:[''],                    n:8,  dur:[3,6],   delay:[0,3], radial:true },
+  };
+  const s = specs[name];
+  if (!s) return;
+  for (let i = 0; i < s.n; i++){
+    const el = document.createElement('div');
+    el.className = s.cls;
+    if (s.chars && s.chars[0]) el.textContent = s.chars[Math.floor(Math.random()*s.chars.length)];
+    if (s.radial){
+      el.style.left = '50%'; el.style.top = '-10vh';
+      el.style.transform = `rotate(${(i / s.n) * 360}deg)`;
+    } else if (s.static){
+      el.style.left = rand(0,100) + 'vw';
+      el.style.top  = rand(0,100) + 'vh';
+    } else {
+      el.style.left = rand(0,100) + 'vw';
+    }
+    el.style.animationDuration = rand(s.dur[0], s.dur[1]) + 's';
+    el.style.animationDelay    = '-' + rand(s.delay[0], s.delay[1]) + 's';
+    if (name === 'ice') el.style.fontSize = rand(9, 18) + 'px';
+    if (name === 'rain') el.style.height  = rand(12, 24) + 'px';
+    fx.appendChild(el);
+  }
 }
 function applyThemeFromStorage(){
   let saved = null; try { saved = localStorage.getItem('josilvaPT_theme'); } catch(e){}
@@ -1645,7 +1695,20 @@ function setupWaterDots(){
     const target = dot.classList.contains('on') ? idx : idx + 1;
     applyWater(target);
     sc('water_' + today, target);
+    const btn = document.getElementById('water-save');
+    if (btn) btn.classList.remove('saved');
   });
+
+  const saveBtn = document.getElementById('water-save');
+  if (saveBtn && !saveBtn.dataset.bound) {
+    saveBtn.dataset.bound = '1';
+    saveBtn.addEventListener('click', () => {
+      const n = +(document.getElementById('water-count').textContent || 0);
+      sc('water_' + today, n);
+      saveBtn.classList.add('saved');
+      toast(LANG === 'pt' ? `Hidratação guardada · ${n}/8` : `Hydration saved · ${n}/8`);
+    });
+  }
 }
 
 function escapeHTML(s){
