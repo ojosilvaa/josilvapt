@@ -80,7 +80,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .lang-toggle span{color:var(--text-3);cursor:pointer;transition:color var(--t-fast);padding:2px 1px}
 .lang-toggle span.on{color:var(--gold)}
 .lang-sep{color:var(--text-3);opacity:.5;cursor:default}
-.theme-picker{display:flex;gap:4px;align-items:center;flex-wrap:wrap;max-width:200px;justify-content:flex-end}
+.theme-picker{display:grid;grid-template-columns:repeat(6,28px);gap:4px;justify-content:end}
 .theme-btn{width:28px;height:28px;border-radius:8px;background:var(--surface-2);border:1.5px solid transparent;
   font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
   transition:all var(--t-fast);padding:0;line-height:1}
@@ -570,6 +570,109 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 .t-moon body,.t-rain body,.t-ice body{background:var(--bg)}
 
+/* ── TIMER PILL POR TEMA ── */
+.t-moon #timer-pill{
+  width:74px;height:74px;border-radius:50%!important;padding:0!important;
+  flex-direction:column;justify-content:center;gap:0;
+  background:radial-gradient(circle at 35% 30%,#3a3a55 0,#1a1a2e 70%);
+  border-color:var(--gold)!important;
+  box-shadow:inset -8px -8px 18px rgba(0,0,0,.5),0 0 20px var(--gold-glow);
+}
+.t-moon #timer-pill::before{
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  background:
+    radial-gradient(circle at 28% 32%,rgba(0,0,0,.45) 0,transparent 6px),
+    radial-gradient(circle at 68% 62%,rgba(0,0,0,.4) 0,transparent 7px),
+    radial-gradient(circle at 48% 78%,rgba(0,0,0,.3) 0,transparent 5px);
+  pointer-events:none;
+}
+.t-moon #timer-pill .tp-icon{display:none}
+.t-moon #timer-pill .tp-time{font-size:14px;min-width:auto}
+.t-moon #timer-pill .tp-label{font-size:6.5px;letter-spacing:.08em}
+
+.t-sun #timer-pill{
+  width:74px;height:74px;border-radius:50%!important;padding:0!important;
+  flex-direction:column;justify-content:center;gap:0;
+  background:radial-gradient(circle,#FFC76B 0%,#FF8A1F 70%);
+  border-color:#FFD96B!important;
+  box-shadow:0 0 30px rgba(255,168,39,.8),0 0 60px rgba(255,168,39,.4);
+}
+.t-sun #timer-pill::before{
+  content:'';position:absolute;inset:-12px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,
+    transparent 0deg,rgba(255,200,80,.5) 8deg,transparent 16deg,
+    transparent 36deg,rgba(255,200,80,.5) 44deg,transparent 52deg,
+    transparent 72deg,rgba(255,200,80,.5) 80deg,transparent 88deg,
+    transparent 108deg,rgba(255,200,80,.5) 116deg,transparent 124deg,
+    transparent 144deg,rgba(255,200,80,.5) 152deg,transparent 160deg,
+    transparent 180deg,rgba(255,200,80,.5) 188deg,transparent 196deg,
+    transparent 216deg,rgba(255,200,80,.5) 224deg,transparent 232deg,
+    transparent 252deg,rgba(255,200,80,.5) 260deg,transparent 268deg,
+    transparent 288deg,rgba(255,200,80,.5) 296deg,transparent 304deg,
+    transparent 324deg,rgba(255,200,80,.5) 332deg,transparent 340deg);
+  animation:sunSpin 20s linear infinite;mask:radial-gradient(circle,transparent 36px,#000 38px)
+}
+@keyframes sunSpin{to{transform:rotate(360deg)}}
+.t-sun #timer-pill .tp-icon{display:none}
+.t-sun #timer-pill .tp-time{font-size:14px;min-width:auto;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.t-sun #timer-pill .tp-label{font-size:6.5px;color:rgba(255,255,255,.8)}
+
+.t-rain #timer-pill{
+  width:64px;height:80px;padding:0!important;
+  border-radius:50% 50% 50% 50% / 65% 65% 35% 35%!important;
+  flex-direction:column;justify-content:center;gap:0;
+  background:linear-gradient(180deg,rgba(56,189,248,.25),rgba(56,189,248,.1));
+  box-shadow:inset -6px -10px 18px rgba(0,0,0,.3),0 4px 24px rgba(56,189,248,.4);
+}
+.t-rain #timer-pill .tp-icon{display:none}
+.t-rain #timer-pill .tp-time{font-size:14px;min-width:auto}
+.t-rain #timer-pill .tp-label{font-size:6.5px}
+
+.t-fire #timer-pill{
+  border-radius:50% 50% 8px 8px!important;
+  background:linear-gradient(180deg,rgba(255,107,0,.3),rgba(204,68,0,.15));
+  animation:fireFlicker 1.8s ease-in-out infinite;
+}
+@keyframes fireFlicker{
+  0%,100%{box-shadow:0 0 18px rgba(255,107,0,.6),0 0 36px rgba(255,107,0,.3)}
+  50%{box-shadow:0 0 26px rgba(255,107,0,.8),0 0 52px rgba(255,107,0,.4)}
+}
+
+.t-ice #timer-pill{
+  clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  border-radius:0!important;width:90px;
+  background:linear-gradient(135deg,rgba(103,232,249,.25),rgba(6,182,212,.15));
+  box-shadow:0 0 20px rgba(103,232,249,.5);
+}
+
+.t-demon #timer-pill{
+  clip-path:polygon(0 15%,8% 0,92% 0,100% 15%,100% 85%,92% 100%,8% 100%,0 85%);
+  border-radius:0!important;
+  background:linear-gradient(180deg,rgba(255,77,109,.25),rgba(201,24,74,.15));
+}
+.t-angry #timer-pill{
+  clip-path:polygon(2% 12%,12% 0,30% 8%,50% 0,72% 6%,92% 0,100% 18%,96% 50%,100% 82%,88% 100%,68% 92%,48% 100%,30% 94%,10% 100%,0 86%,4% 50%);
+  border-radius:0!important;
+  background:linear-gradient(180deg,rgba(255,51,51,.3),rgba(204,0,0,.15));
+  animation:angryShake .25s ease infinite;
+}
+@keyframes angryShake{
+  0%,100%{transform:translateX(-50%) translateY(0) rotate(0)}
+  50%{transform:translateX(-50%) translateY(0) rotate(.6deg)}
+}
+
+.t-happy #timer-pill{border-radius:36px!important;background:linear-gradient(180deg,rgba(52,211,153,.25),rgba(5,150,105,.12))}
+.t-iphone #timer-pill{border-radius:26px!important;background:linear-gradient(180deg,rgba(10,132,255,.22),rgba(0,102,204,.1))}
+
+/* ── SET-PIP POR TEMA ── */
+.t-moon .set-pip,.t-sun .set-pip,.t-happy .set-pip{border-radius:50%!important}
+.t-rain .set-pip{border-radius:50% 50% 50% 50% / 70% 70% 35% 35%!important}
+.t-fire .set-pip{border-radius:50% 50% 6px 6px!important}
+.t-ice .set-pip{clip-path:polygon(50% 0,90% 25%,90% 75%,50% 100%,10% 75%,10% 25%);border-radius:0!important}
+.t-demon .set-pip{clip-path:polygon(0 20%,15% 0,85% 0,100% 20%,100% 80%,85% 100%,15% 100%,0 80%);border-radius:0!important}
+.t-angry .set-pip{clip-path:polygon(8% 8%,40% 0,75% 6%,100% 18%,92% 50%,100% 82%,65% 96%,30% 100%,0 85%,8% 45%);border-radius:0!important}
+.t-iphone .set-pip{border-radius:14px!important}
+
 /* ── BADGE CATEGORIAS ── */
 .badge-cat-label{grid-column:1/-1;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin-top:12px;margin-bottom:4px;padding:0 2px}
 .badge-cat-label:first-child{margin-top:0}
@@ -692,16 +795,17 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         <span data-lang="en">EN</span>
       </div>
       <div class="theme-picker" id="theme-picker">
-        <button class="theme-btn on" data-theme="padrao">🏅</button>
-        <button class="theme-btn" data-theme="moon">🌙</button>
-        <button class="theme-btn" data-theme="sun">☀️</button>
-        <button class="theme-btn" data-theme="demon">👿</button>
-        <button class="theme-btn" data-theme="iphone">📱</button>
-        <button class="theme-btn" data-theme="rain">🌧️</button>
-        <button class="theme-btn" data-theme="happy">😊</button>
-        <button class="theme-btn" data-theme="angry">🤬</button>
-        <button class="theme-btn" data-theme="fire">🔥</button>
-        <button class="theme-btn" data-theme="ice">🧊</button>
+        <button class="theme-btn on" data-theme="padrao" title="Padrão">🏅</button>
+        <button class="theme-btn" data-theme="sun" title="Sol">☀️</button>
+        <button class="theme-btn" data-theme="demon" title="Demónio">👿</button>
+        <button class="theme-btn" data-theme="iphone" title="iPhone">📱</button>
+        <button class="theme-btn" data-theme="rain" title="Chuva">🌧️</button>
+        <button class="theme-btn" data-theme="auto" title="Automático (dia/noite)">🌓</button>
+        <button class="theme-btn" data-theme="moon" title="Lua">🌙</button>
+        <button class="theme-btn" data-theme="happy" title="Feliz">😊</button>
+        <button class="theme-btn" data-theme="angry" title="Raiva">🤬</button>
+        <button class="theme-btn" data-theme="fire" title="Fogo">🔥</button>
+        <button class="theme-btn" data-theme="ice" title="Gelo">🧊</button>
       </div>
     </div>
   </div>

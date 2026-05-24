@@ -1583,7 +1583,8 @@ const THEMES = {
   fire:  { emoji:'🔥', gold:'#FF6B00', g2:'#CC4400', glow:'rgba(255,107,0,.45)',   subtle:'rgba(255,107,0,.09)',   bg:'#0a0400' },
   ice:   { emoji:'🧊', gold:'#67E8F9', g2:'#06B6D4', glow:'rgba(103,232,249,.4)',  subtle:'rgba(103,232,249,.08)', bg:'#00080d' },
 };
-function setTheme(name){
+let _autoTimer = null;
+function _applyThemeRaw(name){
   const t = THEMES[name] || THEMES.padrao;
   const r = document.documentElement;
   r.style.setProperty('--gold', t.gold);
@@ -1597,8 +1598,23 @@ function setTheme(name){
     if (i===arr.length-1) c.setAttribute('filter',`drop-shadow(0 0 6px ${t.gold})`);
   });
   document.querySelectorAll('#g-area stop').forEach(s => s.setAttribute('stop-color', t.gold));
-  document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('on', b.dataset.theme === name));
   applyThemeFX(name);
+}
+function setTheme(name){
+  if (_autoTimer) { clearInterval(_autoTimer); _autoTimer = null; }
+  if (name === 'auto'){
+    const tick = () => {
+      const h = new Date().getHours();
+      _applyThemeRaw(h >= 6 && h < 18 ? 'sun' : 'moon');
+    };
+    tick();
+    _autoTimer = setInterval(tick, 60000);
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('on', b.dataset.theme === 'auto'));
+    try { localStorage.setItem('josilvaPT_theme', 'auto'); } catch(e){}
+    return;
+  }
+  _applyThemeRaw(name);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('on', b.dataset.theme === name));
   try { localStorage.setItem('josilvaPT_theme', name); } catch(e){}
 }
 
@@ -1639,7 +1655,8 @@ function applyThemeFX(name){
 }
 function applyThemeFromStorage(){
   let saved = null; try { saved = localStorage.getItem('josilvaPT_theme'); } catch(e){}
-  setTheme(saved && THEMES[saved] ? saved : 'padrao');
+  const valid = saved === 'auto' || (saved && THEMES[saved]);
+  setTheme(valid ? saved : 'padrao');
 }
 function setupThemePicker(){
   document.querySelectorAll('.theme-btn').forEach(b =>
