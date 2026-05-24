@@ -1759,7 +1759,7 @@ const THEMES = {
   padrao:{ emoji:'🏅', gold:'#FFD96B', g2:'#E5B23A', glow:'rgba(255,217,107,.35)', subtle:'rgba(255,217,107,.07)', bg:'#000000' },
   moon:  { emoji:'🌙', gold:'#C4B5FD', g2:'#7C3AED', glow:'rgba(196,181,253,.4)',  subtle:'rgba(196,181,253,.08)', bg:'#06061a' },
   sun:   { emoji:'☀️', gold:'#FFA827', g2:'#E08000', glow:'rgba(255,168,39,.4)',   subtle:'rgba(255,168,39,.08)',  bg:'#0d0800' },
-  demon: { emoji:'👿', gold:'#FF4D6D', g2:'#C9184A', glow:'rgba(255,77,109,.4)',   subtle:'rgba(255,77,109,.08)',  bg:'#08000f' },
+  demon: { emoji:'👿', gold:'#BF5AF2', g2:'#7B2FBE', glow:'rgba(191,90,242,.4)',   subtle:'rgba(191,90,242,.08)',  bg:'#08000f' },
   iphone:{ emoji:'📱', gold:'#0A84FF', g2:'#0066CC', glow:'rgba(10,132,255,.4)',   subtle:'rgba(10,132,255,.08)',  bg:'#000000' },
   rain:  { emoji:'🌧️', gold:'#38BDF8', g2:'#0284C7', glow:'rgba(56,189,248,.4)',   subtle:'rgba(56,189,248,.08)',  bg:'#040810' },
   happy: { emoji:'😊', gold:'#34D399', g2:'#059669', glow:'rgba(52,211,153,.4)',   subtle:'rgba(52,211,153,.08)',  bg:'#020d07' },
