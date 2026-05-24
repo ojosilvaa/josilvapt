@@ -667,7 +667,11 @@ function renderTreino(){
       <div class="carga-block">
         <button class="carga-btn" data-act="-" data-id="${ex.id}">−</button>
         <div class="carga-mid">
-          <div class="carga-val">${cargaStr}${c > 0 ? '<span class="kg">kg</span>' : ''}</div>
+          <div class="carga-val">
+            <input class="carga-inp" type="number" inputmode="decimal" step="0.5" min="0"
+              value="${c > 0 ? c : ''}" placeholder="—" data-id="${ex.id}">
+            <span class="kg"${c > 0 ? '' : ' style="display:none"'}>kg</span>
+          </div>
           <div class="carga-delta ${deltaCls}">${deltaTxt}</div>
         </div>
         <button class="carga-btn" data-act="+" data-id="${ex.id}">+</button>
@@ -681,6 +685,12 @@ function renderTreino(){
 
   if (!list.dataset.bound){
     list.addEventListener('click', onExListClick);
+    list.addEventListener('change', onExListChange);
+    list.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' && ev.target.classList.contains('carga-inp')) {
+        ev.preventDefault(); ev.target.blur();
+      }
+    });
     list.dataset.bound = '1';
   }
 
@@ -712,6 +722,16 @@ function onExListClick(ev){
     sc('doneSet', out);
     renderTreino();
   }
+}
+
+function onExListChange(ev){
+  const inp = ev.target;
+  if (!inp.classList.contains('carga-inp')) return;
+  const id  = inp.dataset.id;
+  const val = parseFloat(inp.value);
+  cargas[id] = (!isNaN(val) && val > 0) ? Math.round(val * 10) / 10 : 0;
+  sc('cargas', cargas);
+  renderTreino();
 }
 
 function lastCargaFor(exId){

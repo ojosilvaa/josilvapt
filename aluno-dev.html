@@ -210,8 +210,15 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 }
 .carga-btn:active{transform:scale(.92);background:var(--gold);color:#000}
 .carga-mid{text-align:center}
-.carga-val{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
-.carga-val .kg{font-size:13px;color:var(--text-2);font-weight:500;letter-spacing:0;margin-left:3px}
+.carga-val{display:flex;align-items:baseline;justify-content:center;gap:2px}
+.carga-inp{background:none;border:none;border-bottom:2px solid transparent;outline:none;
+  font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;
+  width:72px;text-align:center;padding:0;-moz-appearance:textfield;
+  transition:border-color var(--t-fast),color var(--t-fast)}
+.carga-inp::-webkit-outer-spin-button,.carga-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.carga-inp:focus{color:var(--gold);border-bottom-color:var(--gold)}
+.carga-inp::placeholder{color:var(--text-3);font-size:20px;font-weight:400}
+.carga-val .kg{font-size:13px;color:var(--text-2);font-weight:500;letter-spacing:0;margin-left:1px}
 .carga-delta{font-family:var(--mono);font-size:10px;color:var(--aqua);margin-top:4px;font-weight:600;letter-spacing:.04em}
 .carga-delta.flat{color:var(--text-3)}
 .carga-delta.dn{color:var(--coral)}
