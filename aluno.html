@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<script>location.replace('aluno-v3.html'+location.search);</script>
+<script>
+/* redireciona para aluno-v3.html preservando ?id= */
+(function(){
+  var qs = location.search || '';
+  /* guarda o id em localStorage para PWA sem parâmetro */
+  try {
+    var m = qs.match(/[?&]id=([a-f0-9-]{36})/i);
+    if (m) localStorage.setItem('josilvaPT_id', m[1]);
+    else {
+      var stored = localStorage.getItem('josilvaPT_id');
+      if (stored) qs = '?id=' + stored;
+    }
+  } catch(e){}
+  location.replace('aluno-v3.html' + qs);
+})();
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
