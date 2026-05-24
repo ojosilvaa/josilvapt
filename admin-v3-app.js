@@ -134,6 +134,11 @@ const lc = (k, d) => { try { const v = localStorage.getItem(k); return v !== nul
 const sc = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
 
 function loadConfig() {
+  // Força sempre o URL correcto, ignorando cache antigo
+  const stored = lc('base_url', '');
+  if (!stored || stored.includes('aluno.html') || !stored.includes('aluno-v3')) {
+    sc('base_url', 'https://josilvapt.vercel.app/aluno-v3.html');
+  }
   BASE_URL = lc('base_url', 'https://josilvapt.vercel.app/aluno-v3.html');
   ANTHROPIC_KEY = lc('anthropic_key', '');
   const b = document.getElementById('cfg-base-url'), ak = document.getElementById('cfg-anthropic-key');
