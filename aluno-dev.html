@@ -11,6 +11,21 @@
 <meta name="theme-color" content="#FFD96B">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Jo Silva PT">
+<script>
+/* PWA: guarda o ?id= e recupera-o ao abrir da home screen sem parâmetro */
+(function(){
+  var p = new URLSearchParams(location.search);
+  var id = p.get('id');
+  if (id) {
+    try { localStorage.setItem('josilvaPT_id', id); } catch(e){}
+  } else {
+    try {
+      var stored = localStorage.getItem('josilvaPT_id');
+      if (stored) location.replace(location.pathname + '?id=' + stored);
+    } catch(e){}
+  }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -424,6 +439,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .toast{position:fixed;bottom:calc(96px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:rgba(28,28,30,.95);border:1px solid var(--hairline-strong);backdrop-filter:blur(20px);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;padding:12px 24px;border-radius:30px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .toast.show{opacity:1}
 
+#install-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(16,16,16,.97);border-top:1px solid rgba(200,169,110,.25);backdrop-filter:blur(20px);padding:14px 16px calc(14px + var(--safe-bottom));display:flex;align-items:center;gap:12px;z-index:400;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.2,.64,1)}
+#install-bar.show{transform:translateY(0)}
+#install-bar .ib-icon{font-size:22px;flex-shrink:0}
+#install-bar .ib-text{flex:1;font-size:13px;color:var(--text-2);line-height:1.4}
+#install-bar .ib-text b{color:#fff;font-weight:700}
+#install-bar .ib-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--text-3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
 .success-banner{background:rgba(95,227,211,.08);border:1.5px solid rgba(95,227,211,.3);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
 .success-banner.show{display:flex}
 .success-icon{font-size:24px}
@@ -814,6 +836,14 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 <div class="toast" id="toast"></div>
 
+<div id="install-bar">
+  <span class="ib-icon">📲</span>
+  <div class="ib-text">
+    Instala o app: toca em <b>Partilhar ⬆️</b> e depois <b>"Ecrã de Início"</b>
+  </div>
+  <button class="ib-close" onclick="document.getElementById('install-bar').classList.remove('show');try{localStorage.setItem('josilvaPT_noinstall','1')}catch(e){}">✕</button>
+</div>
+
 <button id="nutri-fab" onclick="abrirModalNutricao()">+</button>
 
 <div id="nut-modal">
@@ -830,5 +860,22 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 </div>
 
 <script src="aluno-dev-app.js?v=3"></script>
+<script>
+if ('serviceWorker' in navigator)
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+
+/* Mostra banner de instalação só no iOS Safari fora do modo standalone */
+(function(){
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  var isStandalone = window.navigator.standalone === true;
+  var dismissed = false;
+  try { dismissed = !!localStorage.getItem('josilvaPT_noinstall'); } catch(e){}
+  if (isIOS && !isStandalone && !dismissed) {
+    setTimeout(function(){
+      document.getElementById('install-bar').classList.add('show');
+    }, 3000);
+  }
+})();
+</script>
 </body>
 </html>
