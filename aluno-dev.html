@@ -430,6 +430,19 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .success-text{font-size:14px;color:var(--aqua);font-weight:600}
 .success-sub{font-size:12px;color:var(--text-2);margin-top:2px}
 
+/* ════ CRONÓMETRO */
+#timer-pill{
+  position:fixed;top:calc(16px + var(--safe-top, 0px));left:50%;transform:translateX(-50%) translateY(-80px);
+  background:rgba(16,16,16,.92);border:1.5px solid var(--gold);backdrop-filter:blur(20px);
+  border-radius:30px;padding:10px 22px;display:flex;align-items:center;gap:10px;
+  z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+  box-shadow:0 4px 24px rgba(0,0,0,.5),0 0 0 1px rgba(200,169,110,.15);
+}
+#timer-pill.show{transform:translateX(-50%) translateY(0)}
+#timer-pill .tp-icon{font-size:16px;line-height:1}
+#timer-pill .tp-time{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:.06em;color:var(--gold);min-width:60px;text-align:center}
+#timer-pill .tp-label{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-top:1px}
+
 /* ════ FAB + MODAL NUTRIÇÃO */
 #nutri-fab{
   position:fixed;bottom:calc(96px + var(--safe-bottom));right:20px;
@@ -789,6 +802,14 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
     </button>
   </nav>
 
+</div>
+
+<div id="timer-pill">
+  <span class="tp-icon">⏱</span>
+  <div>
+    <div class="tp-time" id="timer-display">00:00</div>
+    <div class="tp-label" data-i18n="timer_label">Treino em curso</div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>

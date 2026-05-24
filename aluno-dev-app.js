@@ -19,6 +19,7 @@ const I18N = {
     'evo_heat':'Atividade · 13 semanas','heat_less':'Menos','heat_more':'Mais',
     'n_meta_sub':'da tua meta','n_prot':'Proteína','n_carb':'Carbo','n_gord':'Gordura',
     'water':'copos água','n_meals':'Refeições','n_no_meal':'Sem refeições hoje.',
+    'timer_label':'Treino em curso',
     'pf_level':'Nível atual','streak_days':'dias','streak_active':'streak ativo',
     'pf_conquistas':'Conquistas','pt_msg':'Mensagem','pt_call':'Ligar','pf_orient':'Orientações da semana',
     'nav_treino':'Treino','nav_evolucao':'Evolução','nav_nutricao':'Nutrição','nav_perfil':'Perfil',
@@ -56,6 +57,7 @@ const I18N = {
     'evo_heat':'Activity · 13 weeks','heat_less':'Less','heat_more':'More',
     'n_meta_sub':'of your goal','n_prot':'Protein','n_carb':'Carb','n_gord':'Fat',
     'water':'water cups','n_meals':'Meals','n_no_meal':'No meals today.',
+    'timer_label':'Workout in progress',
     'pf_level':'Current level','streak_days':'days','streak_active':'active streak',
     'pf_conquistas':'Achievements','pt_msg':'Message','pt_call':'Call','pf_orient':'Week guidelines',
     'nav_treino':'Workout','nav_evolucao':'Progress','nav_nutricao':'Nutrition','nav_perfil':'Profile',
@@ -92,6 +94,7 @@ let aluno = null, alunoObjetivo = '';
 let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
 let cargas = {}, doneSet = {};
 let sessoes = [], allCargasHist = null;
+let timerStart = null, timerInterval = null;
 let pesoCached = 0, perimetriaHist = [];
 
 // ── STORAGE HELPERS ──────────────────────────────────────
@@ -555,6 +558,7 @@ async function loadTreinos(){
 }
 
 async function selectTreino(id){
+  if (id !== currentTreinoId) timerReset(); // novo treino = reset cronómetro
   currentTreinoId = id;
   if (!exerciciosPorTreino[id]){
     exerciciosPorTreino[id] = await sb(`exercicios?treino_id=eq.${id}&order=ordem.asc`) || [];
@@ -569,6 +573,38 @@ async function selectTreino(id){
   }
   sc('cargas', cargas);
   renderTreino();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CRONÓMETRO DE TREINO
+// ═══════════════════════════════════════════════════════════
+function timerFmt(ms){
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2,'0');
+  return m + ':' + ss;
+}
+function timerStart_(){
+  if (timerStart !== null) return; // já está a correr
+  timerStart = Date.now();
+  const pill  = document.getElementById('timer-pill');
+  const disp  = document.getElementById('timer-display');
+  if (pill) pill.classList.add('show');
+  timerInterval = setInterval(() => {
+    if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
+  }, 1000);
+}
+function timerStop(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  const pill = document.getElementById('timer-pill');
+  if (pill) pill.classList.remove('show');
+}
+function timerReset(){
+  timerStop();
+  timerStart = null;
+  const disp = document.getElementById('timer-display');
+  if (disp) disp.textContent = '00:00';
 }
 
 function renderTreino(){
@@ -667,7 +703,10 @@ function onExListClick(ev){
     const k  = +pip.dataset.set;
     if (!doneSet[id]) doneSet[id] = new Set();
     if (doneSet[id].has(k)) doneSet[id].delete(k);
-    else doneSet[id].add(k);
+    else {
+      doneSet[id].add(k);
+      timerStart_(); // inicia ao marcar a 1.ª série
+    }
     const out = {};
     Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
     sc('doneSet', out);
@@ -711,9 +750,11 @@ async function registrar(){
   const btn = document.getElementById('btn-reg');
   btn.textContent = T('reg_saving'); btn.disabled = true;
 
+  const duracao_seg = timerStart !== null ? Math.round((Date.now() - timerStart) / 1000) : null;
   const sessaoData = {
     aluno_id: ALUNO_ID, treino_id: currentTreinoId,
-    treino_nome: t?.nome || '', data: todayISO()
+    treino_nome: t?.nome || '', data: todayISO(),
+    ...(duracao_seg !== null && { duracao_seg })
   };
 
   const sesRes = await sb('sessoes', { method:'POST', body: JSON.stringify(sessaoData) });
@@ -739,6 +780,13 @@ async function registrar(){
   const out = {};
   Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
   sc('doneSet', out);
+
+  // mostra tempo no banner e para o cronómetro
+  const bannerSub = document.querySelector('#success-banner .success-sub');
+  if (bannerSub && duracao_seg !== null) {
+    bannerSub.textContent = timerFmt(duracao_seg * 1000) + ' · ' + (LANG==='pt' ? 'Duração do treino' : 'Workout duration');
+  }
+  timerReset();
 
   const banner = document.getElementById('success-banner');
   banner.classList.add('show');
