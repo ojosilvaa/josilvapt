@@ -1625,6 +1625,7 @@ function go(name){
 
   if (name === 'evolucao')   renderEvolucao();
   if (name === 'nutricao')   renderNutricao();
+  if (name === 'comunidade') renderComunidade();
   if (name === 'perfil')     renderPerfil();
 }
 
@@ -1807,6 +1808,377 @@ function setupWaterDots(){
 
 function escapeHTML(s){
   return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  COMUNIDADE
+// ═══════════════════════════════════════════════════════════
+
+let comTab = 'feed';
+let comPosts = [];
+let comChallenges = [];
+let comPhotoB64 = null;
+
+const avGrads = [
+  'linear-gradient(135deg,#FFD96B,#E5B23A)',
+  'linear-gradient(135deg,#A78BFA,#7C3AED)',
+  'linear-gradient(135deg,#5FE3D3,#0891B2)',
+  'linear-gradient(135deg,#FF6B6B,#DC2626)',
+];
+function alunoGrad(id){ let h=0; for(let i=0;i<(id||'').length;i++) h=(h*31+id.charCodeAt(i))>>>0; return avGrads[h%4]; }
+
+function timeAgo(iso){
+  if (!iso) return '';
+  const m = Math.floor((Date.now()-new Date(iso))/60000);
+  if (m < 1) return 'agora';
+  if (m < 60) return m+'min';
+  const h = Math.floor(m/60);
+  if (h < 24) return h+'h';
+  return Math.floor(h/24)+'d';
+}
+
+function getMondayISO(){
+  const d = new Date();
+  const day = d.getDay(), diff = d.getDate()-day+(day===0?-6:1);
+  return new Date(d.setDate(diff)).toISOString().split('T')[0];
+}
+
+// ── Carregar dados ─────────────────────────────────────────
+async function renderComunidade(){
+  const content = document.getElementById('com-content');
+  if (content) content.innerHTML = `<div class="loading" style="padding:32px 0 0">A carregar…</div>`;
+
+  const now = new Date().toISOString();
+  [comPosts, comChallenges] = await Promise.all([
+    sb(`community_posts?expira_em=gte.${encodeURIComponent(now)}&select=*,community_reactions(post_id,aluno_id,emoji),community_comments(id,aluno_id,aluno_nome,texto,criado_em)&order=criado_em.desc&limit=40`) || [],
+    sb(`community_challenges?ativo=eq.true&order=criado_em.asc`) || [],
+  ]);
+  comPosts = comPosts || [];
+  comChallenges = comChallenges || [];
+
+  // Setup tab clicks (once)
+  const tabsEl = document.getElementById('com-tabs');
+  if (tabsEl && !tabsEl.dataset.bound){
+    tabsEl.dataset.bound = '1';
+    tabsEl.addEventListener('click', ev => {
+      const t = ev.target.closest('.com-tab');
+      if (t) comSetTab(t.dataset.tab);
+    });
+  }
+
+  comSetTab(comTab);
+}
+
+function comSetTab(tab){
+  comTab = tab;
+  document.querySelectorAll('.com-tab').forEach(t => t.classList.toggle('on', t.dataset.tab===tab));
+  const content = document.getElementById('com-content');
+  if (!content) return;
+  content.innerHTML = '';
+  if (tab==='feed')      comRenderFeed(content);
+  else if (tab==='desafios') comRenderDesafios(content);
+  else if (tab==='rankings') comRenderRankings(content);
+}
+
+// ── FEED ──────────────────────────────────────────────────
+function comRenderFeed(container){
+  const grad = alunoGrad(ALUNO_ID);
+  const compose = `<div class="com-compose" onclick="comOpenModal()">
+    <div class="com-compose-av" style="background:${grad}">${initials(aluno?.nome||'?')}</div>
+    <div class="com-compose-ph">Partilha algo com a equipa…</div>
+    <div class="com-compose-btn">Publicar</div>
+  </div>`;
+
+  if (!comPosts.length){
+    container.innerHTML = compose + `<div class="empty" style="padding:32px 0">Sem publicações ainda.<br>Sê o primeiro! 💪</div>`;
+    return;
+  }
+  container.innerHTML = compose + comPosts.map((p,i) => comPostHTML(p,i)).join('');
+}
+
+function comPostHTML(p, idx=0){
+  const grad = alunoGrad(p.aluno_id);
+  const reactions = p.community_reactions || [];
+  const comments  = p.community_comments  || [];
+  const myR = reactions.filter(r=>r.aluno_id===ALUNO_ID).map(r=>r.emoji);
+  const rCnt = {};
+  reactions.forEach(r => { rCnt[r.emoji]=(rCnt[r.emoji]||0)+1; });
+  const emojis = ['💪','🔥','👏','😤'];
+  const reactHTML = emojis.map(e => {
+    const n = rCnt[e]||0, on = myR.includes(e);
+    return `<button class="com-react-btn${on?' on':''}" onclick="comReact('${p.id}','${e}')">
+      ${e}<span class="com-react-cnt">${n>0?' '+n:''}</span></button>`;
+  }).join('');
+  const badgeHTML = p.tipo==='checkin' ? '<div class="com-post-badge">Check-in</div>' : '';
+  const expiryDays = p.expira_em ? Math.max(0, Math.ceil((new Date(p.expira_em)-Date.now())/86400000)) : 7;
+  return `<div class="com-post" id="post-${p.id}" style="animation-delay:${idx*.04}s">
+    <div class="com-post-head">
+      <div class="com-post-av" style="background:${grad}">${initials(p.aluno_nome||'?')}</div>
+      <div class="com-post-info">
+        <div class="com-post-name">${escapeHTML(p.aluno_nome||'—')}</div>
+        <div class="com-post-time">${timeAgo(p.criado_em)} · apaga em ${expiryDays}d</div>
+      </div>
+      ${badgeHTML}
+    </div>
+    ${p.texto ? `<div class="com-post-text">${escapeHTML(p.texto)}</div>` : ''}
+    ${p.foto_url ? `<img class="com-post-photo" src="${p.foto_url}" loading="lazy" alt="">` : ''}
+    <div class="com-post-foot">
+      <div class="com-react-group">${reactHTML}</div>
+      <button class="com-comment-toggle" onclick="comToggleComments('${p.id}')">
+        💬 <span id="com-cc-${p.id}">${comments.length}</span>
+      </button>
+    </div>
+    <div class="com-comments-wrap" id="com-cw-${p.id}">
+      <div id="com-cl-${p.id}">${comCommentsHTML(comments)}</div>
+      <div class="com-cmt-inp-row">
+        <input class="com-cmt-inp" id="com-ci-${p.id}" placeholder="Adiciona um comentário…"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();comSendComment('${p.id}')}">
+        <button class="com-cmt-send" onclick="comSendComment('${p.id}')">→</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function comCommentsHTML(comments){
+  if (!comments.length) return `<div style="padding:6px 0;color:var(--text-3);font-size:12px">Sem comentários ainda.</div>`;
+  return comments.map(c => `<div class="com-comment-item">
+    <div class="com-cmt-av" style="background:${alunoGrad(c.aluno_id)}">${initials(c.aluno_nome||'?')}</div>
+    <div class="com-cmt-body">
+      <div class="com-cmt-name">${escapeHTML(c.aluno_nome||'—')} <span>${timeAgo(c.criado_em)}</span></div>
+      <div class="com-cmt-txt">${escapeHTML(c.texto)}</div>
+    </div>
+  </div>`).join('');
+}
+
+// ── Reações ────────────────────────────────────────────────
+async function comReact(postId, emoji){
+  const post = comPosts.find(p=>p.id===postId);
+  if (!post || !ALUNO_ID) return;
+  const reactions = post.community_reactions || [];
+  const existing = reactions.find(r=>r.aluno_id===ALUNO_ID && r.emoji===emoji);
+  if (existing){
+    await sb(`community_reactions?post_id=eq.${postId}&aluno_id=eq.${ALUNO_ID}&emoji=eq.${encodeURIComponent(emoji)}`,
+      { method:'DELETE', headers:{'Prefer':''} });
+    post.community_reactions = reactions.filter(r=>!(r.aluno_id===ALUNO_ID&&r.emoji===emoji));
+  } else {
+    const r = await sb('community_reactions',{
+      method:'POST',
+      headers:{'Prefer':'resolution=ignore-duplicates,return=representation'},
+      body:JSON.stringify({post_id:postId,aluno_id:ALUNO_ID,emoji})
+    });
+    if (r&&r[0]) post.community_reactions = [...reactions,r[0]];
+    else post.community_reactions = [...reactions,{post_id:postId,aluno_id:ALUNO_ID,emoji}];
+  }
+  const el = document.getElementById(`post-${postId}`);
+  const idx = comPosts.findIndex(p=>p.id===postId);
+  if (el) el.outerHTML = comPostHTML(post, idx);
+}
+
+// ── Comentários ────────────────────────────────────────────
+function comToggleComments(postId){
+  const wrap = document.getElementById(`com-cw-${postId}`);
+  if (wrap) wrap.classList.toggle('open');
+}
+
+async function comSendComment(postId){
+  const inp = document.getElementById(`com-ci-${postId}`);
+  const txt = inp?.value.trim();
+  if (!txt || !aluno) return;
+  inp.value = '';
+  const r = await sb('community_comments',{
+    method:'POST',
+    body:JSON.stringify({post_id:postId,aluno_id:ALUNO_ID,aluno_nome:aluno.nome,texto:txt})
+  });
+  if (!r||!r[0]) return;
+  const post = comPosts.find(p=>p.id===postId);
+  if (post){
+    if (!post.community_comments) post.community_comments=[];
+    post.community_comments.push(r[0]);
+    const list = document.getElementById(`com-cl-${postId}`);
+    if (list) list.innerHTML = comCommentsHTML(post.community_comments);
+    const cnt = document.getElementById(`com-cc-${postId}`);
+    if (cnt) cnt.textContent = post.community_comments.length;
+    const wrap = document.getElementById(`com-cw-${postId}`);
+    if (wrap) wrap.classList.add('open');
+  }
+}
+
+// ── DESAFIOS ──────────────────────────────────────────────
+async function comRenderDesafios(container){
+  container.innerHTML = `<div class="loading" style="padding:32px 0 0">A calcular classificações…</div>`;
+  if (!comChallenges.length){
+    container.innerHTML = `<div class="empty" style="padding:32px 0">Sem desafios ativos.</div>`; return;
+  }
+  const cutoff = new Date(Date.now()-30*86400000).toISOString().split('T')[0];
+  const [alunosList, s30] = await Promise.all([
+    sb('alunos?ativo=eq.true&select=id,nome')||[],
+    sb(`sessoes?data=gte.${cutoff}&select=aluno_id,data`)||[]
+  ]);
+  const monday = getMondayISO();
+  container.innerHTML = comChallenges.map(ch => comChallengeHTML(ch, alunosList||[], s30||[], monday)).join('');
+}
+
+function comChallengeHTML(ch, alunosList, s30, monday){
+  const standings = comStandings(ch, alunosList, s30, monday);
+  const mine = standings.find(s=>s.id===ALUNO_ID);
+  const maxVal = standings[0]?.valor || ch.meta_valor;
+  const daysLeft = ch.fim ? Math.max(0,Math.ceil((new Date(ch.fim)-Date.now())/86400000)) : null;
+  const unit = ch.meta_tipo==='sessoes_semana'||ch.meta_tipo==='sessoes_mes' ? 'sessões' : 'dias';
+  const mineBar = mine ? `<div class="com-ch-mine">
+    <div class="com-ch-mine-top"><span>O teu progresso</span><b>${mine.valor} / ${ch.meta_valor} ${unit} · ${Math.round(Math.min(1,mine.valor/ch.meta_valor)*100)}%</b></div>
+    <div class="xp-bar"><div class="xp-fill" style="width:${Math.round(Math.min(1,mine.valor/ch.meta_valor)*100)}%"></div></div>
+  </div>` : '';
+  const posIco = ['🥇','🥈','🥉'];
+  const rowsHTML = standings.slice(0,6).map((s,i)=>{
+    const isMe = s.id===ALUNO_ID;
+    const pct = maxVal>0 ? (s.valor/maxVal*100).toFixed(0) : 0;
+    return `<div class="com-ch-row${isMe?' me':''}">
+      <div class="com-ch-rank">${posIco[i]||i+1}</div>
+      <div class="com-ch-av" style="background:${alunoGrad(s.id)}">${initials(s.nome)}</div>
+      <div class="com-ch-name">${escapeHTML(s.nome)}</div>
+      <div class="com-ch-bar-wrap"><div class="com-ch-bar" style="width:${pct}%"></div></div>
+      <div class="com-ch-val">${s.valor}</div>
+    </div>`;
+  }).join('');
+  return `<div class="com-challenge">
+    <div class="com-ch-head">
+      <div class="com-ch-ico">${ch.emoji||'🏆'}</div>
+      <div>
+        <div class="com-ch-title">${escapeHTML(ch.titulo)}</div>
+        <div class="com-ch-desc">${escapeHTML(ch.descricao||'')}</div>
+        <div class="com-ch-meta">Meta: ${ch.meta_valor} ${unit}${daysLeft!=null?' · '+daysLeft+' dias restantes':''}</div>
+      </div>
+    </div>
+    ${mineBar}
+    ${rowsHTML ? `<div class="com-ch-rows">${rowsHTML}</div>` : ''}
+  </div>`;
+}
+
+function comStandings(ch, alunosList, s30, monday){
+  const cutoff30 = new Date(Date.now()-30*86400000).toISOString().split('T')[0];
+  return (alunosList||[]).map(a=>{
+    let v = 0;
+    if (ch.meta_tipo==='sessoes_semana'){
+      v = s30.filter(s=>s.aluno_id===a.id&&s.data>=monday).length;
+    } else if (ch.meta_tipo==='sessoes_mes'){
+      v = s30.filter(s=>s.aluno_id===a.id).length;
+    } else if (ch.meta_tipo==='streak'){
+      const days = [...new Set(s30.filter(s=>s.aluno_id===a.id).map(s=>s.data))].sort();
+      let streak=0;
+      for(let i=days.length-1;i>=0;i--){
+        const gap = Math.floor((Date.now()-new Date(days[i]))/86400000);
+        if(gap<=streak+1) streak++;
+        else break;
+      }
+      v = streak;
+    }
+    return {id:a.id,nome:a.nome,valor:v};
+  }).filter(s=>s.valor>0).sort((a,b)=>b.valor-a.valor);
+}
+
+// ── RANKINGS ──────────────────────────────────────────────
+async function comRenderRankings(container){
+  container.innerHTML = `<div class="loading" style="padding:32px 0 0">A calcular rankings…</div>`;
+  const [alunosList, allSess] = await Promise.all([
+    sb('alunos?ativo=eq.true&select=id,nome')||[],
+    sb('sessoes?select=aluno_id,data&order=data.desc&limit=1000')||[]
+  ]);
+  const monday = getMondayISO();
+  const cut30 = new Date(Date.now()-30*86400000).toISOString().split('T')[0];
+  const al = alunosList||[], se = allSess||[];
+  const rank = (fn) => al.map(a=>({...a,valor:fn(a)})).filter(r=>r.valor>0).sort((a,b)=>b.valor-a.valor);
+  const weekly  = rank(a=>se.filter(s=>s.aluno_id===a.id&&s.data>=monday).length);
+  const monthly = rank(a=>se.filter(s=>s.aluno_id===a.id&&s.data>=cut30).length);
+  const alltime = rank(a=>se.filter(s=>s.aluno_id===a.id).length);
+  const posIco = ['🥇','🥈','🥉'];
+  const rankRow = (r,i) => {
+    const isMe = r.id===ALUNO_ID;
+    return `<div class="com-rank-row${isMe?' me':''}" style="animation-delay:${i*.03}s">
+      <div class="com-rank-pos">${posIco[i]||i+1}</div>
+      <div class="com-rank-av" style="background:${alunoGrad(r.id)}">${initials(r.nome)}</div>
+      <div class="com-rank-name">${escapeHTML(r.nome)}${isMe?'<em style="color:var(--gold);font-style:normal;font-size:11px"> · tu</em>':''}</div>
+      <div class="com-rank-val">${r.valor}</div>
+    </div>`;
+  };
+  const section = (title, rows) =>
+    `<div class="com-rank-ttl">${title}</div>` +
+    (rows.length ? rows.slice(0,5).map(rankRow).join('') : `<div class="empty" style="padding:10px 0;font-size:13px">Sem dados ainda.</div>`);
+  container.innerHTML = `<div class="com-rank-block">
+    ${section('🗓️ Esta semana · Sessões', weekly)}
+    ${section('📅 Últimos 30 dias · Sessões', monthly)}
+    ${section('🏛️ Histórico · Total de sessões', alltime)}
+  </div>`;
+}
+
+// ── Modal publicar ─────────────────────────────────────────
+function comOpenModal(){
+  comPhotoB64 = null;
+  document.getElementById('com-textarea').value = '';
+  const prev = document.getElementById('com-photo-preview');
+  if (prev){ prev.style.display='none'; prev.src=''; }
+  document.getElementById('com-modal').classList.add('open');
+}
+function comCloseModal(){
+  document.getElementById('com-modal').classList.remove('open');
+}
+function comCheckIn(){
+  const last = sessoes[0];
+  const xp = sessoes.length*50;
+  const txt = last
+    ? `💪 Check-in de treino!\n${last.treino_nome||'Treino'} · ${formatDate(last.data)}\n🏆 ${xp.toLocaleString('pt-PT')} XP acumulado`
+    : `💪 Check-in! Pronto para treinar!`;
+  document.getElementById('com-textarea').value = txt;
+}
+function comSelectPhoto(){
+  const inp = document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  inp.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const b64 = await comCompressImage(file);
+    if (b64.length > 900000){ toast('Foto demasiado grande. Usa uma mais pequena.'); return; }
+    comPhotoB64 = b64;
+    const prev = document.getElementById('com-photo-preview');
+    if (prev){ prev.src=b64; prev.style.display='block'; }
+  };
+  inp.click();
+}
+function comCompressImage(file, maxW=640, q=0.45){
+  return new Promise(resolve=>{
+    const r = new FileReader();
+    r.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxW/Math.max(img.width,img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width*scale);
+        c.height= Math.round(img.height*scale);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        resolve(c.toDataURL('image/jpeg',q));
+      };
+      img.src = e.target.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+async function comPublicar(){
+  const txt = document.getElementById('com-textarea').value.trim();
+  if (!txt && !comPhotoB64){ toast('Escreve algo ou adiciona uma foto.'); return; }
+  if (!aluno) return;
+  const btn = document.querySelector('#com-modal .com-btn-pri');
+  if (btn){ btn.disabled=true; btn.textContent='A publicar…'; }
+  const r = await sb('community_posts',{
+    method:'POST',
+    body:JSON.stringify({aluno_id:ALUNO_ID,aluno_nome:aluno.nome,tipo:'post',texto:txt||null,foto_url:comPhotoB64||null})
+  });
+  if (btn){ btn.disabled=false; btn.textContent='Publicar'; }
+  if (r&&r[0]){
+    r[0].community_reactions=[]; r[0].community_comments=[];
+    comPosts.unshift(r[0]);
+    comCloseModal();
+    if (comTab==='feed'){ const c=document.getElementById('com-content'); if(c) comRenderFeed(c); }
+    toast('Publicado! 🎉');
+  } else { toast('Erro ao publicar. Tenta de novo.'); }
 }
 
 init();

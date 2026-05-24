@@ -514,16 +514,100 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .pfc-section{animation:revealUp .35s ease both}
 
 /* ════ COMUNIDADE */
-.com-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px}
-.com-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:20px 16px;position:relative}
-.com-ico{font-size:28px;margin-bottom:10px}
-.com-name{font-size:15px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
-.com-desc{font-size:12px;color:var(--text-2);line-height:1.55;font-weight:500}
-.com-badge{display:inline-block;margin-top:10px;padding:3px 9px;border-radius:20px;background:var(--gold-subtle);border:1px solid var(--gold-glow);font-family:var(--mono);font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase}
-.com-notify{margin:4px 16px 24px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.com-notify-text{font-size:13px;color:var(--text-2);font-weight:500;flex:1}
-.com-notify-btn{padding:9px 18px;background:var(--gold);color:#000;font-size:13px;font-weight:700;border:0;border-radius:10px;cursor:pointer;flex-shrink:0;transition:opacity var(--t-fast)}
-.com-notify-btn:active{opacity:.8}
+.com-header{padding:16px 16px 0;background:var(--bg)}
+.com-kicker{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:12px}
+.com-tabs-bar{display:flex;gap:6px;margin-bottom:14px}
+.com-tab{flex:1;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;background:var(--surface-1);border:1.5px solid var(--hairline);color:var(--text-2);transition:all var(--t-fast);cursor:pointer}
+.com-tab.on{background:var(--gold-subtle);border-color:var(--gold);color:var(--gold)}
+.com-content{padding-bottom:32px}
+
+/* feed */
+.com-compose{margin:0 16px 10px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:background var(--t-fast)}
+.com-compose:active{background:var(--surface-2)}
+.com-compose-av{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;flex-shrink:0}
+.com-compose-ph{flex:1;font-size:13px;color:var(--text-3);font-weight:500}
+.com-compose-btn{padding:7px 13px;background:var(--gold);color:#000;border-radius:9px;font-size:12px;font-weight:700;flex-shrink:0}
+.com-post{margin:0 16px 10px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;overflow:hidden;animation:revealUp .3s ease both}
+.com-post-head{display:flex;align-items:center;gap:10px;padding:13px 14px 10px}
+.com-post-av{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;flex-shrink:0}
+.com-post-info{flex:1;min-width:0}
+.com-post-name{font-size:14px;font-weight:700;letter-spacing:-.015em}
+.com-post-time{font-family:var(--mono);font-size:9px;color:var(--text-3);font-weight:600;margin-top:1px;letter-spacing:.04em}
+.com-post-badge{padding:2px 8px;border-radius:6px;background:var(--gold-subtle);border:1px solid var(--gold-glow);font-family:var(--mono);font-size:8px;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+.com-post-text{padding:0 14px 12px;font-size:14px;line-height:1.65;font-weight:400;color:var(--text);white-space:pre-line}
+.com-post-photo{width:100%;max-height:300px;object-fit:cover;display:block}
+.com-post-foot{padding:9px 12px;display:flex;align-items:center;gap:6px;border-top:1px solid var(--hairline);flex-wrap:wrap}
+.com-react-group{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.com-react-btn{display:flex;align-items:center;gap:3px;padding:5px 9px;border-radius:20px;background:var(--surface-2);border:1px solid var(--hairline);font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all var(--t-fast);min-width:40px;justify-content:center}
+.com-react-btn.on{background:var(--gold-subtle);border-color:var(--gold-glow);color:var(--gold)}
+.com-react-btn:active{transform:scale(.9)}
+.com-react-cnt{font-family:var(--mono);font-size:10px;font-weight:700}
+.com-comment-toggle{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:var(--surface-2);border:1px solid var(--hairline);font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.com-comments-wrap{display:none;padding:10px 14px 12px;border-top:1px solid var(--hairline);animation:revealUp .2s ease}
+.com-comments-wrap.open{display:block}
+.com-comment-item{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--hairline)}
+.com-comment-item:first-child{border-top:0;padding-top:2px}
+.com-cmt-av{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000;flex-shrink:0}
+.com-cmt-body{flex:1;min-width:0}
+.com-cmt-name{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px}
+.com-cmt-name span{color:var(--text-3);font-weight:400}
+.com-cmt-txt{font-size:13px;color:var(--text-2);line-height:1.5}
+.com-cmt-inp-row{display:flex;gap:8px;margin-top:10px}
+.com-cmt-inp{flex:1;padding:8px 12px;background:var(--surface-2);border:1.5px solid var(--hairline);border-radius:10px;font-size:13px;color:#fff;outline:none;font-family:inherit}
+.com-cmt-inp:focus{border-color:var(--gold)}
+.com-cmt-send{padding:8px 14px;background:var(--gold);color:#000;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity var(--t-fast)}
+.com-cmt-send:active{opacity:.8}
+
+/* desafios */
+.com-challenge{margin:0 16px 10px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:18px;animation:revealUp .3s ease both}
+.com-ch-head{display:flex;gap:12px;margin-bottom:14px}
+.com-ch-ico{font-size:32px;flex-shrink:0}
+.com-ch-title{font-size:15px;font-weight:700;letter-spacing:-.015em;margin-bottom:4px}
+.com-ch-desc{font-size:13px;color:var(--text-2);line-height:1.5}
+.com-ch-meta{font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:6px;letter-spacing:.04em;font-weight:600}
+.com-ch-mine{margin-bottom:14px;padding:10px 12px;background:var(--surface-2);border-radius:10px}
+.com-ch-mine-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:var(--text-2)}
+.com-ch-mine-top b{color:var(--gold);font-family:var(--mono)}
+.com-ch-rows{display:flex;flex-direction:column;gap:6px}
+.com-ch-row{display:flex;align-items:center;gap:8px;padding:6px 0}
+.com-ch-row.me{background:var(--gold-subtle);border-radius:8px;padding:6px 8px;margin:-2px -4px}
+.com-ch-rank{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text-3);width:22px;text-align:center;flex-shrink:0}
+.com-ch-av{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000;flex-shrink:0}
+.com-ch-name{font-size:13px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.com-ch-bar-wrap{width:60px;height:5px;background:var(--surface-3);border-radius:3px;overflow:hidden;flex-shrink:0}
+.com-ch-bar{height:100%;border-radius:3px;background:var(--gold);transition:width 1s cubic-bezier(.4,0,.2,1)}
+.com-ch-val{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);min-width:28px;text-align:right;flex-shrink:0}
+
+/* rankings */
+.com-rank-block{padding:0 16px}
+.com-rank-ttl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;padding:14px 0 8px;border-top:1px solid var(--hairline);margin-top:4px}
+.com-rank-ttl:first-child{border-top:0;padding-top:4px}
+.com-rank-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:12px;margin-bottom:6px;transition:background var(--t-fast);animation:revealUp .3s ease both}
+.com-rank-row.me{background:var(--gold-subtle);border-color:var(--gold-glow)}
+.com-rank-pos{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text-3);width:28px;text-align:center;flex-shrink:0;font-size:16px}
+.com-rank-av{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#000;flex-shrink:0}
+.com-rank-name{flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.com-rank-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold)}
+
+/* post modal */
+#com-modal{position:fixed;inset:0;z-index:210;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;opacity:0;transition:opacity .22s}
+#com-modal.open{pointer-events:all;opacity:1}
+.com-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px)}
+.com-modal-sheet{position:relative;background:#111;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-bottom));max-height:90vh;display:flex;flex-direction:column;gap:12px;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1)}
+#com-modal.open .com-modal-sheet{transform:translateY(0)}
+.com-modal-title{font-size:16px;font-weight:800;text-align:center;letter-spacing:-.02em}
+.com-textarea{width:100%;min-height:100px;padding:12px;background:var(--surface-2);border:1.5px solid var(--hairline);border-radius:12px;font-size:15px;color:#fff;resize:none;outline:none;font-family:inherit;line-height:1.6}
+.com-textarea:focus{border-color:var(--gold)}
+.com-modal-photo-row{display:flex;gap:8px}
+.com-photo-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:10px;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer;transition:background var(--t-fast)}
+.com-photo-btn:active{background:var(--surface-3)}
+.com-checkin-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;background:var(--gold-subtle);border:1px solid var(--gold-glow);border-radius:10px;font-size:13px;font-weight:700;color:var(--gold);cursor:pointer;flex:1;justify-content:center}
+.com-modal-actions{display:flex;gap:10px}
+.com-btn-sec{flex:1;padding:14px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;font-size:14px;font-weight:700;color:var(--text-2);cursor:pointer;transition:background var(--t-fast)}
+.com-btn-sec:active{background:var(--surface-3)}
+.com-btn-pri{flex:2;padding:14px;background:var(--gold);border-radius:12px;font-size:14px;font-weight:700;color:#000;cursor:pointer;transition:opacity var(--t-fast)}
+.com-btn-pri:active{opacity:.8}
+.com-btn-pri:disabled{opacity:.5}
 
 /* ════ PT FLOAT BUTTON */
 #pt-float{
@@ -1145,40 +1229,15 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
     <!-- ════ COMUNIDADE ════ -->
     <div class="screen" data-screen="comunidade" data-state="next">
-      <div class="hero">
-        <div class="hero-kicker">Em breve · Beta</div>
-        <div class="hero-title">Comunidade<br><em>Jo Silva PT</em></div>
-      </div>
-      <div class="com-grid">
-        <div class="com-card">
-          <div class="com-ico">💬</div>
-          <div class="com-name">Chat</div>
-          <div class="com-desc">Fala com o teu PT e outros atletas em tempo real</div>
-          <div class="com-badge">Em breve</div>
-        </div>
-        <div class="com-card">
-          <div class="com-ico">⚔️</div>
-          <div class="com-name">Desafios</div>
-          <div class="com-desc">Compite com outros alunos em desafios semanais</div>
-          <div class="com-badge">Em breve</div>
-        </div>
-        <div class="com-card">
-          <div class="com-ico">📸</div>
-          <div class="com-name">Feed</div>
-          <div class="com-desc">Partilha treinos, progresso e conquistas com fotos</div>
-          <div class="com-badge">Em breve</div>
-        </div>
-        <div class="com-card">
-          <div class="com-ico">🏅</div>
-          <div class="com-name">Rankings</div>
-          <div class="com-desc">Vê quem treina mais e sobe no ranking da equipa</div>
-          <div class="com-badge">Em breve</div>
+      <div class="com-header">
+        <div class="com-kicker">Jo Silva PT · Equipa</div>
+        <div class="com-tabs-bar" id="com-tabs">
+          <button class="com-tab on" data-tab="feed">📣 Feed</button>
+          <button class="com-tab" data-tab="desafios">⚔️ Desafios</button>
+          <button class="com-tab" data-tab="rankings">🏅 Rankings</button>
         </div>
       </div>
-      <div class="com-notify">
-        <div class="com-notify-text">Quer ser notificado quando lançar?</div>
-        <button class="com-notify-btn" onclick="toast('Avisamos assim que estiver disponível! 🚀')">Avisa-me</button>
-      </div>
+      <div id="com-content" class="com-content"></div>
     </div>
 
   </div>
@@ -1268,7 +1327,30 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   </div>
 </div>
 
-<script src="aluno-dev-app.js?v=3"></script>
+<!-- ════ MODAL PUBLICAR COMUNIDADE ════ -->
+<div id="com-modal">
+  <div class="com-modal-backdrop" onclick="comCloseModal()"></div>
+  <div class="com-modal-sheet">
+    <div class="com-modal-title">Nova publicação</div>
+    <textarea class="com-textarea" id="com-textarea" placeholder="Partilha algo com a equipa… 💪" rows="4"></textarea>
+    <img id="com-photo-preview" alt="" style="display:none;max-height:140px;width:100%;object-fit:cover;border-radius:10px">
+    <div class="com-modal-photo-row">
+      <button class="com-photo-btn" onclick="comSelectPhoto()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Foto
+      </button>
+      <button class="com-checkin-btn" onclick="comCheckIn()">
+        ⚡ Auto check-in
+      </button>
+    </div>
+    <div class="com-modal-actions">
+      <button class="com-btn-sec" onclick="comCloseModal()">Cancelar</button>
+      <button class="com-btn-pri" onclick="comPublicar()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<script src="aluno-dev-app.js?v=4"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});
