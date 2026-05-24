@@ -491,6 +491,66 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .success-text{font-size:14px;color:var(--gold);font-weight:600}
 .success-sub{font-size:12px;color:var(--text-2);margin-top:2px}
 
+/* ════ NAV 5 ITEMS */
+.bnav{display:grid;grid-template-columns:repeat(5,1fr)}
+
+/* ════ PERFIL DASHBOARD */
+.pf-hero-wrap{padding:28px 22px 16px;text-align:center}
+.pf-phrase{font-size:13px;color:var(--text-2);margin-top:8px;font-style:italic;font-weight:500}
+.pf-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 16px}
+.pf-card{
+  background:var(--surface-1);border:1.5px solid var(--hairline);border-radius:16px;
+  padding:14px 8px 12px;text-align:center;cursor:pointer;
+  transition:all var(--t-fast);position:relative;overflow:hidden;
+}
+.pf-card.on{background:var(--gold-subtle);border-color:var(--gold);box-shadow:0 0 18px var(--gold-glow)}
+.pf-card.on::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold)}
+.pfc-icon{font-size:22px;margin-bottom:6px}
+.pfc-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);letter-spacing:-.01em;line-height:1.1}
+.pfc-lbl{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-top:4px}
+.pf-content{padding-bottom:24px}
+
+/* ── conteúdo de cada secção dentro do pf-content ── */
+.pfc-section{animation:revealUp .35s ease both}
+
+/* ════ COMUNIDADE */
+.com-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 16px}
+.com-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:20px 16px;position:relative}
+.com-ico{font-size:28px;margin-bottom:10px}
+.com-name{font-size:15px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.com-desc{font-size:12px;color:var(--text-2);line-height:1.55;font-weight:500}
+.com-badge{display:inline-block;margin-top:10px;padding:3px 9px;border-radius:20px;background:var(--gold-subtle);border:1px solid var(--gold-glow);font-family:var(--mono);font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase}
+.com-notify{margin:4px 16px 24px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.com-notify-text{font-size:13px;color:var(--text-2);font-weight:500;flex:1}
+.com-notify-btn{padding:9px 18px;background:var(--gold);color:#000;font-size:13px;font-weight:700;border:0;border-radius:10px;cursor:pointer;flex-shrink:0;transition:opacity var(--t-fast)}
+.com-notify-btn:active{opacity:.8}
+
+/* ════ PT FLOAT BUTTON */
+#pt-float{
+  position:fixed;bottom:calc(78px + var(--safe-bottom));right:16px;
+  width:46px;height:46px;border-radius:50%;padding:0;border:2px solid var(--gold);
+  overflow:hidden;cursor:pointer;z-index:120;
+  box-shadow:0 4px 20px var(--gold-glow);transition:transform var(--t-fast);
+  background:linear-gradient(135deg,#A78BFA,#5FE3D3);
+  color:#fff;font-weight:900;font-size:14px;
+}
+#pt-float img{width:100%;height:100%;object-fit:cover}
+#pt-float:active{transform:scale(.92)}
+#pt-float-sheet{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:0;transition:opacity .22s}
+#pt-float-sheet.open{pointer-events:all;opacity:1}
+.ptfs-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px)}
+.ptfs-panel{
+  position:absolute;bottom:calc(136px + var(--safe-bottom));right:16px;
+  width:min(320px, calc(100vw - 32px));
+  background:#141414;border:1px solid var(--hairline-strong);border-radius:20px;
+  padding:18px;display:flex;flex-direction:column;gap:10px;
+  transform:scale(.9) translateY(16px);transition:transform .28s cubic-bezier(.34,1.2,.64,1);
+}
+#pt-float-sheet.open .ptfs-panel{transform:scale(1) translateY(0)}
+.ptfs-header{display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--hairline)}
+.ptfs-name{font-size:15px;font-weight:700;letter-spacing:-.015em}
+.ptfs-role{font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+
 /* ════ CRONÓMETRO */
 #timer-pill{
   position:fixed;top:calc(16px + var(--safe-top, 0px));left:50%;transform:translateX(-50%) translateY(-80px);
@@ -1050,73 +1110,74 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
     <!-- ════ PERFIL ════ -->
     <div class="screen" data-screen="perfil" data-state="next">
-      <div class="profile-hero">
+      <div class="pf-hero-wrap">
         <div class="avatar-big" id="pf-avatar">—</div>
         <div class="profile-name" id="pf-name">A carregar…</div>
         <div class="profile-meta" id="pf-meta"></div>
+        <div class="pf-phrase" id="pf-phrase"></div>
       </div>
 
-      <!-- bio-card inserido aqui pelo JS -->
-
-      <div class="level-card in" style="animation-delay:.08s">
-        <div class="level-row">
-          <div>
-            <div class="level-l" data-i18n="pf_level">Nível atual</div>
-            <div class="level-num"><em id="pf-lvl">1</em></div>
-          </div>
-          <div style="text-align:right">
-            <div class="level-l">XP</div>
-            <div class="level-xp"><b id="pf-xp">0</b> / <span id="pf-xp-max">100</span></div>
-          </div>
+      <div class="pf-cards" id="pf-cards">
+        <div class="pf-card on" data-pfc="nivel">
+          <div class="pfc-icon">⚡</div>
+          <div class="pfc-val" id="pfc-lvl-v">Nv 1</div>
+          <div class="pfc-lbl" data-i18n="pf_level">Nível</div>
         </div>
-        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-        <div class="level-footer">
-          <span id="lvl-from">Nv 1</span>
-          <span id="lvl-to-sub">— XP para próximo nível</span>
-          <span id="lvl-to">Nv 2</span>
+        <div class="pf-card" data-pfc="conquistas">
+          <div class="pfc-icon">🏆</div>
+          <div class="pfc-val" id="pfc-bdg-v">0/32</div>
+          <div class="pfc-lbl" data-i18n="pf_conquistas">Conquistas</div>
         </div>
-      </div>
-
-      <div class="streak-card in" style="animation-delay:.16s">
-        <div class="streak-icon">🔥</div>
-        <div class="streak-mid">
-          <div class="streak-num"><span id="streak-days">0</span><small data-i18n="streak_days">dias</small></div>
-          <div class="streak-sub" id="streak-sub" data-i18n="streak_active">streak ativo</div>
+        <div class="pf-card" data-pfc="avaliacao">
+          <div class="pfc-icon">📊</div>
+          <div class="pfc-val" id="pfc-bio-v">—</div>
+          <div class="pfc-lbl">Avaliação</div>
+        </div>
+        <div class="pf-card" data-pfc="orient">
+          <div class="pfc-icon">📋</div>
+          <div class="pfc-val">4</div>
+          <div class="pfc-lbl">Orientações</div>
         </div>
       </div>
 
-      <div class="badges in" style="animation-delay:.24s">
-        <div class="sec-header"><div class="sec-title" data-i18n="pf_conquistas">Conquistas</div><div class="sec-link" id="badges-count">0 / 9</div></div>
-        <div class="badge-grid" id="badge-grid"></div>
-      </div>
+      <div id="pf-content" class="pf-content"></div>
+    </div>
 
-      <div class="pt-card in" style="animation-delay:.32s">
-        <div class="pt-row">
-          <div class="pt-avatar"><img src="https://unavatar.io/instagram/ojo.silva?fallback=https://ui-avatars.com/api/?name=Jo+Silva%26background=7C3AED%26color=fff%26size=108%26bold=true" alt="Jo Silva" style="width:54px;height:54px;border-radius:16px;object-fit:cover" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jo+Silva&background=7C3AED&color=fff&size=108&bold=true'"></div>
-          <div class="pt-info">
-            <div class="pt-name">Jo Silva</div>
-            <div class="pt-cargo">Personal Trainer · CPT</div>
-          </div>
+    <!-- ════ COMUNIDADE ════ -->
+    <div class="screen" data-screen="comunidade" data-state="next">
+      <div class="hero">
+        <div class="hero-kicker">Em breve · Beta</div>
+        <div class="hero-title">Comunidade<br><em>Jo Silva PT</em></div>
+      </div>
+      <div class="com-grid">
+        <div class="com-card">
+          <div class="com-ico">💬</div>
+          <div class="com-name">Chat</div>
+          <div class="com-desc">Fala com o teu PT e outros atletas em tempo real</div>
+          <div class="com-badge">Em breve</div>
         </div>
-        <div class="pt-actions">
-          <a class="pt-link" href="https://www.instagram.com/ojo.silva/" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
-            <span>@ojo.silva</span>
-          </a>
-          <a class="pt-link" href="https://wa.me/351921469901" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.34A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8.5s.5 1 2 2.5 2.5 2 2.5 2l1.5-1.5 2 2s-1 2-3 1.5-4-2.5-5-4.5S8.5 8.5 8.5 8.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <span>+351 921 469 901</span>
-          </a>
-          <a class="pt-link" href="https://ojosilva.com" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2c-2.5 3-4 6.5-4 10s1.5 7 4 10M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10" stroke="currentColor" stroke-width="1.8"/></svg>
-            <span>ojosilva.com</span>
-          </a>
+        <div class="com-card">
+          <div class="com-ico">⚔️</div>
+          <div class="com-name">Desafios</div>
+          <div class="com-desc">Compite com outros alunos em desafios semanais</div>
+          <div class="com-badge">Em breve</div>
+        </div>
+        <div class="com-card">
+          <div class="com-ico">📸</div>
+          <div class="com-name">Feed</div>
+          <div class="com-desc">Partilha treinos, progresso e conquistas com fotos</div>
+          <div class="com-badge">Em breve</div>
+        </div>
+        <div class="com-card">
+          <div class="com-ico">🏅</div>
+          <div class="com-name">Rankings</div>
+          <div class="com-desc">Vê quem treina mais e sobe no ranking da equipa</div>
+          <div class="com-badge">Em breve</div>
         </div>
       </div>
-
-      <div class="orient in" style="animation-delay:.4s">
-        <div class="orient-title" data-i18n="pf_orient">Orientações da semana</div>
-        <div id="orient-list"></div>
+      <div class="com-notify">
+        <div class="com-notify-text">Quer ser notificado quando lançar?</div>
+        <button class="com-notify-btn" onclick="toast('Avisamos assim que estiver disponível! 🚀')">Avisa-me</button>
       </div>
     </div>
 
@@ -1135,12 +1196,43 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
       <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 4c-3 0-5 2-5 5 0 6 5 11 5 11s5-5 5-11c0-3-2-5-5-5z"/><circle cx="12" cy="9" r="1.5"/></svg></div>
       <div class="bnav-lbl" data-i18n="nav_nutricao">Nutrição</div>
     </button>
+    <button class="bnav-item" data-screen="comunidade">
+      <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M1 20c0-3.5 3-5.5 8-5.5M23 20c0-3.5-3-5.5-8-5.5M9 14.5c2 0 4 0 5 .5"/></svg></div>
+      <div class="bnav-lbl">Comunidade</div>
+    </button>
     <button class="bnav-item" data-screen="perfil">
       <div class="bnav-icon"><svg fill="none" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
       <div class="bnav-lbl" data-i18n="nav_perfil">Perfil</div>
     </button>
   </nav>
 
+</div>
+
+<!-- PT Float Button -->
+<button id="pt-float" onclick="ptFloatToggle()" title="Contactar Jo Silva">
+  <img src="https://unavatar.io/instagram/ojo.silva" alt="Jo Silva"
+       onerror="this.onerror=null;this.style.display='none';this.parentElement.textContent='JS'">
+</button>
+<div id="pt-float-sheet">
+  <div class="ptfs-backdrop" onclick="ptFloatToggle()"></div>
+  <div class="ptfs-panel">
+    <div class="ptfs-header">
+      <div class="ptfs-avatar"><img src="https://unavatar.io/instagram/ojo.silva" alt="Jo" style="width:42px;height:42px;border-radius:12px;object-fit:cover" onerror="this.style.display='none'"></div>
+      <div><div class="ptfs-name">Jo Silva</div><div class="ptfs-role">Personal Trainer · CPT</div></div>
+    </div>
+    <a class="pt-link" href="https://www.instagram.com/ojo.silva/" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+      <span>@ojo.silva</span>
+    </a>
+    <a class="pt-link" href="https://wa.me/351921469901" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.34A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8.5s.5 1 2 2.5 2.5 2 2.5 2l1.5-1.5 2 2s-1 2-3 1.5-4-2.5-5-4.5S8.5 8.5 8.5 8.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>+351 921 469 901</span>
+    </a>
+    <a class="pt-link" href="https://ojosilva.com" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2c-2.5 3-4 6.5-4 10s1.5 7 4 10M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10" stroke="currentColor" stroke-width="1.8"/></svg>
+      <span>ojosilva.com</span>
+    </a>
+  </div>
 </div>
 
 <div id="timer-pill">

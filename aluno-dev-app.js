@@ -1306,47 +1306,46 @@ async function nutGuardar(){
 // ═══════════════════════════════════════════════════════════
 //  PERFIL (100% original)
 // ═══════════════════════════════════════════════════════════
+let _pfBadges = [];
+let _pfLvl = 1, _pfStreak = 0;
+
 function renderPerfil(){
   if (!aluno) return;
+
+  // Hero
   document.getElementById('pf-avatar').textContent = initials(aluno.nome);
   document.getElementById('pf-name').textContent   = aluno.nome;
-
   const idade = calcIdade(aluno.data_nascimento);
   const idadeStr = idade ? `${idade} ${LANG==='pt'?'anos':'years old'} · ` : '';
-  const metaStr = alunoObjetivo
+  document.getElementById('pf-meta').innerHTML = alunoObjetivo
     ? `${idadeStr}<em>${escapeHTML(alunoObjetivo)}</em>`
     : `${idadeStr}${LANG==='pt'?'Em treino com Jo Silva':'Training with Jo Silva'}`;
-  document.getElementById('pf-meta').innerHTML = metaStr;
 
-  renderBiometria();
-
+  // Phrase
   const total = sessoes.length;
+  const h = new Date().getHours();
+  const saud = h < 12 ? (LANG==='pt'?'Bom dia':'Good morning') : h < 18 ? (LANG==='pt'?'Boa tarde':'Good afternoon') : (LANG==='pt'?'Boa noite':'Good evening');
+  const fp = LANG==='pt' ? [
+    'Cada sessão conta. Continua. 💪',
+    'O teu progresso é real e visível.',
+    'Consistência supera motivação.',
+    total ? `${total} sessões concluídas. Incrível!` : 'A primeira sessão está à espera!',
+  ] : [
+    'Every session counts. Keep going. 💪',
+    'Your progress is real and visible.',
+    'Consistency beats motivation.',
+    total ? `${total} sessions done. Incredible!` : 'Your first session awaits!',
+  ];
+  document.getElementById('pf-phrase').textContent = `${saud} · ${fp[Math.floor(Math.random()*fp.length)]}`;
+
+  // XP + level
   const xp = total * 50;
   let lvl = 1, cumul = 0;
   while (xp >= cumul + 200*lvl){ cumul += 200*lvl; lvl++; }
-  const intoLvl  = xp - cumul;
-  const lvlReq   = 200 * lvl;
-  document.getElementById('pf-lvl').textContent     = lvl;
-  document.getElementById('pf-xp').textContent      = intoLvl.toLocaleString('pt-PT');
-  document.getElementById('pf-xp-max').textContent  = lvlReq.toLocaleString('pt-PT');
-  document.getElementById('lvl-from').textContent   = (LANG==='pt'?'Nv ':'Lv ') + lvl;
-  document.getElementById('lvl-to').textContent     = (LANG==='pt'?'Nv ':'Lv ') + (lvl+1);
-  document.getElementById('lvl-to-sub').textContent =
-    `${(lvlReq - intoLvl).toLocaleString('pt-PT')} XP ${LANG==='pt'?'para':'to'} ${(LANG==='pt'?'Nv ':'Lv ')}${lvl+1}`;
-  const xpFill = document.getElementById('xp-fill');
-  xpFill.style.transition = 'none'; xpFill.style.width = '0%';
-  requestAnimationFrame(() => {
-    xpFill.style.transition = 'width 1.6s cubic-bezier(.4,0,.2,1)';
-    xpFill.style.width = (intoLvl / lvlReq * 100).toFixed(1) + '%';
-  });
+  _pfLvl = lvl;
+  _pfStreak = computeStreak();
 
-  const streak = computeStreak();
-  document.getElementById('streak-days').textContent = streak;
-  document.getElementById('streak-sub').innerHTML = streak >= 7
-    ? `${T('streak_active')} · <b>${LANG==='pt'?'em chamas':'on fire'}</b>`
-    : (streak ? T('streak_active') : (LANG==='pt'?'Começa hoje':'Start today'));
-
-  // ── GAMIFICAÇÃO EXPANDIDA ──
+  // Gamificação data
   const last30 = sessoes.filter(s => daysAgo(s.data) <= 30).length;
   const last90 = sessoes.filter(s => daysAgo(s.data) <= 90).length;
   const volTotal = allCargasHist ? allCargasHist.reduce((s,c)=>s+(parseFloat(c.carga_kg)||0),0) : 0;
@@ -1356,74 +1355,141 @@ function renderPerfil(){
     allCargasHist.forEach(c => { if (!groups[c.exercicio_id]) groups[c.exercicio_id]=[]; groups[c.exercicio_id].push(parseFloat(c.carga_kg)||0); });
     return Object.values(groups).filter(arr => arr.length > 1).length;
   })();
-
-  const BADGES = [
-    // 💪 Sessões
-    { cat:'💪', ico:'🌱', l:'Primeiro passo',    u:'1 sessão',    ok: total >= 1 },
-    { cat:'💪', ico:'🔑', l:'5 sessões',          u:'5 sessões',   ok: total >= 5 },
-    { cat:'💪', ico:'💪', l:'10 sessões',          u:'10 sessões',  ok: total >= 10 },
-    { cat:'💪', ico:'🎯', l:'25 sessões',          u:'25 sessões',  ok: total >= 25 },
-    { cat:'💪', ico:'🏆', l:'50 sessões',          u:'50 sessões',  ok: total >= 50 },
-    { cat:'💪', ico:'🥇', l:'100 sessões',         u:'100 sessões', ok: total >= 100 },
-    { cat:'💪', ico:'💎', l:'200 sessões',         u:'200 sessões', ok: total >= 200 },
-    { cat:'💪', ico:'👑', l:'500 sessões',         u:'500 sessões', ok: total >= 500 },
-    // 🔥 Consistência
-    { cat:'🔥', ico:'🌡️', l:'1 semana seguida',   u:'7 dias',      ok: streak >= 7 },
-    { cat:'🔥', ico:'🔥', l:'2 semanas seguidas',  u:'14 dias',     ok: streak >= 14 },
-    { cat:'🔥', ico:'⚡',  l:'1 mês seguido',       u:'30 dias',     ok: streak >= 30 },
-    { cat:'🔥', ico:'🌟', l:'3 meses seguidos',    u:'90 dias',     ok: streak >= 90 },
-    { cat:'🔥', ico:'🏅', l:'Mês perfeito',        u:'12 sessões/mês', ok: last30 >= 12 },
-    { cat:'🔥', ico:'🎖️', l:'Trimestre activo',   u:'24 sessões/90d', ok: last90 >= 24 },
-    // 🏋️ Volume
-    { cat:'🏋️', ico:'🪨', l:'1 tonelada',         u:'1.000 kg',    ok: volTotal >= 1000 },
-    { cat:'🏋️', ico:'⚓', l:'10 toneladas',        u:'10.000 kg',   ok: volTotal >= 10000 },
-    { cat:'🏋️', ico:'🏗️', l:'50 toneladas',       u:'50.000 kg',   ok: volTotal >= 50000 },
-    { cat:'🏋️', ico:'🚀', l:'100 toneladas',       u:'100.000 kg',  ok: volTotal >= 100000 },
-    { cat:'🏋️', ico:'🌍', l:'500 toneladas',       u:'500.000 kg',  ok: volTotal >= 500000 },
-    // 📈 Recordes
-    { cat:'📈', ico:'📊', l:'Primeiro recorde',    u:'1 PR',        ok: numPRs >= 1 },
-    { cat:'📈', ico:'📈', l:'PR x 3',              u:'3 exercícios',ok: numPRs >= 3 },
-    { cat:'📈', ico:'👊', l:'PR x 5',              u:'5 exercícios',ok: numPRs >= 5 },
-    { cat:'📈', ico:'🦾', l:'PR x 10',             u:'10 exercícios',ok: numPRs >= 10 },
-    { cat:'📈', ico:'🧬', l:'PR em todos',         u:'Todos exerc.',ok: numPRs >= 20 },
-    // ⏱️ Treino
-    { cat:'⏱️', ico:'⚡',  l:'Sessão rápida',      u:'Menos de 30 min', ok: false },
-    { cat:'⏱️', ico:'🕐',  l:'Maratonista',        u:'Mais de 90 min',  ok: false },
-    { cat:'⏱️', ico:'🌅',  l:'Madrugador',         u:'Treino antes 8h', ok: false },
-    { cat:'⏱️', ico:'🌙',  l:'Noctívago',          u:'Treino após 21h', ok: false },
-    // 🌟 Especiais
-    { cat:'🌟', ico:'🎉', l:'Bem-vindo!',          u:'Primeiro login',  ok: true },
-    { cat:'🌟', ico:'🌈', l:'Personalizado',       u:'Mudou o tema',    ok: !!localStorage.getItem('josilvaPT_theme') && localStorage.getItem('josilvaPT_theme') !== 'padrao' },
-    { cat:'🌟', ico:'🤖', l:'Nutricionista',       u:'Registou 1 refeição', ok: false },
-    { cat:'🌟', ico:'💧', l:'Hidratado',           u:'8 copos num dia', ok: false },
+  const streak = _pfStreak;
+  _pfBadges = [
+    { cat:'💪', ico:'🌱', l:'Primeiro passo',   u:'1 sessão',          ok: total >= 1 },
+    { cat:'💪', ico:'🔑', l:'5 sessões',         u:'5 sessões',         ok: total >= 5 },
+    { cat:'💪', ico:'💪', l:'10 sessões',         u:'10 sessões',        ok: total >= 10 },
+    { cat:'💪', ico:'🎯', l:'25 sessões',         u:'25 sessões',        ok: total >= 25 },
+    { cat:'💪', ico:'🏆', l:'50 sessões',         u:'50 sessões',        ok: total >= 50 },
+    { cat:'💪', ico:'🥇', l:'100 sessões',        u:'100 sessões',       ok: total >= 100 },
+    { cat:'💪', ico:'💎', l:'200 sessões',        u:'200 sessões',       ok: total >= 200 },
+    { cat:'💪', ico:'👑', l:'500 sessões',        u:'500 sessões',       ok: total >= 500 },
+    { cat:'🔥', ico:'🌡️',l:'1 semana seguida',  u:'7 dias',             ok: streak >= 7 },
+    { cat:'🔥', ico:'🔥', l:'2 semanas seguidas', u:'14 dias',           ok: streak >= 14 },
+    { cat:'🔥', ico:'⚡', l:'1 mês seguido',      u:'30 dias',           ok: streak >= 30 },
+    { cat:'🔥', ico:'🌟', l:'3 meses seguidos',  u:'90 dias',            ok: streak >= 90 },
+    { cat:'🔥', ico:'🏅', l:'Mês perfeito',      u:'12 sessões/mês',    ok: last30 >= 12 },
+    { cat:'🔥', ico:'🎖️',l:'Trimestre activo',  u:'24 sessões/90d',    ok: last90 >= 24 },
+    { cat:'🏋️',ico:'🪨', l:'1 tonelada',        u:'1 000 kg',           ok: volTotal >= 1000 },
+    { cat:'🏋️',ico:'⚓', l:'10 toneladas',       u:'10 000 kg',          ok: volTotal >= 10000 },
+    { cat:'🏋️',ico:'🏗️',l:'50 toneladas',      u:'50 000 kg',          ok: volTotal >= 50000 },
+    { cat:'🏋️',ico:'🚀', l:'100 toneladas',      u:'100 000 kg',         ok: volTotal >= 100000 },
+    { cat:'🏋️',ico:'🌍', l:'500 toneladas',      u:'500 000 kg',         ok: volTotal >= 500000 },
+    { cat:'📈', ico:'📊', l:'Primeiro recorde',  u:'1 PR',               ok: numPRs >= 1 },
+    { cat:'📈', ico:'📈', l:'PR x 3',            u:'3 exercícios',       ok: numPRs >= 3 },
+    { cat:'📈', ico:'👊', l:'PR x 5',            u:'5 exercícios',       ok: numPRs >= 5 },
+    { cat:'📈', ico:'🦾', l:'PR x 10',           u:'10 exercícios',      ok: numPRs >= 10 },
+    { cat:'📈', ico:'🧬', l:'PR em todos',       u:'Todos exerc.',       ok: numPRs >= 20 },
+    { cat:'⏱️', ico:'⚡', l:'Sessão rápida',     u:'< 30 min',           ok: false },
+    { cat:'⏱️', ico:'🕐', l:'Maratonista',       u:'> 90 min',           ok: false },
+    { cat:'⏱️', ico:'🌅', l:'Madrugador',        u:'Treino antes 8h',    ok: false },
+    { cat:'⏱️', ico:'🌙', l:'Noctívago',         u:'Treino após 21h',    ok: false },
+    { cat:'🌟', ico:'🎉', l:'Bem-vindo!',        u:'Primeiro login',      ok: true },
+    { cat:'🌟', ico:'🌈', l:'Personalizado',     u:'Mudou o tema',        ok: !!localStorage.getItem('josilvaPT_theme') && localStorage.getItem('josilvaPT_theme') !== 'padrao' },
+    { cat:'🌟', ico:'🤖', l:'Nutricionista',     u:'Registou 1 refeição', ok: false },
+    { cat:'🌟', ico:'💧', l:'Hidratado',         u:'8 copos num dia',     ok: false },
   ];
 
-  const unlockedCount = BADGES.filter(b => b.ok).length;
-  document.getElementById('badges-count').textContent = unlockedCount + ' / ' + BADGES.length;
+  // Update card values
+  const lp = LANG==='pt'?'Nv ':'Lv ';
+  document.getElementById('pfc-lvl-v').textContent = lp + lvl;
+  const unlocked = _pfBadges.filter(b => b.ok).length;
+  document.getElementById('pfc-bdg-v').textContent = unlocked + '/' + _pfBadges.length;
+  const peso = perimetriaHist.length ? perimetriaHist[perimetriaHist.length-1].peso : null;
+  document.getElementById('pfc-bio-v').textContent = peso ? peso + 'kg' : '—';
 
-  const cats = [...new Set(BADGES.map(b => b.cat))];
-  const grid = document.getElementById('badge-grid');
-  grid.innerHTML = cats.map(cat => {
-    const catBadges = BADGES.filter(b => b.cat === cat);
-    return `<div class="badge-cat-label">${cat}</div>` +
-      catBadges.map(b => `
-        <div class="badge ${b.ok ? 'on' : 'locked'}">
-          <div class="badge-ico">${b.ico}</div>
-          <div class="badge-lbl">${b.l}</div>
-          <div class="badge-sub">${b.ok ? (LANG==='pt'?'✓ desbloqueado':'✓ unlocked') : b.u}</div>
-        </div>
-      `).join('');
-  }).join('');
-
-  document.getElementById('orient-list').innerHTML = T('orient_default').map(([title, txt], i) => `
-    <div class="orient-row">
-      <div class="orient-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="orient-text"><b>${title}:</b> ${txt}</div>
-    </div>
-  `).join('');
+  // Show default section (nivel)
+  pfSelectCard('nivel');
 }
 
-function renderBiometria(){
+function pfSelectCard(name){
+  document.querySelectorAll('.pf-card').forEach(c => c.classList.toggle('on', c.dataset.pfc === name));
+  const content = document.getElementById('pf-content');
+  content.innerHTML = '';
+
+  const xp = sessoes.length * 50;
+  let lvl = _pfLvl, cumul = 0;
+  const streak = _pfStreak;
+  while (xp > cumul + 200*lvl - 1){ cumul += 200*lvl; lvl++; } // recalc for safety
+  lvl = _pfLvl;
+  let c2 = 0; let l2 = 1; while (xp >= c2 + 200*l2){ c2 += 200*l2; l2++; }
+  const intoLvl = xp - c2, lvlReq = 200 * l2;
+  const lp = LANG==='pt'?'Nv ':'Lv ';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'pfc-section';
+
+  if (name === 'nivel'){
+    wrap.innerHTML = `
+      <div class="level-card in" style="margin-top:0">
+        <div class="level-row">
+          <div>
+            <div class="level-l" data-i18n="pf_level">${LANG==='pt'?'Nível atual':'Current level'}</div>
+            <div class="level-num"><em id="pf-lvl">${l2}</em></div>
+          </div>
+          <div style="text-align:right">
+            <div class="level-l">XP</div>
+            <div class="level-xp"><b id="pf-xp">${intoLvl.toLocaleString('pt-PT')}</b> / <span id="pf-xp-max">${lvlReq.toLocaleString('pt-PT')}</span></div>
+          </div>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+        <div class="level-footer">
+          <span>${lp}${l2}</span>
+          <span>${(lvlReq-intoLvl).toLocaleString('pt-PT')} XP ${LANG==='pt'?'para':'to'} ${lp}${l2+1}</span>
+          <span>${lp}${l2+1}</span>
+        </div>
+      </div>
+      <div class="streak-card in" style="animation-delay:.08s">
+        <div class="streak-icon">🔥</div>
+        <div class="streak-mid">
+          <div class="streak-num"><span>${streak}</span><small> ${LANG==='pt'?'dias':'days'}</small></div>
+          <div class="streak-sub">${streak >= 7 ? (LANG==='pt'?'streak ativo · <b>em chamas</b>':'active streak · <b>on fire</b>') : (streak ? (LANG==='pt'?'streak ativo':'active streak') : (LANG==='pt'?'Começa hoje':'Start today'))}</div>
+        </div>
+      </div>`;
+    content.appendChild(wrap);
+    requestAnimationFrame(() => {
+      const fill = document.getElementById('xp-fill');
+      if (fill){ fill.style.transition = 'width 1.6s cubic-bezier(.4,0,.2,1)'; fill.style.width = (intoLvl/lvlReq*100).toFixed(1)+'%'; }
+    });
+
+  } else if (name === 'conquistas'){
+    const cats = [...new Set(_pfBadges.map(b => b.cat))];
+    const unlocked = _pfBadges.filter(b => b.ok).length;
+    wrap.innerHTML = `
+      <div class="badges" style="padding-top:0">
+        <div class="sec-header"><div class="sec-title">${LANG==='pt'?'Conquistas':'Achievements'}</div><div class="sec-link">${unlocked} / ${_pfBadges.length}</div></div>
+        <div class="badge-grid" id="badge-grid">
+          ${cats.map(cat => `<div class="badge-cat-label">${cat}</div>` +
+            _pfBadges.filter(b => b.cat===cat).map(b => `
+              <div class="badge ${b.ok?'on':'locked'}">
+                <div class="badge-ico">${b.ico}</div>
+                <div class="badge-lbl">${b.l}</div>
+                <div class="badge-sub">${b.ok?(LANG==='pt'?'✓ desbloqueado':'✓ unlocked'):b.u}</div>
+              </div>`).join('')).join('')}
+        </div>
+      </div>`;
+    content.appendChild(wrap);
+
+  } else if (name === 'avaliacao'){
+    renderBiometria(content);
+
+  } else if (name === 'orient'){
+    wrap.innerHTML = `
+      <div class="orient" style="margin-top:0">
+        <div class="orient-title">${LANG==='pt'?'Orientações da semana':'Week guidelines'}</div>
+        <div>${T('orient_default').map(([title,txt],i)=>`
+          <div class="orient-row">
+            <div class="orient-num">${String(i+1).padStart(2,'0')}</div>
+            <div class="orient-text"><b>${title}:</b> ${txt}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    content.appendChild(wrap);
+  }
+}
+
+function renderBiometria(container){
   const old = document.getElementById('bio-card');
   if (old) old.remove();
 
@@ -1533,14 +1599,14 @@ function renderBiometria(){
     ` : ''}
   `;
 
-  const levelCard = document.querySelector('.level-card');
-  if (levelCard) levelCard.parentNode.insertBefore(card, levelCard);
+  const cont = container || document.getElementById('pf-content');
+  if (cont) cont.appendChild(card);
 }
 
 // ═══════════════════════════════════════════════════════════
 //  NAV / ACCENT / LANG / WATER (100% original)
 // ═══════════════════════════════════════════════════════════
-const ORDER = ['treino','evolucao','nutricao','perfil'];
+const ORDER = ['treino','evolucao','nutricao','comunidade','perfil'];
 let currentScreen = 'treino';
 
 function go(name){
@@ -1554,21 +1620,32 @@ function go(name){
   document.querySelectorAll('.bnav-item').forEach(n =>
     n.classList.toggle('on', n.dataset.screen === name));
 
-  if (name === 'evolucao') renderEvolucao();
-  if (name === 'nutricao') renderNutricao();
-  if (name === 'perfil')   renderPerfil();
+  const fab = document.getElementById('nutri-fab');
+  if (fab) fab.style.display = name === 'nutricao' ? 'flex' : 'none';
+
+  if (name === 'evolucao')   renderEvolucao();
+  if (name === 'nutricao')   renderNutricao();
+  if (name === 'perfil')     renderPerfil();
+}
+
+function ptFloatToggle(){
+  const s = document.getElementById('pt-float-sheet');
+  if (s) s.classList.toggle('open');
 }
 
 function setupNav(){
   document.querySelectorAll('.bnav-item').forEach(b =>
     b.addEventListener('click', () => go(b.dataset.screen)));
   document.getElementById('btn-reg').addEventListener('click', registrar);
-  // FAB nutrição — mostrar/ocultar conforme screen
-  document.querySelectorAll('.bnav-item').forEach(b =>
-    b.addEventListener('click', () => {
-      const fab = document.getElementById('nutri-fab');
-      if (fab) fab.style.display = b.dataset.screen === 'nutricao' ? 'flex' : 'none';
-    }));
+  // Cards do Perfil
+  const cards = document.getElementById('pf-cards');
+  if (cards && !cards.dataset.bound) {
+    cards.dataset.bound = '1';
+    cards.addEventListener('click', ev => {
+      const c = ev.target.closest('.pf-card');
+      if (c) pfSelectCard(c.dataset.pfc);
+    });
+  }
 }
 
 const THEMES = {
