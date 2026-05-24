@@ -561,6 +561,11 @@ async function init(){
 // ═══════════════════════════════════════════════════════════
 async function loadTreinos(){
   treinos = await sb(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`) || [];
+  treinos.sort((a, b) => {
+    const na = parseInt(a.nome) || 999;
+    const nb = parseInt(b.nome) || 999;
+    return na - nb;
+  });
   const loading = document.getElementById('treino-loading');
   if (!treinos.length){
     loading.innerHTML = `<div class="empty"><div class="empty-icon">📋</div>${T('sem_treinos')}</div>`;
@@ -757,7 +762,12 @@ function onExListClick(ev){
       const ex = (exerciciosPorTreino[currentTreinoId] || []).find(x => x.id === id);
       const embedUrl = ex ? exVideoEmbedUrl(ex.video_url) : null;
       if (embedUrl){
-        wrap.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+        const ifr = document.createElement('iframe');
+        ifr.src = embedUrl;
+        ifr.allowFullscreen = true;
+        ifr.allow = 'autoplay; fullscreen; picture-in-picture';
+        ifr.loading = 'lazy';
+        wrap.appendChild(ifr);
         wrap.dataset.loaded = '1';
       }
     }
@@ -1126,8 +1136,10 @@ function computeStreak(){
 async function renderNutricao(){
   const hoje = todayISO();
   const refs = await sb(`refeicoes?aluno_id=eq.${ALUNO_ID}&data=eq.${hoje}&order=criado_em.asc`) || [];
-  const peso = parseFloat(perimetriaHist[perimetriaHist.length-1]?.peso) || 70;
-  const meta = calcDailyKcal(peso, alunoObjetivo);
+  const lastP = perimetriaHist[perimetriaHist.length - 1];
+  const peso = parseFloat(lastP?.peso) || 70;
+  const gorduraPct = parseFloat(lastP?.gordura) || null;
+  const meta = calcDailyKcal(peso, alunoObjetivo, gorduraPct);
   const metaP = Math.round(peso * 1.8);
   const metaC = Math.round(meta * 0.45 / 4);
   const metaG = Math.round(meta * 0.25 / 9);
@@ -1219,8 +1231,13 @@ async function renderNutricao(){
   }
 }
 
-function calcDailyKcal(peso, obj){
-  const base = peso * 30;
+function calcDailyKcal(peso, obj, gorduraPct = null){
+  let pesoCalc = peso;
+  if (gorduraPct && gorduraPct > 20) {
+    const lean = peso * (1 - gorduraPct / 100);
+    pesoCalc = (lean + lean * 1.2) / 2;
+  }
+  const base = pesoCalc * 30;
   if (/secar|cut|emagre/i.test(obj || '')) return Math.round(base * 0.85 / 50) * 50;
   if (/hipertrof|bulk|massa/i.test(obj || '')) return Math.round(base * 1.15 / 50) * 50;
   return Math.round(base / 50) * 50;
@@ -1374,7 +1391,15 @@ function renderPerfil(){
   if (!aluno) return;
 
   // Hero
-  document.getElementById('pf-avatar').textContent = initials(aluno.nome);
+  const av = document.getElementById('pf-avatar');
+  const savedPhoto = lc('profilePhoto');
+  if (savedPhoto) {
+    av.style.cssText = 'background-image:url(' + savedPhoto + ');background-size:cover;background-position:center;';
+    av.textContent = '';
+  } else {
+    av.style.cssText = '';
+    av.textContent = initials(aluno.nome);
+  }
   document.getElementById('pf-name').textContent   = aluno.nome;
   const idade = calcIdade(aluno.data_nascimento);
   const idadeStr = idade ? `${idade} ${LANG==='pt'?'anos':'years old'} · ` : '';
@@ -1582,7 +1607,7 @@ function renderBiometria(container){
 
   const pt = LANG === 'pt';
   const row = (l,v,unit='') => v != null && v !== 0 && v !== ''
-    ? `<div class="bio-row"><span class="bio-row-l">${l}</span><span class="bio-row-r">${v}${unit?'<small> '+unit+'</small>':''}</span></div>`
+    ? `<div class="bio-row"><span class="bio-row-l">${escapeHTML(String(l))}</span><span class="bio-row-r">${escapeHTML(String(v))}${unit?'<small> '+escapeHTML(unit)+'</small>':''}</span></div>`
     : '';
 
   const card = document.createElement('div');
@@ -1623,6 +1648,7 @@ function renderBiometria(container){
         const hasL = vL != null && vL !== 0 && vL !== '';
         const hasR = vR != null && vR !== 0 && vR !== '';
         if (!hasL && !hasR) return '';
+        if (hasL !== hasR) return `<div class="bio-pair bio-single">${cell(hasL?lL:lR, hasL?vL:vR)}</div>`;
         return `<div class="bio-pair">${cell(lL,vL)}${cell(lR,vR)}</div>`;
       };
       return `
@@ -1693,6 +1719,25 @@ function go(name){
 function ptFloatToggle(){
   const s = document.getElementById('pt-float-sheet');
   if (s) s.classList.toggle('open');
+}
+
+function handlePfPhoto(inp){
+  const f = inp.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 200; canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      const s = Math.min(img.width, img.height);
+      ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 200, 200);
+      sc('profilePhoto', canvas.toDataURL('image/jpeg', 0.82));
+      renderPerfil();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(f);
 }
 
 function setupNav(){
@@ -1927,6 +1972,16 @@ async function renderComunidade(){
     });
   }
 
+  // Delegated listener for reaction buttons (avoids inline onclick with user data)
+  const contentEl = document.getElementById('com-content');
+  if (contentEl && !contentEl.dataset.reactBound){
+    contentEl.dataset.reactBound = '1';
+    contentEl.addEventListener('click', ev => {
+      const btn = ev.target.closest('.com-react-btn[data-pid]');
+      if (btn) comReact(btn.dataset.pid, btn.dataset.emoji);
+    });
+  }
+
   comSetTab(comTab);
 }
 
@@ -1967,7 +2022,7 @@ function comPostHTML(p, idx=0){
   const emojis = ['💪','🔥','👏','😤'];
   const reactHTML = emojis.map(e => {
     const n = rCnt[e]||0, on = myR.includes(e);
-    return `<button class="com-react-btn${on?' on':''}" onclick="comReact('${p.id}','${e}')">
+    return `<button class="com-react-btn${on?' on':''}" data-pid="${escapeHTML(p.id)}" data-emoji="${escapeHTML(e)}">
       ${e}<span class="com-react-cnt">${n>0?' '+n:''}</span></button>`;
   }).join('');
   const badgeHTML = p.tipo==='checkin' ? '<div class="com-post-badge">Check-in</div>' : '';

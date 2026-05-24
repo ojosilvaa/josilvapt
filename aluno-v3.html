@@ -414,6 +414,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .profile-name{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
 .profile-meta{font-size:13px;color:var(--text-2);margin-top:6px;font-weight:500}
 .profile-meta em{font-style:normal;color:var(--gold);font-weight:700}
+.av-wrap{position:relative;width:96px;margin:0 auto 14px;cursor:pointer}
+.av-wrap .avatar-big{margin:0}
+.av-cam{position:absolute;bottom:-4px;right:-4px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 
 /* ── BIOMETRIA ── */
 .bio-card{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
@@ -629,24 +632,24 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 /* ════ PT FLOAT BUTTON */
 #pt-float{
-  position:fixed;bottom:calc(78px + var(--safe-bottom));right:16px;
-  width:46px;height:46px;border-radius:50%;padding:0;border:2px solid var(--gold);
+  position:fixed;top:92px;right:16px;
+  width:44px;height:44px;border-radius:50%;padding:0;
+  border:1.5px solid rgba(0,0,0,.12);
   overflow:hidden;cursor:pointer;z-index:120;
-  box-shadow:0 4px 20px var(--gold-glow);transition:transform var(--t-fast);
-  background:linear-gradient(135deg,#A78BFA,#5FE3D3);
+  transition:transform var(--t-fast);
+  background:#3a3733;
   color:#fff;font-weight:900;font-size:14px;
 }
-#pt-float img{width:100%;height:100%;object-fit:cover}
 #pt-float:active{transform:scale(.92)}
 #pt-float-sheet{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:0;transition:opacity .22s}
 #pt-float-sheet.open{pointer-events:all;opacity:1}
 .ptfs-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px)}
 .ptfs-panel{
-  position:absolute;bottom:calc(136px + var(--safe-bottom));right:16px;
+  position:absolute;top:148px;right:16px;
   width:min(320px, calc(100vw - 32px));
   background:#141414;border:1px solid var(--hairline-strong);border-radius:20px;
   padding:18px;display:flex;flex-direction:column;gap:10px;
-  transform:scale(.9) translateY(16px);transition:transform .28s cubic-bezier(.34,1.2,.64,1);
+  transform:scale(.9) translateY(-16px);transition:transform .28s cubic-bezier(.34,1.2,.64,1);
 }
 #pt-float-sheet.open .ptfs-panel{transform:scale(1) translateY(0)}
 .ptfs-header{display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--hairline)}
@@ -1214,7 +1217,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
     <!-- ════ PERFIL ════ -->
     <div class="screen" data-screen="perfil" data-state="next">
       <div class="pf-hero-wrap">
-        <div class="avatar-big" id="pf-avatar">—</div>
+        <div class="av-wrap" onclick="document.getElementById('pf-photo-inp').click()">
+          <div class="avatar-big" id="pf-avatar">—</div>
+          <div class="av-cam">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <input type="file" id="pf-photo-inp" accept="image/*" style="display:none" onchange="handlePfPhoto(this)">
+        </div>
         <div class="profile-name" id="pf-name">A carregar…</div>
         <div class="profile-meta" id="pf-meta"></div>
         <div class="pf-phrase" id="pf-phrase"></div>
@@ -1288,14 +1297,26 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 <!-- PT Float Button -->
 <button id="pt-float" onclick="ptFloatToggle()" title="Contactar Jo Silva">
-  <img src="https://unavatar.io/instagram/ojo.silva" alt="Jo Silva"
-       onerror="this.onerror=null;this.style.display='none';this.parentElement.textContent='JS'">
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+    <rect width="100" height="100" fill="#3a3733"/>
+    <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
+    <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
+    <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+    <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+  </svg>
 </button>
 <div id="pt-float-sheet">
   <div class="ptfs-backdrop" onclick="ptFloatToggle()"></div>
   <div class="ptfs-panel">
     <div class="ptfs-header">
-      <div class="ptfs-avatar"><img src="https://unavatar.io/instagram/ojo.silva" alt="Jo" style="width:42px;height:42px;border-radius:12px;object-fit:cover" onerror="this.style.display='none'"></div>
+      <div class="ptfs-avatar" style="width:42px;height:42px;border-radius:12px;background:#3a3733;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" fill="none" style="width:38px;height:38px">
+          <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
+          <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
+          <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+          <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div><div class="ptfs-name">Jo Silva</div><div class="ptfs-role">Personal Trainer · CPT</div></div>
     </div>
     <a class="pt-link" href="https://www.instagram.com/ojo.silva/" target="_blank" rel="noopener">
