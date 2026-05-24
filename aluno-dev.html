@@ -414,6 +414,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .profile-name{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
 .profile-meta{font-size:13px;color:var(--text-2);margin-top:6px;font-weight:500}
 .profile-meta em{font-style:normal;color:var(--gold);font-weight:700}
+.av-wrap{position:relative;width:96px;margin:0 auto 14px;cursor:pointer}
+.av-wrap .avatar-big{margin:0}
+.av-cam{position:absolute;bottom:-4px;right:-4px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 
 /* ── BIOMETRIA ── */
 .bio-card{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
@@ -633,8 +636,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   width:44px;height:44px;border-radius:50%;padding:0;
   border:1.5px solid rgba(0,0,0,.12);
   overflow:hidden;cursor:pointer;z-index:120;
-  box-shadow:0 2px 14px rgba(0,0,0,.22);
-  transition:transform var(--t-fast),box-shadow var(--t-fast);
+  transition:transform var(--t-fast);
   background:#3a3733;
   color:#fff;font-weight:900;font-size:14px;
 }
@@ -811,14 +813,14 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .t-demon #timer-pill{
   clip-path:polygon(0 15%,8% 0,92% 0,100% 15%,100% 85%,92% 100%,8% 100%,0 85%);
   border-radius:0!important;
-  background:linear-gradient(180deg,rgba(255,77,109,.25),rgba(201,24,74,.15));
+  background:linear-gradient(180deg,rgba(191,90,242,.25),rgba(123,47,190,.15));
 }
 .t-angry #timer-pill{
   clip-path:polygon(2% 12%,12% 0,30% 8%,50% 0,72% 6%,92% 0,100% 18%,96% 50%,100% 82%,88% 100%,68% 92%,48% 100%,30% 94%,10% 100%,0 86%,4% 50%);
   border-radius:0!important;
   background:linear-gradient(180deg,rgba(255,51,51,.3),rgba(204,0,0,.15));
-  animation:angryShake .25s ease infinite;
 }
+.t-angry #timer-pill.show{animation:angryShake .25s ease infinite}
 @keyframes angryShake{
   0%,100%{transform:translateX(-50%) translateY(0) rotate(0)}
   50%{transform:translateX(-50%) translateY(0) rotate(.6deg)}
@@ -843,7 +845,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 /* ══════ THEME FX LAYER ══════ */
 #theme-fx{
-  position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+  position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden;
   opacity:0;transition:opacity .5s ease;
 }
 .t-ice #theme-fx,.t-rain #theme-fx,.t-fire #theme-fx,.t-sun #theme-fx,.t-moon #theme-fx,.t-happy #theme-fx{opacity:1}
@@ -928,11 +930,6 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 /* Garantir que o conteúdo fica acima do FX */
 .app{position:relative;z-index:2}
 
-/* ── AVATAR FOTO ── */
-.av-wrap{position:relative;width:96px;margin:0 auto 14px;cursor:pointer}
-.av-wrap .avatar-big{margin:0}
-.av-cam{position:absolute;bottom:-4px;right:-4px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.35)}
-
 /* ── BIO EXTRA ── */
 .bio-obs{font-size:12px;color:var(--text-2);line-height:1.55;padding:8px 0;border-top:1px solid var(--hairline)}
 .bio-obs:first-of-type{border-top:0}
@@ -941,8 +938,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .bio-grid-2 .bio-row:first-child,.bio-grid-2 .bio-row:nth-child(2){border-top:0}
 .bio-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:9px 0;border-top:1px solid var(--hairline)}
 .bio-pair:first-of-type{border-top:0}
+.bio-pair.bio-single{grid-template-columns:1fr}
 .bio-cell{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
-.bio-cell.empty{visibility:hidden}
+.bio-cell.empty{display:none}
 .bio-cell-l{font-size:13px;color:var(--text-2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bio-cell-r{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);letter-spacing:-.01em;flex-shrink:0}
 </style>
@@ -1224,8 +1222,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
           <div class="av-cam">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
+          <input type="file" id="pf-photo-inp" accept="image/*" style="display:none" onchange="handlePfPhoto(this)">
         </div>
-        <input id="pf-photo-inp" type="file" accept="image/*" style="display:none" onchange="handlePfPhoto(this)">
         <div class="profile-name" id="pf-name">A carregar…</div>
         <div class="profile-meta" id="pf-meta"></div>
         <div class="pf-phrase" id="pf-phrase"></div>
@@ -1392,7 +1390,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   </div>
 </div>
 
-<script src="aluno-dev-app.js?v=4"></script>
+<script src="aluno-dev-app.js?v=9"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});

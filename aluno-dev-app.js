@@ -492,8 +492,27 @@ async function init(){
 
   if (!ALUNO_ID) {
     hideLoader();
-    document.getElementById('treino-loading').innerHTML =
-      '<div class="empty"><div class="empty-icon">🔗</div>Link inválido. Pede ao teu PT o link correto.</div>';
+    document.getElementById('treino-loading').innerHTML = `
+      <div style="padding:32px 24px;text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">🔗</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">Primeiro acesso</div>
+        <div style="font-size:14px;color:var(--text-2);margin-bottom:24px;line-height:1.5">
+          Cola o link que o teu PT te enviou para activar a app.
+        </div>
+        <input id="first-link-inp" type="url" inputmode="url"
+          style="width:100%;background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;
+                 padding:14px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px"
+          placeholder="https://josilvapt.vercel.app/aluno-v3.html?id=...">
+        <button onclick="
+          var v=document.getElementById('first-link-inp').value.trim();
+          var m=v.match(/[?&]id=([a-f0-9-]{36})/i);
+          if(m){try{localStorage.setItem('josilvaPT_id',m[1]);}catch(e){}location.replace('aluno-v3.html?id='+m[1]);}
+          else{document.getElementById('first-link-inp').style.borderColor='var(--coral)';}"
+          style="width:100%;background:var(--gold);color:#000;font-weight:700;font-size:16px;
+                 padding:14px;border-radius:12px;border:none">
+          ACTIVAR APP
+        </button>
+      </div>`;
     return;
   }
 
@@ -743,7 +762,12 @@ function onExListClick(ev){
       const ex = (exerciciosPorTreino[currentTreinoId] || []).find(x => x.id === id);
       const embedUrl = ex ? exVideoEmbedUrl(ex.video_url) : null;
       if (embedUrl){
-        wrap.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+        const ifr = document.createElement('iframe');
+        ifr.src = embedUrl;
+        ifr.allowFullscreen = true;
+        ifr.allow = 'autoplay; fullscreen; picture-in-picture';
+        ifr.loading = 'lazy';
+        wrap.appendChild(ifr);
         wrap.dataset.loaded = '1';
       }
     }
@@ -1583,7 +1607,7 @@ function renderBiometria(container){
 
   const pt = LANG === 'pt';
   const row = (l,v,unit='') => v != null && v !== 0 && v !== ''
-    ? `<div class="bio-row"><span class="bio-row-l">${l}</span><span class="bio-row-r">${v}${unit?'<small> '+unit+'</small>':''}</span></div>`
+    ? `<div class="bio-row"><span class="bio-row-l">${escapeHTML(String(l))}</span><span class="bio-row-r">${escapeHTML(String(v))}${unit?'<small> '+escapeHTML(unit)+'</small>':''}</span></div>`
     : '';
 
   const card = document.createElement('div');
@@ -1624,6 +1648,7 @@ function renderBiometria(container){
         const hasL = vL != null && vL !== 0 && vL !== '';
         const hasR = vR != null && vR !== 0 && vR !== '';
         if (!hasL && !hasR) return '';
+        if (hasL !== hasR) return `<div class="bio-pair bio-single">${cell(hasL?lL:lR, hasL?vL:vR)}</div>`;
         return `<div class="bio-pair">${cell(lL,vL)}${cell(lR,vR)}</div>`;
       };
       return `
@@ -1734,7 +1759,7 @@ const THEMES = {
   padrao:{ emoji:'🏅', gold:'#FFD96B', g2:'#E5B23A', glow:'rgba(255,217,107,.35)', subtle:'rgba(255,217,107,.07)', bg:'#000000' },
   moon:  { emoji:'🌙', gold:'#C4B5FD', g2:'#7C3AED', glow:'rgba(196,181,253,.4)',  subtle:'rgba(196,181,253,.08)', bg:'#06061a' },
   sun:   { emoji:'☀️', gold:'#FFA827', g2:'#E08000', glow:'rgba(255,168,39,.4)',   subtle:'rgba(255,168,39,.08)',  bg:'#0d0800' },
-  demon: { emoji:'👿', gold:'#FF4D6D', g2:'#C9184A', glow:'rgba(255,77,109,.4)',   subtle:'rgba(255,77,109,.08)',  bg:'#08000f' },
+  demon: { emoji:'👿', gold:'#BF5AF2', g2:'#7B2FBE', glow:'rgba(191,90,242,.4)',   subtle:'rgba(191,90,242,.08)',  bg:'#08000f' },
   iphone:{ emoji:'📱', gold:'#0A84FF', g2:'#0066CC', glow:'rgba(10,132,255,.4)',   subtle:'rgba(10,132,255,.08)',  bg:'#000000' },
   rain:  { emoji:'🌧️', gold:'#38BDF8', g2:'#0284C7', glow:'rgba(56,189,248,.4)',   subtle:'rgba(56,189,248,.08)',  bg:'#040810' },
   happy: { emoji:'😊', gold:'#34D399', g2:'#059669', glow:'rgba(52,211,153,.4)',   subtle:'rgba(52,211,153,.08)',  bg:'#020d07' },
@@ -1947,6 +1972,16 @@ async function renderComunidade(){
     });
   }
 
+  // Delegated listener for reaction buttons (avoids inline onclick with user data)
+  const contentEl = document.getElementById('com-content');
+  if (contentEl && !contentEl.dataset.reactBound){
+    contentEl.dataset.reactBound = '1';
+    contentEl.addEventListener('click', ev => {
+      const btn = ev.target.closest('.com-react-btn[data-pid]');
+      if (btn) comReact(btn.dataset.pid, btn.dataset.emoji);
+    });
+  }
+
   comSetTab(comTab);
 }
 
@@ -1987,7 +2022,7 @@ function comPostHTML(p, idx=0){
   const emojis = ['💪','🔥','👏','😤'];
   const reactHTML = emojis.map(e => {
     const n = rCnt[e]||0, on = myR.includes(e);
-    return `<button class="com-react-btn${on?' on':''}" onclick="comReact('${p.id}','${e}')">
+    return `<button class="com-react-btn${on?' on':''}" data-pid="${escapeHTML(p.id)}" data-emoji="${escapeHTML(e)}">
       ${e}<span class="com-react-cnt">${n>0?' '+n:''}</span></button>`;
   }).join('');
   const badgeHTML = p.tipo==='checkin' ? '<div class="com-post-badge">Check-in</div>' : '';
