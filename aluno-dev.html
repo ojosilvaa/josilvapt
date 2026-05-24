@@ -12,17 +12,19 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Jo Silva PT">
 <script>
-/* PWA: guarda o ?id= e recupera-o ao abrir da home screen sem parâmetro */
+/* PWA: guarda o ?id= em localStorage + cookie (cookie é partilhado entre Safari e PWA no iOS) */
 (function(){
   var p = new URLSearchParams(location.search);
   var id = p.get('id');
+  function getCookie(n){ var m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():null; }
   if (id) {
     try { localStorage.setItem('josilvaPT_id', id); } catch(e){}
+    document.cookie = 'josilvaPT_id=' + id + ';path=/;max-age=31536000;SameSite=Lax';
   } else {
-    try {
-      var stored = localStorage.getItem('josilvaPT_id');
-      if (stored) location.replace(location.pathname + '?id=' + stored);
-    } catch(e){}
+    var stored = null;
+    try { stored = localStorage.getItem('josilvaPT_id'); } catch(e){}
+    if (!stored) stored = getCookie('josilvaPT_id');
+    if (stored) location.replace(location.pathname + '?id=' + stored);
   }
 })();
 </script>

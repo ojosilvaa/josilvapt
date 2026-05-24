@@ -12,17 +12,19 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Jo Silva PT">
 <script>
-/* PWA: guarda o ?id= e recupera-o ao abrir da home screen sem parâmetro */
+/* PWA: guarda o ?id= em localStorage + cookie (cookie é partilhado entre Safari e PWA no iOS) */
 (function(){
   var p = new URLSearchParams(location.search);
   var id = p.get('id');
+  function getCookie(n){ var m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():null; }
   if (id) {
     try { localStorage.setItem('josilvaPT_id', id); } catch(e){}
+    document.cookie = 'josilvaPT_id=' + id + ';path=/;max-age=31536000;SameSite=Lax';
   } else {
-    try {
-      var stored = localStorage.getItem('josilvaPT_id');
-      if (stored) location.replace(location.pathname + '?id=' + stored);
-    } catch(e){}
+    var stored = null;
+    try { stored = localStorage.getItem('josilvaPT_id'); } catch(e){}
+    if (!stored) stored = getCookie('josilvaPT_id');
+    if (stored) location.replace(location.pathname + '?id=' + stored);
   }
 })();
 </script>
@@ -933,8 +935,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .bio-grid-2 .bio-row:first-child,.bio-grid-2 .bio-row:nth-child(2){border-top:0}
 .bio-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:9px 0;border-top:1px solid var(--hairline)}
 .bio-pair:first-of-type{border-top:0}
+.bio-pair.bio-single{grid-template-columns:1fr}
 .bio-cell{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
-.bio-cell.empty{visibility:hidden}
+.bio-cell.empty{display:none}
 .bio-cell-l{font-size:13px;color:var(--text-2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bio-cell-r{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);letter-spacing:-.01em;flex-shrink:0}
 </style>
