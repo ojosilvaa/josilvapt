@@ -632,10 +632,10 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 /* ════ PT FLOAT BUTTON */
 #pt-float{
-  position:fixed;top:92px;right:16px;
+  position:relative;align-self:flex-end;flex-shrink:0;
   width:44px;height:44px;border-radius:50%;padding:0;
   border:1.5px solid rgba(0,0,0,.12);
-  overflow:hidden;cursor:pointer;z-index:120;
+  overflow:hidden;cursor:pointer;
   transition:transform var(--t-fast);
   background:#3a3733;
   color:#fff;font-weight:900;font-size:14px;
@@ -973,6 +973,15 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         <button class="theme-btn" data-theme="fire" title="Fogo">🔥</button>
         <button class="theme-btn" data-theme="ice" title="Gelo">🧊</button>
       </div>
+      <button id="pt-float" onclick="ptFloatToggle()" title="Contactar Jo Silva">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+          <rect width="100" height="100" fill="#3a3733"/>
+          <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
+          <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
+          <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+          <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -1295,16 +1304,6 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 </div>
 
-<!-- PT Float Button -->
-<button id="pt-float" onclick="ptFloatToggle()" title="Contactar Jo Silva">
-  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
-    <rect width="100" height="100" fill="#3a3733"/>
-    <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
-    <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
-    <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
-    <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
-  </svg>
-</button>
 <div id="pt-float-sheet">
   <div class="ptfs-backdrop" onclick="ptFloatToggle()"></div>
   <div class="ptfs-panel">
