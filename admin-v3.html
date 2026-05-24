@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Jo Silva PT · Admin</title>
+<link rel="manifest" href="manifest-admin.json">
+<meta name="theme-color" content="#FFD96B">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Jo Silva Admin">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#000;
+  --surface-1:rgba(255,255,255,.04);
+  --surface-2:rgba(255,255,255,.06);
+  --surface-3:rgba(255,255,255,.08);
+  --hairline:rgba(255,255,255,.08);
+  --hairline-strong:rgba(255,255,255,.14);
+  --text:#fff;
+  --text-2:rgba(255,255,255,.62);
+  --text-3:rgba(255,255,255,.38);
+  --gold:#FFD96B;
+  --gold-2:#E5B23A;
+  --gold-glow:rgba(255,217,107,.35);
+  --gold-subtle:rgba(255,217,107,.07);
+  --green:#5DCA9A;
+  --coral:#FF6B6B;
+  --t-fast:.15s;
+  --t-med:.25s;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+html,body{background:#000;color:var(--text);font-family:'Inter',-apple-system,system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit;background:none;cursor:pointer}
+button{border:none}
+input,select,textarea{border:none}
+
+/* ── SCREEN SYSTEM ── */
+.screen{display:none;min-height:100vh;padding-bottom:calc(80px + var(--safe-bottom))}
+.screen.active{display:block;animation:screenIn .35s cubic-bezier(.4,0,.2,1)}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes revealUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:#000}
+
+/* ── LOGIN ── */
+.login-wrap{width:100%;max-width:340px}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--gold);letter-spacing:6px;line-height:1;margin-bottom:4px}
+.login-sub{font-size:11px;color:var(--text-3);letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:48px;font-family:'Inter',sans-serif}
+.login-field{position:relative;margin-bottom:12px}
+.login-field input{width:100%;background:var(--surface-1);border:1px solid var(--hairline);color:var(--text);padding:16px 18px;font-size:16px;border-radius:12px;outline:none;transition:border .2s}
+.login-field input:focus{border-color:var(--gold)}
+.btn-login{width:100%;background:var(--gold);color:#000;border:none;font-weight:800;font-size:15px;letter-spacing:.02em;padding:17px;border-radius:12px;margin-top:8px;transition:opacity .2s}
+.btn-login:active{opacity:.8}
+.login-err{font-size:13px;color:var(--coral);text-align:center;margin-top:12px;min-height:18px;font-weight:500}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(0,0,0,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--hairline);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.topbar-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:3px;line-height:1}
+.topbar-sub{font-size:10px;color:var(--text-3);letter-spacing:.15em;text-transform:uppercase;font-weight:600;margin-top:2px;font-family:'Inter',sans-serif}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.icon-btn{background:var(--surface-1);border:1px solid var(--hairline);color:var(--text-2);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all var(--t-fast)}
+.icon-btn:active{background:var(--surface-2);color:var(--text)}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(10,10,12,.82);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);border-top:1px solid var(--hairline);display:flex;padding:10px 8px;padding-bottom:calc(12px + var(--safe-bottom));gap:2px}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;color:var(--text-3);transition:color var(--t-fast);position:relative;border-radius:10px;background:none;border:none}
+.bnav-item.active{color:var(--gold)}
+.bnav-item.active::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:18px;height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 12px var(--gold-glow)}
+.bnav-icon{width:22px;height:22px}
+.bnav-icon svg{width:100%;height:100%;display:block;stroke:currentColor;fill:none;stroke-width:1.8}
+.bnav-lbl{font-size:10px;font-weight:600;letter-spacing:-.005em}
+.bnav-badge{position:absolute;top:4px;right:calc(50% - 18px);background:var(--coral);color:#fff;font-size:9px;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;font-weight:700;font-family:'Inter',sans-serif}
+
+/* ── PAGE CONTENT ── */
+.page-content{padding:20px 16px}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--text-2);letter-spacing:.14em;text-transform:uppercase}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:16px;transition:all var(--t-med)}
+.stat-card:hover{background:var(--surface-2);border-color:var(--hairline-strong)}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:#fff;line-height:1;letter-spacing:-.03em}
+.stat-lbl{font-size:10px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-top:6px;font-weight:600}
+.stat-delta{font-size:11px;margin-top:6px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.delta-up{color:var(--green)}
+.delta-dn{color:var(--coral)}
+
+/* ── CARDS ── */
+.card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:16px;margin-bottom:12px}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:.1em;margin-bottom:14px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:10px;border:1px solid var(--hairline);background:transparent;color:var(--text);font-size:14px;font-weight:600;min-height:44px;transition:all var(--t-fast);cursor:pointer}
+.btn:active{opacity:.7;transform:scale(.98)}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700}
+.btn-gold:active{opacity:.85}
+.btn-outline-gold{border-color:rgba(255,217,107,.4);color:var(--gold)}
+.btn-danger{border-color:rgba(255,107,107,.4);color:var(--coral)}
+.btn-sm{padding:8px 14px;font-size:13px;min-height:36px;border-radius:8px}
+.btn-full{width:100%}
+
+/* ── ALUNO CARD ── */
+.aluno-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:all var(--t-fast);cursor:pointer}
+.aluno-card:active{background:var(--surface-2);border-color:var(--gold);transform:translateX(2px)}
+.aluno-card:hover{background:var(--surface-2);border-color:var(--hairline-strong)}
+
+/* ── AVATARS ── */
+.av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#000;flex-shrink:0;letter-spacing:-.01em}
+.av-sm{width:34px;height:34px;font-size:12px}
+.av-lg{width:64px;height:64px;font-size:24px}
+.av-0{background:linear-gradient(135deg,#FFD96B,#E5B23A)}
+.av-1{background:linear-gradient(135deg,#5DCA9A,#3aab7b)}
+.av-2{background:linear-gradient(135deg,#FF6B6B,#e04444)}
+.av-3{background:linear-gradient(135deg,#a78bfa,#7c3aed)}
+
+.aluno-info{flex:1;min-width:0}
+.aluno-nome{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.aluno-sub{font-size:12px;color:var(--text-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.chevron{color:var(--text-3);flex-shrink:0;opacity:.5}
+.chevron svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;font-size:10px;padding:3px 9px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;margin-top:5px}
+.badge-green{background:rgba(93,202,154,.1);color:var(--green);border:1px solid rgba(93,202,154,.2)}
+.badge-gray{background:var(--surface-2);color:var(--text-3);border:1px solid var(--hairline)}
+.badge-gold{background:rgba(255,217,107,.1);color:var(--gold);border:1px solid rgba(255,217,107,.2)}
+.badge-coral{background:rgba(255,107,107,.1);color:var(--coral);border:1px solid rgba(255,107,107,.2)}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:16px}
+.form-label{font-size:11px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;display:block;font-weight:700}
+.form-inp{width:100%;background:var(--surface-1);border:1px solid var(--hairline);color:var(--text);padding:13px 15px;font-size:15px;border-radius:10px;outline:none;transition:border .2s;-webkit-appearance:none}
+.form-inp:focus{border-color:var(--gold)}
+.form-inp::placeholder{color:var(--text-3)}
+select.form-inp{-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.38)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center}
+textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--hairline);background:rgba(0,0,0,.6);backdrop-filter:blur(12px);position:sticky;top:58px;z-index:50;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);padding:14px 16px;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:color .2s;flex-shrink:0;cursor:pointer}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── BACK BUTTON ── */
+.back-btn{display:flex;align-items:center;gap:8px;color:var(--text-3);font-size:14px;font-weight:600;background:none;border:none;padding:0;cursor:pointer;transition:color var(--t-fast)}
+.back-btn:active{color:var(--gold)}
+.back-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+/* ── FAB ── */
+.fab{position:fixed;right:20px;bottom:calc(80px + var(--safe-bottom) + 16px);width:56px;height:56px;background:var(--gold);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;box-shadow:0 4px 24px var(--gold-glow);z-index:150;transition:transform .15s;font-size:26px;font-weight:800;cursor:pointer}
+.fab:active{transform:scale(.9)}
+
+/* ── TREINO CARDS ── */
+.treino-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:14px;margin-bottom:10px;transition:all var(--t-fast)}
+.treino-card:hover{background:var(--surface-2);border-color:var(--hairline-strong)}
+.treino-nome{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:.08em}
+.treino-sub{font-size:12px;color:var(--text-3);margin-top:3px;font-weight:500}
+.treino-actions{display:flex;gap:8px;margin-top:12px}
+
+/* ── EXERCISE BUILDER ── */
+.ex-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:12px;padding:14px;margin-bottom:8px;position:relative}
+.ex-num-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:.1em;margin-bottom:10px}
+.ex-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-3);font-size:18px;padding:4px;line-height:1;cursor:pointer;transition:color var(--t-fast)}
+.ex-del:active{color:var(--coral)}
+
+/* ── PERIMETRIA ── */
+.peri-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.peri-item{background:var(--surface-1);border:1px solid var(--hairline);border-radius:12px;padding:12px}
+.peri-lbl{font-size:10px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-weight:700}
+.peri-inp{width:100%;background:transparent;border:none;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;outline:none;padding:0}
+.peri-inp::placeholder{color:var(--surface-3)}
+.peri-unit{font-size:10px;color:var(--text-3);margin-top:2px;font-weight:600}
+
+/* ── HIST ITEM ── */
+.hist-item{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--hairline)}
+.hist-item:last-child{border-bottom:none}
+.hist-label{font-size:14px;color:var(--text);font-weight:500}
+.hist-sub{font-size:11px;color:var(--text-3);margin-top:2px;font-weight:500;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.hist-val{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--gold);font-weight:700;letter-spacing:-.02em}
+.pchange{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.pchange.pos{color:var(--green)}
+.pchange.neg{color:var(--coral)}
+.pchange.zero{color:var(--text-3)}
+
+/* ── CHART ── */
+.chart-wrap{background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:16px;margin-bottom:14px}
+
+/* ── LINK BOX ── */
+.link-box{background:var(--surface-1);border:1px solid rgba(255,217,107,.3);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:12px}
+.link-url{font-size:12px;color:var(--gold);word-break:break-all;flex:1;line-height:1.4;font-family:'JetBrains Mono',monospace}
+.copy-btn{background:var(--gold);color:#000;border:none;font-weight:700;font-size:12px;letter-spacing:.05em;padding:8px 12px;border-radius:8px;flex-shrink:0;cursor:pointer;white-space:nowrap}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(88px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:rgba(20,20,22,.9);backdrop-filter:blur(20px);border:1px solid var(--hairline-strong);color:#fff;font-size:13px;font-weight:700;letter-spacing:.05em;padding:12px 24px;border-radius:99px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── EMPTY STATE ── */
+.empty{padding:48px 20px;text-align:center;color:var(--text-3);font-size:14px;font-weight:500}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--hairline);margin:20px 0}
+
+/* ── DET HEADER ── */
+.det-header{background:var(--surface-1);border-bottom:1px solid var(--hairline);padding:20px 16px}
+.det-av-wrap{margin-bottom:14px}
+.det-nome{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:.05em;line-height:1.1}
+.det-sub{font-size:13px;color:var(--text-3);margin-top:4px;font-weight:500}
+
+/* ── AGENDA CALENDAR ── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px}
+.cal-week-label{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);letter-spacing:.1em}
+.cal-nav-btn{width:36px;height:36px;border-radius:10px;background:var(--surface-2);border:1px solid var(--hairline);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--t-fast)}
+.cal-nav-btn:active{background:var(--surface-3)}
+.cal-nav-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:0 16px 16px}
+.cal-col{background:var(--surface-1);border:1px solid var(--hairline);border-radius:12px;padding:10px 6px;text-align:center;min-height:80px;transition:all var(--t-fast)}
+.cal-col.today{border-color:rgba(255,217,107,.4);background:rgba(255,217,107,.04)}
+.cal-day-name{font-size:9px;font-weight:700;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.cal-day-num{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.cal-col.today .cal-day-num{color:var(--gold)}
+.cal-avatars{display:flex;flex-direction:column;gap:2px;align-items:center}
+.cal-mini-av{width:22px;height:22px;border-radius:50%;font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#000;cursor:pointer;transition:transform var(--t-fast)}
+.cal-mini-av:active{transform:scale(1.15)}
+
+/* ── FEEDBACK CARDS ── */
+.fb-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all var(--t-fast)}
+.fb-card:hover{background:var(--surface-2)}
+.fb-card.unread{border-color:rgba(255,217,107,.35);background:rgba(255,217,107,.025)}
+.fb-stars{font-size:16px;letter-spacing:2px;margin-bottom:8px}
+.fb-star-on{color:var(--gold)}
+.fb-star-off{color:var(--surface-3)}
+
+/* ── CONFIG ── */
+.cfg-section{background:var(--surface-1);border:1px solid var(--hairline);border-radius:16px;padding:18px;margin-bottom:12px}
+.cfg-title{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:.1em;margin-bottom:16px}
+
+/* ── TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.toggle-label{font-size:14px;color:var(--text);font-weight:500}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;border-radius:13px;background:var(--surface-3);transition:background .2s;cursor:pointer}
+.toggle-slider::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle input:checked+.toggle-slider{background:var(--gold)}
+.toggle input:checked+.toggle-slider::after{transform:translateX(20px)}
+
+/* ── PERIODIZAÇÃO ── */
+.phase-bar{display:flex;gap:6px;margin:12px 0}
+.phase-item{flex:1;border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--hairline);background:var(--surface-1);transition:all var(--t-fast)}
+.phase-item.current-phase{border-color:rgba(255,217,107,.5);background:rgba(255,217,107,.08)}
+.phase-week{font-size:10px;color:var(--text-3);font-weight:700;letter-spacing:.08em;margin-bottom:4px}
+.phase-name{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text-2);letter-spacing:.05em}
+.phase-item.current-phase .phase-name{color:var(--gold)}
+.deload-banner{background:rgba(93,202,154,.1);border:1px solid rgba(93,202,154,.25);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:700;color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.08em}
+.overload-banner{background:rgba(255,217,107,.08);border:1px solid rgba(255,217,107,.3);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:700;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.08em}
+
+/* ── ALERTAS ── */
+.alerta-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:all var(--t-fast)}
+.alerta-item:active{background:var(--surface-2)}
+.alerta-pill{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.25);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;color:var(--coral);white-space:nowrap;letter-spacing:.05em}
+
+/* ── SEMANAL ACTIVITY GRID ── */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:4px}
+.week-col{text-align:center}
+.week-day-lbl{font-size:9px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.week-avatars{display:flex;flex-direction:column;gap:2px;align-items:center;min-height:28px}
+.week-mini-av{width:24px;height:24px;border-radius:50%;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#000;cursor:pointer;transition:transform var(--t-fast)}
+.week-mini-av:hover{transform:scale(1.1)}
+
+/* ── IA BANNER ── */
+.ia-banner{background:var(--surface-1);border:1px solid rgba(255,217,107,.2);border-radius:16px;padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all var(--t-fast)}
+.ia-banner:hover{background:var(--surface-2);border-color:rgba(255,217,107,.35)}
+.ia-icon{width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;color:#000}
+.ia-text{flex:1}
+.ia-title{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);letter-spacing:.1em;margin-bottom:3px}
+.ia-sub{font-size:12px;color:var(--text-3);line-height:1.4;font-weight:500}
+
+/* ── COMMUNITY CHALLENGE CARDS ── */
+.challenge-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:14px;margin-bottom:10px}
+.challenge-card .c-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.challenge-card .c-emoji{font-size:24px;flex-shrink:0}
+.challenge-card .c-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.challenge-card .c-desc{font-size:12px;color:var(--text-3);margin-bottom:10px;font-weight:500;line-height:1.45}
+.challenge-card .c-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ── COMPARISON VIEW ── */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cmp-side{background:var(--surface-1);border:1px solid var(--hairline);border-radius:12px;padding:12px}
+.cmp-side-title{font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.cmp-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--hairline)}
+.cmp-row:last-child{border-bottom:none}
+.cmp-key{font-size:12px;color:var(--text-2);font-weight:500}
+.cmp-v{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#fff}
+.cmp-delta-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.cmp-delta-badge.pos{background:rgba(93,202,154,.12);color:var(--green)}
+.cmp-delta-badge.neg{background:rgba(255,107,107,.12);color:var(--coral)}
+.cmp-delta-badge.flat{background:var(--surface-2);color:var(--text-3)}
+
+/* ── RESPONSIVE ── */
+@media(min-width:600px){
+  .page-content{padding:24px;max-width:600px;margin:0 auto}
+  .stats-row{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-logo">JO SILVA</div>
+    <div class="login-sub">Painel Personal Trainer</div>
+    <div class="login-field">
+      <input type="email" id="login-email" placeholder="Email" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <input type="password" id="login-senha" placeholder="Senha" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="btn-login-go">ENTRAR</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app" style="display:none">
+
+  <!-- BOTTOM NAV (5 tabs) -->
+  <nav class="bnav">
+    <button class="bnav-item active" id="nav-dash" onclick="goTab('dash')">
+      <div class="bnav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <span class="bnav-lbl">Dashboard</span>
+    </button>
+    <button class="bnav-item" id="nav-alunos" onclick="goTab('alunos')">
+      <div class="bnav-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><circle cx="19" cy="11" r="2"/><path d="M19 15c2.2 0 4 1.3 4 3"/></svg></div>
+      <span class="bnav-lbl">Alunos</span>
+    </button>
+    <button class="bnav-item" id="nav-agenda" onclick="goTab('agenda')">
+      <div class="bnav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+      <span class="bnav-lbl">Agenda</span>
+    </button>
+    <button class="bnav-item" id="nav-feedbacks" onclick="goTab('feedbacks')" style="position:relative">
+      <div class="bnav-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <span class="bnav-lbl">Feedbacks</span>
+      <span class="bnav-badge" id="feedback-badge" style="display:none">0</span>
+    </button>
+    <button class="bnav-item" id="nav-config" onclick="goTab('config')">
+      <div class="bnav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <span class="bnav-lbl">Config</span>
+    </button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       TAB: DASHBOARD
+  ══════════════════════════════════════════ -->
+  <div id="screen-dash" class="screen active">
+    <div class="topbar">
+      <div>
+        <div class="topbar-brand">JO SILVA PT</div>
+        <div class="topbar-sub">PAINEL ADMIN</div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="logout()" title="Sair">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="page-content">
+      <!-- Stats Row -->
+      <div class="stats-row" id="dash-stats">
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Total Alunos</div></div>
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Ativos</div></div>
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Sessões semana</div></div>
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Feedbacks novos</div></div>
+      </div>
+
+      <!-- Alertas -->
+      <div class="sec-hdr"><div class="sec-title">ALERTAS</div></div>
+      <div id="dash-alertas" style="margin-bottom:20px">
+        <div class="empty" style="padding:20px">A carregar...</div>
+      </div>
+
+      <!-- Atividade semanal -->
+      <div class="sec-hdr"><div class="sec-title">ATIVIDADE SEMANAL</div></div>
+      <div class="card" style="padding:14px 12px;margin-bottom:20px">
+        <div class="week-grid" id="dash-week-grid">
+          <div class="empty" style="padding:10px;grid-column:1/-1;font-size:12px">A carregar...</div>
+        </div>
+      </div>
+
+      <!-- Feedbacks recentes -->
+      <div class="sec-hdr"><div class="sec-title">FEEDBACKS RECENTES</div></div>
+      <div id="dash-fbs-recent" style="margin-bottom:20px">
+        <div class="empty" style="padding:20px">A carregar...</div>
+      </div>
+
+      <!-- IA Banner -->
+      <div class="ia-banner" onclick="window.location.href='ia-treino.html'">
+        <div class="ia-icon">✦</div>
+        <div class="ia-text">
+          <div class="ia-title">IA · GERAR TREINO</div>
+          <div class="ia-sub">Preenche o perfil e a IA monta o plano completo em segundos.</div>
+        </div>
+        <div style="color:var(--text-3)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB: ALUNOS
+  ══════════════════════════════════════════ -->
+  <div id="screen-alunos" class="screen" style="display:none">
+
+    <!-- Vista: Lista -->
+    <div id="view-lista">
+      <div class="topbar">
+        <div class="topbar-brand">ALUNOS</div>
+        <div class="topbar-right">
+          <div style="position:relative">
+            <input id="search-alunos" type="search" placeholder="Pesquisar..." style="background:var(--surface-1);border:1px solid var(--hairline);color:var(--text);padding:9px 14px;border-radius:10px;font-size:14px;outline:none;width:160px" oninput="filterAlunos(this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="page-content">
+        <div id="alunos-list"><div class="empty">A carregar...</div></div>
+      </div>
+      <button class="fab" onclick="openView('novo')">＋</button>
+    </div>
+
+    <!-- Vista: Novo Aluno -->
+    <div id="view-novo" style="display:none">
+      <div class="topbar">
+        <button class="back-btn" onclick="openView('lista')">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          VOLTAR
+        </button>
+        <div class="topbar-brand">NOVO ALUNO</div>
+      </div>
+      <div class="page-content">
+        <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-inp" id="na-nome" placeholder="Ex: Maria Clara"></div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Email</label><input class="form-inp" id="na-email" type="email" placeholder="email@exemplo.com"></div>
+          <div class="form-group"><label class="form-label">Telefone</label><input class="form-inp" id="na-tel" type="tel" placeholder="+351 912 000 000"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Objetivo</label>
+          <select class="form-inp" id="na-obj">
+            <option value="">Selecione...</option>
+            <option>Emagrecimento</option><option>Hipertrofia</option>
+            <option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option>
+          </select>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Modalidade</label>
+            <select class="form-inp" id="na-mod">
+              <option value="presencial">Presencial</option>
+              <option value="online">Online</option>
+              <option value="hibrido">Híbrido</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Plano</label>
+            <select class="form-inp" id="na-plano">
+              <option value="">Selecione...</option>
+              <option>Avaliação + Plano (€47)</option>
+              <option>Mensal (€45/mês)</option>
+              <option>6 Meses (€197)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Observações</label><textarea class="form-inp" id="na-obs" placeholder="Lesões, restrições..."></textarea></div>
+        <button class="btn btn-gold btn-full" onclick="criarAluno()">CRIAR ALUNO</button>
+      </div>
+    </div>
+
+    <!-- Vista: Detalhe Aluno -->
+    <div id="view-detalhe" style="display:none">
+      <div class="topbar">
+        <button class="back-btn" onclick="openView('lista')">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          ALUNOS
+        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-outline-gold" onclick="toggleAtivo()">ATIVAR/INATIVAR</button>
+          <button class="btn btn-sm btn-danger" onclick="deletarAluno()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="det-header">
+        <div class="det-av-wrap"><div id="det-avatar" class="av av-lg av-0"></div></div>
+        <div class="det-nome" id="det-nome"></div>
+        <div class="det-sub" id="det-sub"></div>
+        <div class="link-box">
+          <div class="link-url" id="det-link-url"></div>
+          <button class="copy-btn" onclick="copyLink()">COPIAR</button>
+        </div>
+      </div>
+      <div class="tabs" id="det-tabs">
+        <button class="tab active" onclick="showTab('treinos')">TREINOS</button>
+        <button class="tab" onclick="showTab('evolucao')">EVOLUÇÃO</button>
+        <button class="tab" onclick="showTab('medidas')">MEDIDAS</button>
+        <button class="tab" onclick="showTab('periodizacao')">PERÍODO</button>
+        <button class="tab" onclick="showTab('perfil')">PERFIL</button>
+      </div>
+
+      <!-- ── TAB: TREINOS ── -->
+      <div id="tab-treinos" class="tab-content active">
+        <div class="page-content">
+          <div id="treinos-list"></div>
+          <div id="novo-treino-form" style="display:none">
+            <hr class="divider">
+            <div class="sec-hdr" style="margin-bottom:16px">
+              <div class="sec-title" id="form-treino-title">NOVO TREINO</div>
+            </div>
+            <div class="form-group"><label class="form-label">Nome do treino *</label><input class="form-inp" id="nt-nome" placeholder="Ex: Treino A — Inferiores"></div>
+            <div class="form-group"><label class="form-label">Dia da semana</label><input class="form-inp" id="nt-desc" placeholder="Ex: Segunda-feira"></div>
+            <div class="sec-hdr" style="margin-top:4px">
+              <div class="sec-title">EXERCÍCIOS</div>
+              <button class="btn btn-sm btn-outline-gold" onclick="addExercicio()">＋ Adicionar</button>
+            </div>
+            <div id="ex-list"></div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <button class="btn btn-gold" style="flex:1" onclick="salvarTreino()">SALVAR</button>
+              <button class="btn" onclick="cancelarTreino()">CANCELAR</button>
+            </div>
+          </div>
+        </div>
+        <button class="fab" id="fab-treino" onclick="showNovoTreino()">＋</button>
+      </div>
+
+      <!-- ── TAB: EVOLUÇÃO ── -->
+      <div id="tab-evolucao" class="tab-content">
+        <div class="page-content">
+          <div class="stats-row" id="det-stats" style="margin-bottom:16px"></div>
+          <!-- Gráfico -->
+          <div class="chart-wrap">
+            <select class="form-inp" id="ev-select" onchange="renderEvoChart()" style="margin-bottom:14px">
+              <option value="">Selecione exercício...</option>
+            </select>
+            <div style="position:relative;height:200px">
+              <canvas id="evoChart" role="img" aria-label="Gráfico de progressão de carga"></canvas>
+            </div>
+          </div>
+          <!-- Comparativo medidas -->
+          <div class="sec-hdr" style="margin-top:4px"><div class="sec-title">COMPARATIVO DE MEDIDAS</div></div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="form-grid" style="margin-bottom:12px">
+              <div class="form-group" style="margin:0"><label class="form-label">Data A</label><input type="date" class="form-inp" id="cmp-date-a" onchange="renderComparativo()"></div>
+              <div class="form-group" style="margin:0"><label class="form-label">Data B</label><input type="date" class="form-inp" id="cmp-date-b" onchange="renderComparativo()"></div>
+            </div>
+            <div id="cmp-result"></div>
+          </div>
+          <!-- Histórico sessões -->
+          <div class="sec-hdr"><div class="sec-title">HISTÓRICO DE SESSÕES</div></div>
+          <div class="card" style="padding:0 16px" id="sessoes-hist"></div>
+          <!-- Fotos -->
+          <div class="sec-hdr" style="margin-top:16px"><div class="sec-title">FOTOS DA EVOLUÇÃO</div></div>
+          <div id="fotos-aluno-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px"></div>
+        </div>
+      </div>
+
+      <!-- ── TAB: MEDIDAS ── -->
+      <div id="tab-medidas" class="tab-content">
+        <div class="page-content">
+          <div class="card">
+            <div class="card-title" id="pm-card-title">NOVA AVALIAÇÃO</div>
+            <input type="hidden" id="pm-id">
+            <div class="form-group"><label class="form-label">Data *</label><input type="date" class="form-inp" id="pm-data"></div>
+            <div style="font-size:11px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-weight:700">BIOIMPEDÂNCIA</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-peso" placeholder="96.2"></div>
+              <div class="form-group"><label class="form-label">IMC</label><input type="number" step="0.1" class="form-inp" id="pm-imc" placeholder="29.4"></div>
+              <div class="form-group"><label class="form-label">% Gordura</label><input type="number" step="0.1" class="form-inp" id="pm-gord" placeholder="29.6"></div>
+              <div class="form-group"><label class="form-label">Gord. Abs. (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-gord-abs" placeholder="28.5"></div>
+              <div class="form-group"><label class="form-label">Massa Magra (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-massa" placeholder="67.7"></div>
+              <div class="form-group"><label class="form-label">Gord. Visceral</label><input type="number" step="1" class="form-inp" id="pm-gord-visc" placeholder="12"></div>
+              <div class="form-group full"><label class="form-label">TMB (kcal)</label><input type="number" step="1" class="form-inp" id="pm-tmb" placeholder="1959"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin:10px 0;font-weight:700">PERÍMETROS (cm)</div>
+            <div class="peri-grid" id="peri-inputs"></div>
+            <div class="form-group"><label class="form-label">Observações</label><textarea class="form-inp" id="pm-obs" placeholder="Postura, evolução observada..."></textarea></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-gold btn-full" onclick="salvarMedida()" id="pm-btn-salvar">SALVAR AVALIAÇÃO</button>
+              <button class="btn btn-full" onclick="cancelarEditarMedida()" id="pm-btn-cancel" style="display:none">CANCELAR</button>
+            </div>
+          </div>
+          <div class="sec-hdr" style="margin-top:4px"><div class="sec-title">HISTÓRICO</div></div>
+          <div id="medidas-hist"></div>
+        </div>
+      </div>
+
+      <!-- ── TAB: PERIODIZAÇÃO ── -->
+      <div id="tab-periodizacao" class="tab-content">
+        <div class="page-content">
+          <div id="perio-banner"></div>
+          <div class="card" id="perio-card">
+            <div class="card-title">CICLO DE TREINO</div>
+            <div class="form-group">
+              <label class="form-label">Semanas por ciclo</label>
+              <div style="display:flex;gap:8px">
+                <button id="ciclo-3-btn" class="btn btn-sm" onclick="setCiclo(3)" style="flex:1">3 SEMANAS</button>
+                <button id="ciclo-4-btn" class="btn btn-sm btn-gold" onclick="setCiclo(4)" style="flex:1">4 SEMANAS</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data de início</label>
+              <input type="date" class="form-inp" id="perio-data-inicio">
+            </div>
+            <!-- Phase bar rendered by JS -->
+            <div id="perio-phase-bar" style="margin-bottom:16px"></div>
+            <div class="form-group">
+              <label class="form-label">Tipo de Deload</label>
+              <select class="form-inp" id="perio-tipo-deload">
+                <option value="volume">Volume</option>
+                <option value="intensidade">Intensidade</option>
+                <option value="total">Total (ativo)</option>
+              </select>
+            </div>
+            <div class="toggle-row">
+              <span class="toggle-label">Overload na semana</span>
+              <label class="toggle">
+                <input type="checkbox" id="perio-overload">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="form-group" style="margin-top:16px">
+              <label class="form-label">Notas do ciclo</label>
+              <textarea class="form-inp" id="perio-notas" placeholder="Observações, ajustes..."></textarea>
+            </div>
+            <button class="btn btn-gold btn-full" onclick="salvarPeriodizacao()">SALVAR PERIODIZAÇÃO</button>
+          </div>
+          <!-- Mensagem para o aluno -->
+          <div class="card" style="margin-top:4px">
+            <div class="card-title">MENSAGEM PARA O ALUNO</div>
+            <div class="form-group"><textarea class="form-inp" id="perio-msg" placeholder="Escreve uma mensagem para o aluno..." style="min-height:80px"></textarea></div>
+            <button class="btn btn-gold btn-full" onclick="enviarMensagemPT()">ENVIAR MENSAGEM</button>
+            <div id="perio-msgs-list" style="margin-top:16px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: PERFIL ── -->
+      <div id="tab-perfil" class="tab-content">
+        <div class="page-content">
+          <div class="card">
+            <div class="card-title">DADOS PESSOAIS</div>
+            <div class="form-group"><label class="form-label">Nome completo</label><input class="form-inp" id="pf-nome"></div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Data de Nasc.</label><input type="date" class="form-inp" id="pf-nasc"></div>
+              <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-inp" id="pf-altura" placeholder="165"></div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-inp" id="pf-email"></div>
+              <div class="form-group"><label class="form-label">Telefone</label><input class="form-inp" id="pf-tel"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Profissão</label><input class="form-inp" id="pf-prof" placeholder="Ex: Enfermeira"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">SAÚDE E OBJETIVOS</div>
+            <div class="form-group"><label class="form-label">Doenças / Condições</label><textarea class="form-inp" id="pf-doencas" placeholder="Hipertensão, diabetes..."></textarea></div>
+            <div class="form-group"><label class="form-label">Medicamentos</label><textarea class="form-inp" id="pf-med" placeholder="Anticoncepcional..."></textarea></div>
+            <div class="form-group"><label class="form-label">Lesões / Cirurgias</label><textarea class="form-inp" id="pf-lesoes" placeholder="Lesão no joelho..."></textarea></div>
+            <div class="form-group"><label class="form-label">Dores frequentes</label><textarea class="form-inp" id="pf-dores" placeholder="Dor lombar..."></textarea></div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Objetivo</label>
+                <select class="form-inp" id="pf-obj"><option value="">Selecione...</option><option>Emagrecimento</option><option>Hipertrofia</option><option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option></select>
+              </div>
+              <div class="form-group"><label class="form-label">Nível</label>
+                <select class="form-inp" id="pf-nivel"><option value="">Selecione...</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Horas de sono</label><input type="number" class="form-inp" id="pf-sono" placeholder="7"></div>
+              <div class="form-group"><label class="form-label">Estresse (1-10)</label><input type="number" min="1" max="10" class="form-inp" id="pf-stress" placeholder="6"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Alimentação</label><textarea class="form-inp" id="pf-alim" placeholder="Come bem de dia, peca à noite..."></textarea></div>
+            <div class="form-group"><label class="form-label">Obs. do personal</label><textarea class="form-inp" id="pf-obs" placeholder="Impressões, metas..."></textarea></div>
+          </div>
+          <div class="card">
+            <div class="card-title">PLANO ALIMENTAR</div>
+            <div class="form-grid">
+              <div class="form-group full"><label class="form-label">Calorias alvo (kcal)</label><input type="number" class="form-inp" id="pf-kcal" placeholder="2000"></div>
+              <div class="form-group"><label class="form-label">Proteína (g)</label><input type="number" class="form-inp" id="pf-prot" placeholder="160"></div>
+              <div class="form-group"><label class="form-label">Hidratos (g)</label><input type="number" class="form-inp" id="pf-carbo" placeholder="200"></div>
+              <div class="form-group full"><label class="form-label">Gordura (g)</label><input type="number" class="form-inp" id="pf-gord" placeholder="70"></div>
+            </div>
+            <button class="btn btn-gold btn-full" onclick="salvarPerfil()">SALVAR FICHA</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-detalhe -->
+  </div><!-- /screen-alunos -->
+
+  <!-- ══════════════════════════════════════════
+       TAB: AGENDA
+  ══════════════════════════════════════════ -->
+  <div id="screen-agenda" class="screen" style="display:none">
+    <div class="topbar">
+      <div>
+        <div class="topbar-brand">AGENDA</div>
+        <div class="topbar-sub" id="agenda-week-label">SEMANA ATUAL</div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="agenda-prev-btn" onclick="agendaPrevWeek()">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="icon-btn" id="agenda-next-btn" onclick="agendaNextWeek()">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Calendar grid -->
+    <div id="agenda-cal-grid" style="padding:0 12px 8px">
+      <div class="empty">A carregar...</div>
+    </div>
+    <!-- Sessions list -->
+    <div class="page-content" style="padding-top:8px">
+      <div class="sec-hdr"><div class="sec-title">SESSÕES DA SEMANA</div></div>
+      <div id="agenda-sessions-list">
+        <div class="empty">A carregar...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB: FEEDBACKS
+  ══════════════════════════════════════════ -->
+  <div id="screen-feedbacks" class="screen" style="display:none">
+    <div class="topbar">
+      <div>
+        <div class="topbar-brand">FEEDBACKS</div>
+        <div class="topbar-sub">RESPOSTAS DOS ALUNOS</div>
+      </div>
+      <button class="btn btn-sm btn-outline-gold" onclick="marcarTodosLidos()" style="font-size:11px">✓ TODOS</button>
+    </div>
+    <div class="page-content" id="feedbacks-list">
+      <div class="empty">A carregar...</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB: CONFIG
+  ══════════════════════════════════════════ -->
+  <div id="screen-config" class="screen" style="display:none">
+    <div class="topbar">
+      <div class="topbar-brand">CONFIGURAÇÕES</div>
+      <button class="icon-btn" onclick="logout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+    <div class="page-content">
+      <!-- Idioma -->
+      <div class="cfg-section">
+        <div class="cfg-title">IDIOMA</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" id="lang-pt-btn" onclick="setLang('pt')" style="flex:1">PT</button>
+          <button class="btn btn-sm" id="lang-en-btn" onclick="setLang('en')" style="flex:1;opacity:.5">EN</button>
+        </div>
+      </div>
+      <!-- URL Base -->
+      <div class="cfg-section">
+        <div class="cfg-title">URL BASE DO SISTEMA</div>
+        <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;line-height:1.5;font-weight:500">URL do arquivo <strong style="color:var(--gold)">aluno.html</strong> usada para gerar links dos alunos.</div>
+        <div class="form-group"><label class="form-label">URL base</label><input class="form-inp" id="cfg-base-url" placeholder="https://...aluno.html"></div>
+        <button class="btn btn-gold btn-full" onclick="salvarBaseUrl()">SALVAR URL</button>
+      </div>
+      <!-- IA Key -->
+      <div class="cfg-section">
+        <div class="cfg-title">IA · ANTHROPIC</div>
+        <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;line-height:1.5;font-weight:500">Chave da API Anthropic para geração de treinos. Começa com <strong style="color:var(--gold)">sk-ant-</strong></div>
+        <div class="form-group"><label class="form-label">Anthropic API Key</label><input class="form-inp" id="cfg-anthropic-key" type="password" placeholder="sk-ant-api03-..."></div>
+        <button class="btn btn-gold btn-full" onclick="salvarAnthropicKey()">GUARDAR CHAVE</button>
+      </div>
+      <!-- Comunidade Desafios -->
+      <div class="cfg-section">
+        <div class="cfg-title">COMUNIDADE · DESAFIOS</div>
+        <div id="challenges-list" style="margin-bottom:14px">
+          <div class="empty" style="padding:20px">A carregar...</div>
+        </div>
+        <button class="btn btn-outline-gold btn-full" onclick="openNewChallenge()">＋ NOVO DESAFIO</button>
+        <!-- New challenge form -->
+        <div id="new-challenge-form" style="display:none;margin-top:14px">
+          <hr class="divider" style="margin-top:0">
+          <div class="form-group"><label class="form-label">Título</label><input class="form-inp" id="ch-titulo" placeholder="Desafio de Consistência"></div>
+          <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-inp" id="ch-desc" placeholder="Descrição do desafio..."></textarea></div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Emoji</label><input class="form-inp" id="ch-emoji" placeholder="🔥" maxlength="4"></div>
+            <div class="form-group"><label class="form-label">Tipo de meta</label>
+              <select class="form-inp" id="ch-meta-tipo">
+                <option value="sessoes_semana">Sessões/semana</option>
+                <option value="sessoes_mes">Sessões/mês</option>
+                <option value="streak">Streak (dias)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Valor da meta</label><input type="number" class="form-inp" id="ch-meta-val" placeholder="3"></div>
+            <div class="form-group"><label class="form-label">Data fim</label><input type="date" class="form-inp" id="ch-fim"></div>
+          </div>
+          <div class="toggle-row" style="margin-bottom:12px">
+            <span class="toggle-label">Ativo</span>
+            <label class="toggle">
+              <input type="checkbox" id="ch-ativo" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-gold" style="flex:1" onclick="salvarChallenge()">CRIAR DESAFIO</button>
+            <button class="btn" onclick="closeNewChallenge()">CANCELAR</button>
+          </div>
+        </div>
+      </div>
+      <!-- Logout -->
+      <button class="btn btn-danger btn-full" onclick="logout()" style="margin-top:4px">SAIR DA CONTA</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOTO LIGHTBOX ADMIN -->
+<div id="admin-foto-lightbox" onclick="this.style.display='none';this.querySelector('img').src=''" style="position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.97);display:none;flex-direction:column;align-items:center;justify-content:center">
+  <button onclick="event.stopPropagation();document.getElementById('admin-foto-lightbox').style.display='none'" style="position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none">×</button>
+  <img style="max-width:100%;max-height:82vh;object-fit:contain;border-radius:4px" onclick="event.stopPropagation()">
+  <div class="foto-lb-lbl" style="color:#555;font-size:12px;margin-top:10px;letter-spacing:1px;text-transform:uppercase"></div>
+</div>
+
+<script src="admin-v3-app.js?v=1"></script>
+</body>
+</html>
