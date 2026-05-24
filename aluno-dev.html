@@ -80,15 +80,12 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .lang-toggle span{color:var(--text-3);cursor:pointer;transition:color var(--t-fast);padding:2px 1px}
 .lang-toggle span.on{color:var(--gold)}
 .lang-sep{color:var(--text-3);opacity:.5;cursor:default}
-.color-picker{display:flex;gap:6px;align-items:center}
-.color-swatch{
-  width:14px;height:14px;border-radius:50%;
-  background:var(--c);border:1.5px solid rgba(255,255,255,.16);
-  cursor:pointer;transition:transform var(--t-fast),box-shadow var(--t-fast),border-color var(--t-fast);
-  padding:0;
-}
-.color-swatch:hover{transform:scale(1.1);border-color:rgba(255,255,255,.36)}
-.color-swatch.on{border-color:#fff;transform:scale(1.2);box-shadow:0 0 10px var(--c)}
+.theme-picker{display:flex;gap:4px;align-items:center;flex-wrap:wrap;max-width:200px;justify-content:flex-end}
+.theme-btn{width:28px;height:28px;border-radius:8px;background:var(--surface-2);border:1.5px solid transparent;
+  font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all var(--t-fast);padding:0;line-height:1}
+.theme-btn:hover{transform:scale(1.12);border-color:var(--hairline-strong)}
+.theme-btn.on{border-color:var(--gold);transform:scale(1.15);box-shadow:0 0 10px var(--gold-glow)}
 
 .screen-wrap{flex:1;position:relative;overflow:hidden;min-height:calc(100vh - 56px)}
 
@@ -247,13 +244,24 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 /* ════ EVOLUÇÃO */
 .evo-hero{padding:16px 22px 8px}
-.kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px}
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px 8px}
 .kpi{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:12px}
 .kpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
 .kpi-v{font-size:24px;font-weight:800;letter-spacing:-.025em;margin-top:6px;line-height:1;color:#fff}
 .kpi-d{font-family:var(--mono);font-size:10px;color:var(--green);margin-top:4px;font-weight:600;letter-spacing:.02em}
 .kpi-d.dn{color:var(--coral)}
 .kpi-d.flat{color:var(--text-3)}
+.vol-card{margin:0 16px 8px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:14px 16px}
+.vol-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:12px}
+.vol-cols{display:grid;grid-template-columns:1fr auto 1fr auto 1fr}
+.vol-divider{width:1px;background:var(--hairline);margin:0 4px}
+.vol-col{text-align:center;padding:0 8px}
+.vol-val{font-size:22px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1}
+.vol-sub{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.04em;margin-top:3px;min-height:14px}
+.vol-sub.up{color:var(--green)}
+.vol-sub.dn{color:var(--coral)}
+.vol-sub.flat{color:var(--text-3)}
+.vol-period{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-top:4px}
 
 .chart-card{margin:6px 16px 12px}
 .chart-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:10px}
@@ -447,10 +455,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .pt-info{flex:1;min-width:0}
 .pt-name{font-size:16px;font-weight:700;letter-spacing:-.015em}
 .pt-cargo{font-family:var(--mono);font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
-.pt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pt-btn{padding:11px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;font-size:13px;font-weight:600;color:#fff;letter-spacing:-.01em;transition:all var(--t-fast);text-decoration:none;display:flex;align-items:center;justify-content:center;text-align:center}
-.pt-btn:hover{border-color:var(--hairline-strong);background:var(--surface-3)}
-.pt-btn.primary{background:var(--gold);color:#000;border-color:var(--gold)}
+.pt-actions{display:flex;flex-direction:column;gap:8px}
+.pt-link{display:flex;align-items:center;gap:12px;padding:11px 14px;
+  background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;
+  color:var(--text-2);text-decoration:none;font-size:13px;font-weight:600;
+  transition:all var(--t-fast)}
+.pt-link:hover,.pt-link:active{background:var(--surface-3);color:#fff;border-color:var(--hairline-strong)}
+.pt-link svg{color:var(--gold);flex-shrink:0}
 
 .orient{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:18px}
 .orient-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:14px}
@@ -531,6 +542,38 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .nut-btn-sec{flex:1;padding:14px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;font-size:14px;font-weight:700;color:var(--text-2);transition:background var(--t-fast)}
 .nut-btn-pri{flex:1;padding:14px;background:var(--gold);border-radius:12px;font-size:14px;font-weight:700;color:#000;transition:opacity var(--t-fast)}
 .nut-btn-pri:active{opacity:.8}
+
+/* ── TEMAS ESTRUTURAIS ── */
+.t-demon .card,.t-demon .ex,.t-demon .kpi,.t-demon .vol-card,.t-demon .bio-card,.t-demon .pt-card,.t-demon .badge,.t-demon .orient{border-radius:4px!important}
+.t-demon .set-pip,.t-demon .carga-btn,.t-demon .btn-register,.t-demon .bnav-item{border-radius:3px!important}
+.t-demon .chip{border-radius:4px!important}
+
+.t-angry .card,.t-angry .ex,.t-angry .kpi,.t-angry .vol-card,.t-angry .bio-card,.t-angry .pt-card,.t-angry .badge,.t-angry .orient{border-radius:3px!important}
+.t-angry .set-pip,.t-angry .carga-btn,.t-angry .btn-register{border-radius:2px!important}
+.t-angry .chip{border-radius:3px!important}
+
+.t-iphone .card,.t-iphone .ex,.t-iphone .kpi,.t-iphone .vol-card,.t-iphone .bio-card,.t-iphone .pt-card,.t-iphone .badge,.t-iphone .orient{border-radius:22px!important}
+.t-iphone .set-pip{border-radius:14px!important}
+.t-iphone .chip{border-radius:99px!important}
+.t-iphone .btn-register{border-radius:16px!important}
+
+.t-happy .card,.t-happy .ex,.t-happy .kpi,.t-happy .vol-card,.t-happy .bio-card,.t-happy .pt-card,.t-happy .badge,.t-happy .orient{border-radius:24px!important}
+.t-happy .set-pip{border-radius:16px!important}
+.t-happy .chip{border-radius:99px!important}
+
+.t-moon body,.t-rain body,.t-ice body{background:var(--bg)}
+
+/* ── BADGE CATEGORIAS ── */
+.badge-cat-label{grid-column:1/-1;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin-top:12px;margin-bottom:4px;padding:0 2px}
+.badge-cat-label:first-child{margin-top:0}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+/* ── BIO EXTRA ── */
+.bio-obs{font-size:12px;color:var(--text-2);line-height:1.55;padding:8px 0;border-top:1px solid var(--hairline)}
+.bio-obs:first-of-type{border-top:0}
+.bio-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.bio-grid-2 .bio-row{padding:7px 0;border-top:1px solid var(--hairline)}
+.bio-grid-2 .bio-row:first-child,.bio-grid-2 .bio-row:nth-child(2){border-top:0}
 </style>
 </head>
 <body>
@@ -545,11 +588,17 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         <span class="lang-sep">|</span>
         <span data-lang="en">EN</span>
       </div>
-      <div class="color-picker" role="radiogroup" aria-label="Esquema de cores">
-        <button class="color-swatch on" data-accent="gold"  style="--c:#FFD96B" aria-label="Dourado"></button>
-        <button class="color-swatch"     data-accent="green" style="--c:#5FE3D3" aria-label="Verde"></button>
-        <button class="color-swatch"     data-accent="red"   style="--c:#FF6B6B" aria-label="Vermelho"></button>
-        <button class="color-swatch"     data-accent="blue"  style="--c:#5FA8FF" aria-label="Azul"></button>
+      <div class="theme-picker" id="theme-picker">
+        <button class="theme-btn on" data-theme="padrao">🏅</button>
+        <button class="theme-btn" data-theme="moon">🌙</button>
+        <button class="theme-btn" data-theme="sun">☀️</button>
+        <button class="theme-btn" data-theme="demon">👿</button>
+        <button class="theme-btn" data-theme="iphone">📱</button>
+        <button class="theme-btn" data-theme="rain">🌧️</button>
+        <button class="theme-btn" data-theme="happy">😊</button>
+        <button class="theme-btn" data-theme="angry">🤬</button>
+        <button class="theme-btn" data-theme="fire">🔥</button>
+        <button class="theme-btn" data-theme="ice">🧊</button>
       </div>
     </div>
   </div>
@@ -613,10 +662,27 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
           <div class="kpi-v" id="kpi-freq">—</div>
           <div class="kpi-d flat" id="kpi-freq-d">/ semana</div>
         </div>
-        <div class="kpi in" style="animation-delay:.18s">
-          <div class="kpi-l" data-i18n="kpi_volume">Volume kg</div>
-          <div class="kpi-v" id="kpi-volume">0</div>
-          <div class="kpi-d" id="kpi-volume-d">—</div>
+      </div>
+      <div class="vol-card in" style="animation-delay:.18s">
+        <div class="vol-label" data-i18n="kpi_volume">Volume kg</div>
+        <div class="vol-cols">
+          <div class="vol-col">
+            <div class="vol-val" id="vol-week">—</div>
+            <div class="vol-sub" id="vol-week-d"></div>
+            <div class="vol-period" data-i18n="vol_week">Esta semana</div>
+          </div>
+          <div class="vol-divider"></div>
+          <div class="vol-col">
+            <div class="vol-val" id="vol-month">—</div>
+            <div class="vol-sub" id="vol-month-d"></div>
+            <div class="vol-period" data-i18n="vol_month">Este mês</div>
+          </div>
+          <div class="vol-divider"></div>
+          <div class="vol-col">
+            <div class="vol-val" id="vol-total">—</div>
+            <div class="vol-sub" id="vol-total-d"></div>
+            <div class="vol-period" data-i18n="vol_total">Total</div>
+          </div>
         </div>
       </div>
 
@@ -813,15 +879,25 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
       <div class="pt-card in" style="animation-delay:.32s">
         <div class="pt-row">
-          <div class="pt-avatar">JS</div>
+          <div class="pt-avatar"><img src="https://ui-avatars.com/api/?name=Jo+Silva&background=7C3AED&color=fff&size=54&bold=true&rounded=true" alt="Jo Silva" style="width:54px;height:54px;border-radius:16px;object-fit:cover" onerror="this.style.display='none';this.parentElement.textContent='JS'"></div>
           <div class="pt-info">
             <div class="pt-name">Jo Silva</div>
             <div class="pt-cargo">Personal Trainer · CPT</div>
           </div>
         </div>
         <div class="pt-actions">
-          <a class="pt-btn primary" id="pt-msg" href="#" data-i18n="pt_msg">Mensagem</a>
-          <a class="pt-btn" id="pt-call" href="#" data-i18n="pt_call">Ligar</a>
+          <a class="pt-link" href="https://www.instagram.com/ojo.silva/" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+            <span>@ojo.silva</span>
+          </a>
+          <a class="pt-link" href="https://wa.me/351921469901" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.34A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 8.5s.5 1 2 2.5 2.5 2 2.5 2l1.5-1.5 2 2s-1 2-3 1.5-4-2.5-5-4.5S8.5 8.5 8.5 8.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>+351 921 469 901</span>
+          </a>
+          <a class="pt-link" href="https://ojosilva.com" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20M12 2c-2.5 3-4 6.5-4 10s1.5 7 4 10M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10" stroke="currentColor" stroke-width="1.8"/></svg>
+            <span>ojosilva.com</span>
+          </a>
         </div>
       </div>
 

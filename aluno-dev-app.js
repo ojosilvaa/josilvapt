@@ -14,6 +14,7 @@ const I18N = {
     'sucesso':'Sessão registada!','sucesso_sub':'Excelente trabalho. Até ao próximo treino!',
     'evo_kicker':'Resumo · 90 dias','evo_title':'A tua evolução,<br><em>visualizada.</em>',
     'kpi_sessoes':'Sessões','kpi_freq':'Frequência','kpi_volume':'Volume kg',
+    'vol_week':'Esta semana','vol_month':'Este mês','vol_total':'Total',
     'evo_chart_title':'Progressão de carga','sel_ex':'Selecione um exercício…',
     'evo_cmp':'Composição corporal','evo_pr':'Recordes pessoais','evo_no_pr':'Ainda sem recordes. Treina mais sessões!',
     'evo_heat':'Atividade · 13 semanas','heat_less':'Menos','heat_more':'Mais',
@@ -52,6 +53,7 @@ const I18N = {
     'sucesso':'Session saved!','sucesso_sub':'Great work. See you next time!',
     'evo_kicker':'Summary · 90 days','evo_title':'Your evolution,<br><em>visualised.</em>',
     'kpi_sessoes':'Sessions','kpi_freq':'Frequency','kpi_volume':'Volume kg',
+    'vol_week':'This week','vol_month':'This month','vol_total':'Total',
     'evo_chart_title':'Load progression','sel_ex':'Select an exercise…',
     'evo_cmp':'Body composition','evo_pr':'Personal records','evo_no_pr':'No records yet. Train more!',
     'evo_heat':'Activity · 13 weeks','heat_less':'Less','heat_more':'More',
@@ -96,6 +98,7 @@ let cargas = {}, doneSet = {};
 let sessoes = [], allCargasHist = null;
 let timerStart = null, timerInterval = null;
 let pesoCached = 0, perimetriaHist = [];
+let anamnese = null;
 
 // ── STORAGE HELPERS ──────────────────────────────────────
 const lc = (k, d = null) => { try { const v = localStorage.getItem('alunoV3_' + ALUNO_ID + '_' + k); return v ? JSON.parse(v) : d; } catch(e){ return d; } };
@@ -480,7 +483,7 @@ function calcN(a, g, campo){ return Math.round(a[campo] * g / 100 * 10) / 10; }
 // ═══════════════════════════════════════════════════════════
 async function init(){
   applyI18n();
-  applyAccentFromStorage();
+  applyThemeFromStorage();
 
   const hideLoader = () => {
     const ls = document.getElementById('loading-screen');
@@ -511,12 +514,14 @@ async function init(){
   Object.keys(stored).forEach(k => doneSet[k] = new Set(stored[k]));
 
   setupNav();
-  setupAccentPicker();
+  setupThemePicker();
   setupLangToggle();
   setupWaterDots();
 
   sessoes = await sb(`sessoes?aluno_id=eq.${ALUNO_ID}&order=data.desc&limit=200`) || [];
   perimetriaHist = await sb(`perimetria?aluno_id=eq.${ALUNO_ID}&order=data.asc&limit=20`) || [];
+  const anamRes = await sb(`anamnese?aluno_id=eq.${ALUNO_ID}&limit=1`) || [];
+  anamnese = anamRes[0]?.dados || null;
 
   if (sessoes.length) {
     const sids = sessoes.map(s => s.id);
@@ -829,9 +834,33 @@ async function renderEvolucao(){
   document.getElementById('kpi-freq').textContent = freq + '×';
   document.getElementById('kpi-freq-d').textContent = LANG==='pt' ? '/ semana' : '/ week';
 
-  const vol = allCargasHist.reduce((s,c) => s + (parseFloat(c.carga_kg)||0), 0);
-  document.getElementById('kpi-volume').textContent = Math.round(vol).toLocaleString('pt-PT');
-  document.getElementById('kpi-volume-d').textContent = `${allCargasHist.length} ${LANG==='pt'?'registos':'records'}`;
+  // Volume split: weekly / monthly / total
+  const volOf = (days) => {
+    if (!allCargasHist || !sessoes.length) return 0;
+    const ids = new Set(sessoes.filter(s => daysAgo(s.data) <= days).map(s => s.id));
+    return allCargasHist.filter(c => ids.has(c.sessao_id)).reduce((s,c) => s + (parseFloat(c.carga_kg)||0), 0);
+  };
+  const volW = Math.round(volOf(7));
+  const volM = Math.round(volOf(30));
+  const volT = allCargasHist ? Math.round(allCargasHist.reduce((s,c)=>s+(parseFloat(c.carga_kg)||0),0)) : 0;
+  // avg weekly from monthly
+  const avgW = Math.round(volM / 4);
+  const avgM = volT && sessoes.length > 4 ? Math.round(volT / (sessoes.length / (90/30))) : 0;
+  const fmt = n => n >= 1000 ? (n/1000).toFixed(1)+'t' : n+'kg';
+  const delta = (val, avg) => {
+    if (!avg || !val) return ['flat','—'];
+    const d = Math.round(val - avg);
+    return d > 0 ? ['up', '+'+fmt(d)] : d < 0 ? ['dn', fmt(d)] : ['flat','='];
+  };
+  document.getElementById('vol-week').textContent = fmt(volW);
+  document.getElementById('vol-month').textContent = fmt(volM);
+  document.getElementById('vol-total').textContent = fmt(volT);
+  const [wCls, wTxt] = delta(volW, avgW);
+  const [mCls, mTxt] = delta(volM, avgM);
+  const vwd = document.getElementById('vol-week-d'); vwd.textContent = wTxt; vwd.className = 'vol-sub ' + wCls;
+  const vmd = document.getElementById('vol-month-d'); vmd.textContent = mTxt; vmd.className = 'vol-sub ' + mCls;
+  document.getElementById('vol-total-d').textContent = (allCargasHist?.length||0) + ' reg';
+  document.getElementById('vol-total-d').className = 'vol-sub flat';
 
   // carrega exercícios se necessário
   for (const t of treinos){
@@ -1308,20 +1337,74 @@ function renderPerfil(){
     ? `${T('streak_active')} · <b>${LANG==='pt'?'em chamas':'on fire'}</b>`
     : (streak ? T('streak_active') : (LANG==='pt'?'Começa hoje':'Start today'));
 
+  // ── GAMIFICAÇÃO EXPANDIDA ──
   const last30 = sessoes.filter(s => daysAgo(s.data) <= 30).length;
-  const unlocked = [
-    streak >= 7, total >= 10, total >= 50, total >= 100,
-    streak >= 14, streak >= 30, false, false, last30 >= 12,
+  const last90 = sessoes.filter(s => daysAgo(s.data) <= 90).length;
+  const volTotal = allCargasHist ? allCargasHist.reduce((s,c)=>s+(parseFloat(c.carga_kg)||0),0) : 0;
+  const numPRs = (() => {
+    if (!allCargasHist) return 0;
+    const groups = {};
+    allCargasHist.forEach(c => { if (!groups[c.exercicio_id]) groups[c.exercicio_id]=[]; groups[c.exercicio_id].push(parseFloat(c.carga_kg)||0); });
+    return Object.values(groups).filter(arr => arr.length > 1).length;
+  })();
+
+  const BADGES = [
+    // 💪 Sessões
+    { cat:'💪', ico:'🌱', l:'Primeiro passo',    u:'1 sessão',    ok: total >= 1 },
+    { cat:'💪', ico:'🔑', l:'5 sessões',          u:'5 sessões',   ok: total >= 5 },
+    { cat:'💪', ico:'💪', l:'10 sessões',          u:'10 sessões',  ok: total >= 10 },
+    { cat:'💪', ico:'🎯', l:'25 sessões',          u:'25 sessões',  ok: total >= 25 },
+    { cat:'💪', ico:'🏆', l:'50 sessões',          u:'50 sessões',  ok: total >= 50 },
+    { cat:'💪', ico:'🥇', l:'100 sessões',         u:'100 sessões', ok: total >= 100 },
+    { cat:'💪', ico:'💎', l:'200 sessões',         u:'200 sessões', ok: total >= 200 },
+    { cat:'💪', ico:'👑', l:'500 sessões',         u:'500 sessões', ok: total >= 500 },
+    // 🔥 Consistência
+    { cat:'🔥', ico:'🌡️', l:'1 semana seguida',   u:'7 dias',      ok: streak >= 7 },
+    { cat:'🔥', ico:'🔥', l:'2 semanas seguidas',  u:'14 dias',     ok: streak >= 14 },
+    { cat:'🔥', ico:'⚡',  l:'1 mês seguido',       u:'30 dias',     ok: streak >= 30 },
+    { cat:'🔥', ico:'🌟', l:'3 meses seguidos',    u:'90 dias',     ok: streak >= 90 },
+    { cat:'🔥', ico:'🏅', l:'Mês perfeito',        u:'12 sessões/mês', ok: last30 >= 12 },
+    { cat:'🔥', ico:'🎖️', l:'Trimestre activo',   u:'24 sessões/90d', ok: last90 >= 24 },
+    // 🏋️ Volume
+    { cat:'🏋️', ico:'🪨', l:'1 tonelada',         u:'1.000 kg',    ok: volTotal >= 1000 },
+    { cat:'🏋️', ico:'⚓', l:'10 toneladas',        u:'10.000 kg',   ok: volTotal >= 10000 },
+    { cat:'🏋️', ico:'🏗️', l:'50 toneladas',       u:'50.000 kg',   ok: volTotal >= 50000 },
+    { cat:'🏋️', ico:'🚀', l:'100 toneladas',       u:'100.000 kg',  ok: volTotal >= 100000 },
+    { cat:'🏋️', ico:'🌍', l:'500 toneladas',       u:'500.000 kg',  ok: volTotal >= 500000 },
+    // 📈 Recordes
+    { cat:'📈', ico:'📊', l:'Primeiro recorde',    u:'1 PR',        ok: numPRs >= 1 },
+    { cat:'📈', ico:'📈', l:'PR x 3',              u:'3 exercícios',ok: numPRs >= 3 },
+    { cat:'📈', ico:'👊', l:'PR x 5',              u:'5 exercícios',ok: numPRs >= 5 },
+    { cat:'📈', ico:'🦾', l:'PR x 10',             u:'10 exercícios',ok: numPRs >= 10 },
+    { cat:'📈', ico:'🧬', l:'PR em todos',         u:'Todos exerc.',ok: numPRs >= 20 },
+    // ⏱️ Treino
+    { cat:'⏱️', ico:'⚡',  l:'Sessão rápida',      u:'Menos de 30 min', ok: false },
+    { cat:'⏱️', ico:'🕐',  l:'Maratonista',        u:'Mais de 90 min',  ok: false },
+    { cat:'⏱️', ico:'🌅',  l:'Madrugador',         u:'Treino antes 8h', ok: false },
+    { cat:'⏱️', ico:'🌙',  l:'Noctívago',          u:'Treino após 21h', ok: false },
+    // 🌟 Especiais
+    { cat:'🌟', ico:'🎉', l:'Bem-vindo!',          u:'Primeiro login',  ok: true },
+    { cat:'🌟', ico:'🌈', l:'Personalizado',       u:'Mudou o tema',    ok: !!localStorage.getItem('josilvaPT_theme') && localStorage.getItem('josilvaPT_theme') !== 'padrao' },
+    { cat:'🌟', ico:'🤖', l:'Nutricionista',       u:'Registou 1 refeição', ok: false },
+    { cat:'🌟', ico:'💧', l:'Hidratado',           u:'8 copos num dia', ok: false },
   ];
+
+  const unlockedCount = BADGES.filter(b => b.ok).length;
+  document.getElementById('badges-count').textContent = unlockedCount + ' / ' + BADGES.length;
+
+  const cats = [...new Set(BADGES.map(b => b.cat))];
   const grid = document.getElementById('badge-grid');
-  grid.innerHTML = T('badges').map((b,i) => `
-    <div class="badge ${unlocked[i] ? 'on' : 'locked'}">
-      <div class="badge-ico">${b.ico}</div>
-      <div class="badge-lbl">${b.l}</div>
-      <div class="badge-sub">${unlocked[i] ? (LANG==='pt'?'desbloqueado':'unlocked') : b.u}</div>
-    </div>
-  `).join('');
-  document.getElementById('badges-count').textContent = unlocked.filter(Boolean).length + ' / 9';
+  grid.innerHTML = cats.map(cat => {
+    const catBadges = BADGES.filter(b => b.cat === cat);
+    return `<div class="badge-cat-label">${cat}</div>` +
+      catBadges.map(b => `
+        <div class="badge ${b.ok ? 'on' : 'locked'}">
+          <div class="badge-ico">${b.ico}</div>
+          <div class="badge-lbl">${b.l}</div>
+          <div class="badge-sub">${b.ok ? (LANG==='pt'?'✓ desbloqueado':'✓ unlocked') : b.u}</div>
+        </div>
+      `).join('');
+  }).join('');
 
   document.getElementById('orient-list').innerHTML = T('orient_default').map(([title, txt], i) => `
     <div class="orient-row">
@@ -1338,20 +1421,21 @@ function renderBiometria(){
   const p = perimetriaHist.length ? perimetriaHist[perimetriaHist.length - 1] : null;
   if (!p) return;
 
-  const m          = p.medidas || {};
-  const peso       = parseFloat(p.peso)         || 0;
-  const gordura    = parseFloat(p.gordura)       || 0;
-  const massaMagra = parseFloat(p.massa_magra)   || 0;
-  const altura     = m.altura_cm                 || 0;
-  const imc        = m.imc || (altura ? +(peso / ((altura/100)**2)).toFixed(1) : 0);
-  const massaGorda = m.massa_gorda_kg            || +(peso * gordura / 100).toFixed(1);
-  const tmb        = m.tmb_kcal                  || 0;
-  const visceralNivel = m.gordura_visceral_nivel || 0;
+  const m   = p.medidas || {};
+  const an  = anamnese  || {};
 
-  const imcLabel = imc < 18.5
-    ? (LANG==='pt'?'Abaixo peso':'Underweight')
-    : imc < 25 ? (LANG==='pt'?'Normal':'Normal')
-    : imc < 30 ? (LANG==='pt'?'Sobrepeso':'Overweight')
+  const peso       = parseFloat(p.peso)       || 0;
+  const gordura    = parseFloat(p.gordura)     || 0;
+  const massaMagra = parseFloat(p.massa_magra) || 0;
+  const massaGorda = +(peso * gordura / 100).toFixed(1);
+  const altura     = an.altura_cm || m.altura_cm || 0;
+  const imc        = m.bio_imc || an.imc || (altura ? +(peso/((altura/100)**2)).toFixed(1) : 0);
+  const tmb        = m.bio_tmb || an.tmb_kcal || 0;
+  const gordVisc   = m.bio_gord_visc || an.gordura_visceral || 0;
+  const gordAbs    = m.bio_gord_abs  || 0;
+
+  const imcLabel = imc < 18.5 ? (LANG==='pt'?'Abaixo peso':'Underweight')
+    : imc < 25 ? 'Normal' : imc < 30 ? (LANG==='pt'?'Sobrepeso':'Overweight')
     : (LANG==='pt'?'Obesidade':'Obese');
 
   const dataFmt = p.data ? (() => {
@@ -1361,11 +1445,12 @@ function renderBiometria(){
   })() : '—';
 
   const pt = LANG === 'pt';
+  const row = (l,v,unit='') => v != null && v !== 0 && v !== ''
+    ? `<div class="bio-row"><span class="bio-row-l">${l}</span><span class="bio-row-r">${v}${unit?'<small> '+unit+'</small>':''}</span></div>`
+    : '';
 
   const card = document.createElement('div');
-  card.id = 'bio-card';
-  card.className = 'bio-card in';
-  card.style.animationDelay = '.04s';
+  card.id = 'bio-card'; card.className = 'bio-card in'; card.style.animationDelay = '.04s';
 
   card.innerHTML = `
     <div class="bio-title">${pt?'Avaliação física':'Physical assessment'} · <span style="color:var(--gold)">${dataFmt}</span></div>
@@ -1375,36 +1460,68 @@ function renderBiometria(){
         <div class="bio-kpi-l">${pt?'Peso':'Weight'}</div>
       </div>
       <div class="bio-kpi">
-        <div class="bio-kpi-v">${altura}<span>cm</span></div>
+        <div class="bio-kpi-v">${altura||'—'}<span>${altura?'cm':''}</span></div>
         <div class="bio-kpi-l">${pt?'Altura':'Height'}</div>
       </div>
       <div class="bio-kpi">
-        <div class="bio-kpi-v">${imc}</div>
+        <div class="bio-kpi-v">${imc||'—'}</div>
         <div class="bio-kpi-l">IMC · ${imcLabel}</div>
       </div>
     </div>
+
     <div class="bio-divider">${pt?'Composição corporal':'Body composition'}</div>
-    <div class="bio-row"><span class="bio-row-l">${pt?'Gordura corporal':'Body fat'}</span><span class="bio-row-r">${gordura}%</span></div>
-    <div class="bio-row"><span class="bio-row-l">${pt?'Massa magra':'Lean mass'}</span><span class="bio-row-r">${massaMagra} kg</span></div>
-    <div class="bio-row"><span class="bio-row-l">${pt?'Massa gorda':'Fat mass'}</span><span class="bio-row-r">${massaGorda} kg</span></div>
-    ${tmb ? `<div class="bio-row"><span class="bio-row-l">TMB</span><span class="bio-row-r">${tmb} kcal</span></div>` : ''}
-    ${visceralNivel ? `<div class="bio-row"><span class="bio-row-l">${pt?'Gordura visceral':'Visceral fat'}</span><span class="bio-row-r">${pt?'Nível':'Level'} ${visceralNivel}</span></div>` : ''}
+    ${row(pt?'Gordura corporal':'Body fat', gordura, '%')}
+    ${row(pt?'Gordura abdominal':'Abdominal fat', gordAbs, '%')}
+    ${row(pt?'Massa magra':'Lean mass', massaMagra, 'kg')}
+    ${row(pt?'Massa gorda':'Fat mass', massaGorda, 'kg')}
+    ${row('TMB', tmb, 'kcal')}
+    ${row(pt?'Gordura visceral':'Visceral fat', gordVisc ? (pt?'Nível ':'Level ')+gordVisc : null)}
+    ${p.obs ? `<div class="bio-obs">${escapeHTML(p.obs)}</div>` : ''}
+
     <div class="bio-divider">${pt?'Perímetros (cm)':'Measurements (cm)'}</div>
-    <div class="bio-grid">
-      ${[
-        [pt?'Ombro':'Shoulder',m.ombro_cm],[pt?'Peito':'Chest',m.peito_cm],
-        [pt?'Cintura':'Waist',m.cintura_cm],[pt?'Abdómen':'Abdomen',m.abdomen_cm],
-        [pt?'Quadril':'Hip',m.quadril_cm],[pt?'Braço (rel.)':'Arm rel.',m.braco_relaxado_dir_cm],
-        [pt?'Braço (cont.)':'Arm cont.',m.braco_contraido_dir_cm],[pt?'Coxa D':'Thigh R',m.coxa_dir_cm],
-        [pt?'Coxa E':'Thigh L',m.coxa_esq_cm],[pt?'Panturrilha':'Calf',m.panturrilha_dir_cm],
-      ].filter(([,v]) => v != null).map(([l,v]) => `
-        <div class="bio-row"><span class="bio-row-l">${l}</span><span class="bio-row-r">${v}</span></div>
-      `).join('')}
+    <div class="bio-grid-2">
+      ${row(pt?'Ombro':'Shoulder', m.ombro)}
+      ${row(pt?'Tórax':'Chest', m.torax)}
+      ${row(pt?'Cintura':'Waist', m.cintura)}
+      ${row(pt?'Abdómen':'Abdomen', m.abdomen)}
+      ${row(pt?'Quadril':'Hip', m.quadril)}
+      ${row(pt?'Braço D (relax.)':'Arm R (relax.)', m.braco_d)}
+      ${row(pt?'Braço E (relax.)':'Arm L (relax.)', m.braco_e)}
+      ${row(pt?'Braço D (flex.)':'Arm R (flex.)', m.braco_flex_d)}
+      ${row(pt?'Braço E (flex.)':'Arm L (flex.)', m.braco_flex_e)}
+      ${row(pt?'Antebraço D':'Forearm R', m.antebraco_d)}
+      ${row(pt?'Antebraço E':'Forearm L', m.antebraco_e)}
+      ${row(pt?'Coxa D':'Thigh R', m.coxa_d)}
+      ${row(pt?'Coxa E':'Thigh L', m.coxa_e)}
+      ${row(pt?'Panturrilha D':'Calf R', m.panturrilha_d)}
+      ${row(pt?'Panturrilha E':'Calf L', m.panturrilha_e)}
     </div>
+
+    ${an && Object.keys(an).length ? `
+    <div class="bio-divider">${pt?'Dados da anamnese':'Anamnesis'}</div>
+    ${row(pt?'Idade':'Age', an.idade, pt?'anos':'years')}
+    ${row(pt?'Profissão':'Profession', an.profissao)}
+    ${row(pt?'Nível de actividade':'Activity level', an.nivel_atividade)}
+    ${row(pt?'Nível de experiência':'Experience', an.nivel_experiencia)}
+    ${row(pt?'Nível de stresse':'Stress level', an.nivel_estresse)}
+    ${row(pt?'Qualidade do sono':'Sleep quality', an.qualidade_sono)}
+    ${row(pt?'Água diária':'Daily water', an.agua_litros, 'L')}
+    ${row(pt?'Refeições/dia':'Meals/day', an.refeicoes_por_dia)}
+    ${row(pt?'Duração da sessão':'Session length', an.tempo_sessao_min, 'min')}
+    ${row(pt?'Objectivo principal':'Main goal', an.objetivo_principal)}
+    ${row(pt?'Objectivo secundário':'Secondary goal', an.objetivo_secundario)}
+    ${row(pt?'Divisão':'Split', an.divisao)}
+    ${row(pt?'Fase':'Phase', an.fase)}
+    ${an.lesoes ? `<div class="bio-divider">${pt?'Lesões / restrições':'Injuries / restrictions'}</div>
+      <div class="bio-obs">${escapeHTML(an.lesoes)}</div>
+      ${an.restricoes ? `<div class="bio-obs" style="margin-top:6px;color:var(--coral)">${escapeHTML(an.restricoes)}</div>` : ''}` : ''}
+    ${an.historico_treino ? `<div class="bio-divider">${pt?'Histórico':'History'}</div>
+      <div class="bio-obs">${escapeHTML(an.historico_treino)}</div>` : ''}
+    ` : ''}
   `;
 
   const levelCard = document.querySelector('.level-card');
-  levelCard.parentNode.insertBefore(card, levelCard);
+  if (levelCard) levelCard.parentNode.insertBefore(card, levelCard);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1441,34 +1558,42 @@ function setupNav(){
     }));
 }
 
-const PALETTES = {
-  gold:  ['#FFD96B', '#E5B23A', 'rgba(255,217,107,.35)', 'rgba(255,217,107,.07)'],
-  green: ['#5FE3D3', '#3EB8A8', 'rgba(95,227,211,.4)',   'rgba(95,227,211,.07)'],
-  red:   ['#FF6B6B', '#E54444', 'rgba(255,107,107,.4)',  'rgba(255,107,107,.07)'],
-  blue:  ['#5FA8FF', '#3E82E5', 'rgba(95,168,255,.4)',   'rgba(95,168,255,.07)'],
+const THEMES = {
+  padrao:{ emoji:'🏅', gold:'#FFD96B', g2:'#E5B23A', glow:'rgba(255,217,107,.35)', subtle:'rgba(255,217,107,.07)', bg:'#000000' },
+  moon:  { emoji:'🌙', gold:'#C4B5FD', g2:'#7C3AED', glow:'rgba(196,181,253,.4)',  subtle:'rgba(196,181,253,.08)', bg:'#06061a' },
+  sun:   { emoji:'☀️', gold:'#FFA827', g2:'#E08000', glow:'rgba(255,168,39,.4)',   subtle:'rgba(255,168,39,.08)',  bg:'#0d0800' },
+  demon: { emoji:'👿', gold:'#FF4D6D', g2:'#C9184A', glow:'rgba(255,77,109,.4)',   subtle:'rgba(255,77,109,.08)',  bg:'#08000f' },
+  iphone:{ emoji:'📱', gold:'#0A84FF', g2:'#0066CC', glow:'rgba(10,132,255,.4)',   subtle:'rgba(10,132,255,.08)',  bg:'#000000' },
+  rain:  { emoji:'🌧️', gold:'#38BDF8', g2:'#0284C7', glow:'rgba(56,189,248,.4)',   subtle:'rgba(56,189,248,.08)',  bg:'#040810' },
+  happy: { emoji:'😊', gold:'#34D399', g2:'#059669', glow:'rgba(52,211,153,.4)',   subtle:'rgba(52,211,153,.08)',  bg:'#020d07' },
+  angry: { emoji:'🤬', gold:'#FF3333', g2:'#CC0000', glow:'rgba(255,51,51,.5)',    subtle:'rgba(255,51,51,.1)',    bg:'#0a0000' },
+  fire:  { emoji:'🔥', gold:'#FF6B00', g2:'#CC4400', glow:'rgba(255,107,0,.45)',   subtle:'rgba(255,107,0,.09)',   bg:'#0a0400' },
+  ice:   { emoji:'🧊', gold:'#67E8F9', g2:'#06B6D4', glow:'rgba(103,232,249,.4)',  subtle:'rgba(103,232,249,.08)', bg:'#00080d' },
 };
-function setAccent(name){
-  const [c1, c2, glow, subtle] = PALETTES[name] || PALETTES.gold;
-  document.documentElement.style.setProperty('--gold', c1);
-  document.documentElement.style.setProperty('--gold-2', c2);
-  document.documentElement.style.setProperty('--gold-glow', glow);
-  document.documentElement.style.setProperty('--gold-subtle', subtle || 'rgba(255,217,107,.07)');
-  document.querySelectorAll('#chart-dots circle').forEach((c, i, arr) => {
-    c.setAttribute('fill', c1);
-    if (i === arr.length - 1) c.setAttribute('filter', `drop-shadow(0 0 6px ${c1})`);
+function setTheme(name){
+  const t = THEMES[name] || THEMES.padrao;
+  const r = document.documentElement;
+  r.style.setProperty('--gold', t.gold);
+  r.style.setProperty('--gold-2', t.g2);
+  r.style.setProperty('--gold-glow', t.glow);
+  r.style.setProperty('--gold-subtle', t.subtle);
+  document.body.style.background = t.bg;
+  document.body.className = (document.body.className||'').replace(/\bt-\w+/g,'').trim() + ' t-' + name;
+  document.querySelectorAll('#chart-dots circle').forEach((c,i,arr) => {
+    c.setAttribute('fill', t.gold);
+    if (i===arr.length-1) c.setAttribute('filter',`drop-shadow(0 0 6px ${t.gold})`);
   });
-  document.querySelectorAll('#g-area stop').forEach(s => s.setAttribute('stop-color', c1));
-  document.querySelectorAll('.color-swatch').forEach(x =>
-    x.classList.toggle('on', x.dataset.accent === name));
-  try { localStorage.setItem('alunoV3_accent', name); } catch(e){}
+  document.querySelectorAll('#g-area stop').forEach(s => s.setAttribute('stop-color', t.gold));
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('on', b.dataset.theme === name));
+  try { localStorage.setItem('josilvaPT_theme', name); } catch(e){}
 }
-function applyAccentFromStorage(){
-  let saved = null; try { saved = localStorage.getItem('alunoV3_accent'); } catch(e){}
-  if (saved && PALETTES[saved]) setAccent(saved);
+function applyThemeFromStorage(){
+  let saved = null; try { saved = localStorage.getItem('josilvaPT_theme'); } catch(e){}
+  setTheme(saved && THEMES[saved] ? saved : 'padrao');
 }
-function setupAccentPicker(){
-  document.querySelectorAll('.color-swatch').forEach(s =>
-    s.addEventListener('click', () => setAccent(s.dataset.accent)));
+function setupThemePicker(){
+  document.querySelectorAll('.theme-btn').forEach(b =>
+    b.addEventListener('click', () => setTheme(b.dataset.theme)));
 }
 
 function setLang(lang){
