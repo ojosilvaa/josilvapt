@@ -317,6 +317,10 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
       <span class="bnav-lbl">Feedbacks</span>
       <span class="bnav-badge" id="feedback-badge" style="display:none">0</span>
     </button>
+    <button class="bnav-item" onclick="goTab('financeiro')" id="nav-financeiro">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      <span class="bnav-lbl">Financeiro</span>
+    </button>
     <button class="bnav-item" onclick="goTab('config')" id="nav-config">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07M19.07 4.93L12 12M4.93 19.07L12 12"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       <span class="bnav-lbl">Config</span>
@@ -576,6 +580,17 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
     </div>
   </div>
 
+  <!-- ═══ FINANCEIRO ═══ -->
+  <div id="screen-financeiro" class="screen">
+    <div class="page-content">
+      <div style="padding:8px 0 16px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600">Gestão</div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:4px">Financeiro</div>
+      </div>
+      <div id="fin-dash-content"><div class="empty">A carregar...</div></div>
+    </div>
+  </div>
+
   <!-- ═══ CONFIG ═══ -->
   <div id="screen-config" class="screen">
     <div class="page-content">
@@ -702,6 +717,7 @@ function goTab(tab){
   if(tab==='alunos'){openView('lista');renderAlunos();}
   if(tab==='feedbacks')renderFeedbacks();
   if(tab==='config')loadConfig();
+  if(tab==='financeiro')renderDashFinanceiro();
 }
 function goTabFiltered(filter){
   alunosFilter=filter;goTab('alunos');
@@ -1045,6 +1061,101 @@ async function renderPerfil(){
   const dados=res[0]?.dados||{};
   ['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'].forEach(f=>{const el=document.getElementById('pf-'+f);if(el&&dados[f])el.value=dados[f];});
 }
+// ── DASHBOARD FINANCEIRO ──
+async function renderDashFinanceiro(){
+  const el=document.getElementById('fin-dash-content');
+  el.innerHTML='<div class="empty">A carregar...</div>';
+  const mesAtual=new Date().toISOString().slice(0,7);
+  const [pags,alunos]=await Promise.all([
+    sbFetch('pagamentos?select=*,alunos(nome,plano)&order=data.desc'),
+    sbFetch('alunos?ativo=eq.true&select=id,nome,plano&order=nome.asc')
+  ]);
+  const lista=pags||[];
+  const al=alunos||[];
+
+  const pagsMes=lista.filter(p=>p.data?.startsWith(mesAtual));
+  const totalMes=pagsMes.reduce((s,p)=>s+parseFloat(p.valor||0),0);
+  const totalGeral=lista.reduce((s,p)=>s+parseFloat(p.valor||0),0);
+
+  const ultimoPag={};
+  lista.forEach(p=>{if(!ultimoPag[p.aluno_id])ultimoPag[p.aluno_id]=p;});
+
+  const emFalta=al.filter(a=>{
+    if(!a.plano?.toLowerCase().includes('mensal'))return false;
+    const last=ultimoPag[a.id];
+    if(!last)return true;
+    return Math.floor((Date.now()-new Date(last.data))/86400000)>30;
+  });
+
+  // receita por mês (últimos 6)
+  const meses={};
+  lista.forEach(p=>{
+    const m=p.data?.slice(0,7);if(!m)return;
+    meses[m]=(meses[m]||0)+parseFloat(p.valor||0);
+  });
+  const ultMeses=Object.keys(meses).sort().slice(-6).reverse();
+
+  const nomesMes=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const fmtMes=m=>{const[y,mo]=m.split('-');return`${nomesMes[parseInt(mo)-1]} ${y}`;};
+  const maxVal=Math.max(...ultMeses.map(m=>meses[m]),1);
+
+  el.innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <div style="flex:1;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;margin-bottom:6px">ESTE MÊS</div>
+        <div style="font-size:24px;font-weight:800;color:var(--green)">€${totalMes.toFixed(2)}</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${pagsMes.length} pagamento${pagsMes.length!==1?'s':''}</div>
+      </div>
+      <div style="flex:1;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;margin-bottom:6px">TOTAL GERAL</div>
+        <div style="font-size:24px;font-weight:800;color:var(--gold)">€${totalGeral.toFixed(2)}</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px">${lista.length} pagamento${lista.length!==1?'s':''}</div>
+      </div>
+    </div>
+
+    ${emFalta.length?`
+    <div class="card" style="margin-bottom:16px;border-color:rgba(224,85,85,.3)">
+      <div style="font-family:var(--mono);font-size:10px;color:#e05555;letter-spacing:.1em;margin-bottom:12px">⚠ MENSALIDADES EM ATRASO (${emFalta.length})</div>
+      ${emFalta.map(a=>{
+        const last=ultimoPag[a.id];
+        const dias=last?Math.floor((Date.now()-new Date(last.data))/86400000):null;
+        return`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--hairline)" onclick="goTab('alunos');openAluno('${a.id}')" style="cursor:pointer">
+          <div>
+            <div style="font-size:14px;font-weight:700">${a.nome}</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${last?`Último: ${formatDate(last.data)}`:'Nunca pagou'}</div>
+          </div>
+          <span class="badge badge-warn">${dias!==null?dias+'d':'—'}</span>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+
+    ${ultMeses.length?`
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.1em;margin-bottom:14px">RECEITA POR MÊS</div>
+      ${ultMeses.map(m=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="font-size:11px;color:var(--text-3);width:60px;flex-shrink:0">${fmtMes(m)}</div>
+          <div style="flex:1;background:var(--surface-2);border-radius:4px;height:8px;overflow:hidden">
+            <div style="height:100%;background:var(--green);border-radius:4px;width:${Math.round((meses[m]/maxVal)*100)}%;transition:width .4s ease"></div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);width:64px;text-align:right">€${meses[m].toFixed(0)}</div>
+        </div>`).join('')}
+    </div>`:''}
+
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.1em;margin-bottom:12px">ÚLTIMOS PAGAMENTOS</div>
+      ${lista.slice(0,10).map(p=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--hairline)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.alunos?.nome||'—'}</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${formatDate(p.data)} · ${p.tipo==='mensalidade'?'Mensalidade':p.tipo==='avulso'?'Prescrição Avulsa':'Outro'}</div>
+          </div>
+          <div style="font-size:16px;font-weight:800;color:var(--green);white-space:nowrap">€${parseFloat(p.valor).toFixed(2)}</div>
+        </div>`).join('')}
+      ${!lista.length?'<div class="empty" style="padding:20px 0">Nenhum pagamento registado.</div>':''}
+    </div>`;
+}
+
 // ── FINANCEIRO ──
 async function renderFinanceiro(){
   document.getElementById('fin-data').value=new Date().toISOString().split('T')[0];
