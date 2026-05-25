@@ -738,7 +738,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 /* ── TIMER PILL POR TEMA ── */
 .t-moon #timer-pill{
-  width:74px;height:74px;border-radius:50%!important;padding:0!important;
+  width:104px;height:104px;border-radius:50%!important;padding:0!important;
   flex-direction:column;justify-content:center;gap:0;
   background:radial-gradient(circle at 35% 30%,#3a3a55 0,#1a1a2e 70%);
   border-color:var(--gold)!important;
@@ -753,11 +753,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   pointer-events:none;
 }
 .t-moon #timer-pill .tp-icon{display:none}
-.t-moon #timer-pill .tp-time{font-size:14px;min-width:auto}
-.t-moon #timer-pill .tp-label{font-size:6.5px;letter-spacing:.08em}
+.t-moon #timer-pill .tp-time{font-size:13px;min-width:auto}
+.t-moon #timer-pill .tp-label{font-size:6px;letter-spacing:.06em}
+.t-moon #timer-pill #rest-btn{font-size:7px;letter-spacing:.05em}
+.t-moon #timer-pill #rest-display{font-size:10px}
 
 .t-sun #timer-pill{
-  width:74px;height:74px;border-radius:50%!important;padding:0!important;
+  width:104px;height:104px;border-radius:50%!important;padding:0!important;
   flex-direction:column;justify-content:center;gap:0;
   background:radial-gradient(circle,#FFC76B 0%,#FF8A1F 70%);
   border-color:#FFD96B!important;
@@ -780,19 +782,23 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 }
 @keyframes sunSpin{to{transform:rotate(360deg)}}
 .t-sun #timer-pill .tp-icon{display:none}
-.t-sun #timer-pill .tp-time{font-size:14px;min-width:auto;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
-.t-sun #timer-pill .tp-label{font-size:6.5px;color:rgba(255,255,255,.8)}
+.t-sun #timer-pill .tp-time{font-size:13px;min-width:auto;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.t-sun #timer-pill .tp-label{font-size:6px;color:rgba(255,255,255,.8)}
+.t-sun #timer-pill #rest-btn{font-size:7px;letter-spacing:.05em;color:rgba(255,255,255,.7)}
+.t-sun #timer-pill #rest-display{font-size:10px;color:#fff}
 
 .t-rain #timer-pill{
-  width:64px;height:80px;padding:0!important;
-  border-radius:50% 50% 50% 50% / 65% 65% 35% 35%!important;
+  width:80px;height:118px;padding:0!important;
+  border-radius:50% 50% 50% 50% / 60% 60% 40% 40%!important;
   flex-direction:column;justify-content:center;gap:0;
   background:linear-gradient(180deg,rgba(56,189,248,.25),rgba(56,189,248,.1));
   box-shadow:inset -6px -10px 18px rgba(0,0,0,.3),0 4px 24px rgba(56,189,248,.4);
 }
 .t-rain #timer-pill .tp-icon{display:none}
-.t-rain #timer-pill .tp-time{font-size:14px;min-width:auto}
-.t-rain #timer-pill .tp-label{font-size:6.5px}
+.t-rain #timer-pill .tp-time{font-size:13px;min-width:auto}
+.t-rain #timer-pill .tp-label{font-size:6px}
+.t-rain #timer-pill #rest-btn{font-size:7px;letter-spacing:.05em}
+.t-rain #timer-pill #rest-display{font-size:10px}
 
 .t-fire #timer-pill{
   border-radius:50% 50% 8px 8px!important;
@@ -806,21 +812,33 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 .t-ice #timer-pill{
   clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
-  border-radius:0!important;width:90px;
+  border-radius:0!important;width:130px;height:130px;
+  flex-direction:column;justify-content:center;gap:0;padding:0!important;
   background:linear-gradient(135deg,rgba(103,232,249,.25),rgba(6,182,212,.15));
   box-shadow:0 0 20px rgba(103,232,249,.5);
 }
+.t-ice #timer-pill .tp-icon{display:none}
+.t-ice #timer-pill .tp-time{font-size:13px;min-width:auto}
+.t-ice #timer-pill .tp-label{font-size:6px}
+.t-ice #timer-pill #rest-btn{font-size:7px;letter-spacing:.05em}
+.t-ice #timer-pill #rest-display{font-size:10px}
 
 .t-demon #timer-pill{
   clip-path:polygon(0 15%,8% 0,92% 0,100% 15%,100% 85%,92% 100%,8% 100%,0 85%);
-  border-radius:0!important;
+  border-radius:0!important;min-height:90px;padding:12px 20px!important;
   background:linear-gradient(180deg,rgba(191,90,242,.25),rgba(123,47,190,.15));
 }
+.t-demon #timer-pill .tp-time{font-size:15px}
+.t-demon #timer-pill .tp-label{font-size:7px}
+.t-demon #timer-pill #rest-btn{font-size:8px}
 .t-angry #timer-pill{
   clip-path:polygon(2% 12%,12% 0,30% 8%,50% 0,72% 6%,92% 0,100% 18%,96% 50%,100% 82%,88% 100%,68% 92%,48% 100%,30% 94%,10% 100%,0 86%,4% 50%);
-  border-radius:0!important;
+  border-radius:0!important;min-height:96px;padding:14px 22px!important;
   background:linear-gradient(180deg,rgba(255,51,51,.3),rgba(204,0,0,.15));
 }
+.t-angry #timer-pill .tp-time{font-size:15px}
+.t-angry #timer-pill .tp-label{font-size:7px}
+.t-angry #timer-pill #rest-btn{font-size:8px}
 .t-angry #timer-pill.show{animation:angryShake .25s ease infinite}
 @keyframes angryShake{
   0%,100%{transform:translateX(-50%) translateY(0) rotate(0)}
