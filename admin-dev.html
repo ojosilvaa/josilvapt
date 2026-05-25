@@ -603,7 +603,7 @@ let SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co';
 let SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 let BASE_URL='https://josilvapt.vercel.app/aluno-v3.html';
 let ANTHROPIC_KEY='';
-let currentAlunoId=null,currentTreinoId=null,exerciciosList=[],evoChartInst=null,editingMedidaId=null;
+let currentAlunoId=null,currentTreinoId=null,exerciciosList=[],evoChartInst=null,editingMedidaId=null,alunosFilter=null;
 
 // ── UTILS ──
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
@@ -671,6 +671,9 @@ function goTab(tab){
   if(tab==='feedbacks')renderFeedbacks();
   if(tab==='config')loadConfig();
 }
+function goTabFiltered(filter){
+  alunosFilter=filter;goTab('alunos');
+}
 function openView(view){
   ['lista','novo','detalhe'].forEach(v=>{document.getElementById('view-'+v).style.display='none';});
   document.getElementById('view-'+view).style.display='block';
@@ -706,10 +709,10 @@ async function renderDash(){
   const sesSem=sessoes.filter(s=>s.data&&new Date(s.data).getTime()>w7).length;
   const sesPrev=sessoes.filter(s=>s.data&&new Date(s.data).getTime()>w14&&new Date(s.data).getTime()<=w7).length;
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">Total Alunos</div>${novos?`<div class="stat-delta delta-up">↑ +${novos}</div>`:''}</div>
-    <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">Ativos</div></div>
-    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div>${sesSem?`<div class="stat-delta delta-up">↑ +${sesSem}</div>`:''}</div>
-    <div class="stat-card"><div class="stat-val">${alunos.length-ativos}</div><div class="stat-lbl">Inativos</div></div>`;
+    <div class="stat-card" style="cursor:pointer" onclick="goTabFiltered(null)"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">Total Alunos</div>${novos?`<div class="stat-delta delta-up">↑ +${novos}</div>`:''}</div>
+    <div class="stat-card" style="cursor:pointer" onclick="goTabFiltered('ativo')"><div class="stat-val">${ativos}</div><div class="stat-lbl">Ativos</div></div>
+    <div class="stat-card" style="cursor:pointer" onclick="document.getElementById('atividade-list').scrollIntoView({behavior:'smooth'})"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div>${sesSem?`<div class="stat-delta delta-up">↑ +${sesSem}</div>`:''}</div>
+    <div class="stat-card" style="cursor:pointer" onclick="goTabFiltered('inativo')"><div class="stat-val">${alunos.length-ativos}</div><div class="stat-lbl">Inativos</div></div>`;
   animateRing(ativos,alunos.length);
   const el=document.getElementById('atividade-list');
   if(!sessoes.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◌</div>Nenhuma sessão registada.</div>`;return;}
@@ -731,8 +734,10 @@ function animateRing(ativos,total){
 async function renderAlunos(){
   const alunos=await sbFetch('alunos?order=nome.asc')||[];
   const el=document.getElementById('alunos-list');
-  if(!alunos.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◉</div>Nenhum aluno. Toque no ＋ para adicionar.</div>`;return;}
-  el.innerHTML=alunos.map((a,i)=>`
+  const filtered=alunosFilter==='ativo'?alunos.filter(a=>a.ativo):alunosFilter==='inativo'?alunos.filter(a=>!a.ativo):alunos;
+  const chipHtml=alunosFilter?`<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span class="badge ${alunosFilter==='ativo'?'badge-green':'badge-gray'}">${alunosFilter==='ativo'?'ATIVOS':'INATIVOS'}</span><button onclick="alunosFilter=null;renderAlunos()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">✕ ver todos</button></div>`:'';
+  if(!filtered.length){el.innerHTML=chipHtml+`<div class="empty"><div class="empty-icon">◉</div>Nenhum aluno encontrado.</div>`;return;}
+  el.innerHTML=chipHtml+filtered.map((a,i)=>`
     <div class="aluno-card" style="animation:revealUp .3s ease ${i*0.06}s both" onclick="openAluno('${a.id}')">
       <div class="av av-${i%4}">${initials(a.nome)}</div>
       <div class="aluno-info-wrap">
