@@ -424,6 +424,7 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
         <button class="tab" onclick="showTab('evolucao')">EVOLUÇÃO</button>
         <button class="tab" onclick="showTab('medidas')">MEDIDAS</button>
         <button class="tab" onclick="showTab('perfil')">PERFIL</button>
+        <button class="tab" onclick="showTab('financeiro')">💰 PAGAMENTOS</button>
       </div>
 
       <!-- TAB TREINOS -->
@@ -532,6 +533,30 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
             <div class="form-group"><label class="form-label">Obs. do personal</label><textarea class="form-inp" id="pf-obs" placeholder="Impressões, metas..."></textarea></div>
             <button class="btn btn-gold btn-full" onclick="salvarPerfil()">SALVAR FICHA</button>
           </div>
+        </div>
+      </div>
+
+      <!-- TAB FINANCEIRO -->
+      <div id="tab-financeiro" class="tab-content">
+        <div class="page-content">
+          <div id="fin-resumo" style="display:flex;gap:10px;margin-bottom:16px"></div>
+          <div class="card" style="margin-bottom:16px">
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">Registar Pagamento</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-inp" id="fin-data"></div>
+              <div class="form-group"><label class="form-label">Valor (€)</label><input type="number" step="0.01" min="0" class="form-inp" id="fin-valor" placeholder="0.00"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Tipo</label>
+              <select class="form-inp" id="fin-tipo">
+                <option value="mensalidade">Mensalidade</option>
+                <option value="avulso">Prescrição Avulsa</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Observação (opcional)</label><input class="form-inp" id="fin-obs" placeholder="Ex: Referente a maio..."></div>
+            <button class="btn btn-gold btn-full" onclick="registarPagamento()">REGISTAR PAGAMENTO</button>
+          </div>
+          <div id="fin-hist"></div>
         </div>
       </div>
     </div>
@@ -827,7 +852,7 @@ function showTab(tab){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  const tabNames=['treinos','evolucao','medidas','perfil'];
+  const tabNames=['treinos','evolucao','medidas','perfil','financeiro'];
   const idx=tabNames.indexOf(tab);
   document.querySelectorAll('.tab')[idx]?.classList.add('active');
   const fabTreino=document.getElementById('fab-treino');
@@ -836,6 +861,7 @@ function showTab(tab){
   if(tab==='evolucao')renderEvolucao();
   if(tab==='medidas')renderMedidas();
   if(tab==='perfil')renderPerfil();
+  if(tab==='financeiro')renderFinanceiro();
 }
 
 // ── TREINOS ──
@@ -1019,6 +1045,68 @@ async function renderPerfil(){
   const dados=res[0]?.dados||{};
   ['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'].forEach(f=>{const el=document.getElementById('pf-'+f);if(el&&dados[f])el.value=dados[f];});
 }
+// ── FINANCEIRO ──
+async function renderFinanceiro(){
+  document.getElementById('fin-data').value=new Date().toISOString().split('T')[0];
+  const [pags,alunos]=await Promise.all([
+    sbFetch(`pagamentos?aluno_id=eq.${currentAlunoId}&order=data.desc`),
+    sbFetch(`alunos?id=eq.${currentAlunoId}&select=plano,nome`)
+  ]);
+  const lista=pags||[];
+  const aluno=alunos?.[0]||{};
+
+  // resumo
+  const total=lista.reduce((s,p)=>s+parseFloat(p.valor||0),0);
+  const ultimo=lista[0];
+  const planoLabel={mensal:'Mensal',avulso:'Avulso','':'—'}[aluno.plano||'']||aluno.plano||'—';
+  document.getElementById('fin-resumo').innerHTML=`
+    <div style="flex:1;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:14px;text-align:center">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;margin-bottom:6px">TOTAL RECEBIDO</div>
+      <div style="font-size:22px;font-weight:800;color:var(--green)">€${total.toFixed(2)}</div>
+    </div>
+    <div style="flex:1;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:14px;text-align:center">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;margin-bottom:6px">ÚLTIMO PAG.</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text)">${ultimo?formatDate(ultimo.data):'—'}</div>
+    </div>
+    <div style="flex:1;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:14px;text-align:center">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;margin-bottom:6px">PLANO</div>
+      <div style="font-size:15px;font-weight:700;color:var(--gold)">${planoLabel}</div>
+    </div>`;
+
+  // histórico
+  const tipoLabel={mensalidade:'Mensalidade',avulso:'Prescrição Avulsa',outro:'Outro'};
+  const tipoCor={mensalidade:'badge-gold',avulso:'badge-green',outro:'badge-gray'};
+  const el=document.getElementById('fin-hist');
+  if(!lista.length){el.innerHTML=`<div class="empty"><div class="empty-icon">💳</div>Sem pagamentos registados.</div>`;return;}
+  el.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.1em;margin-bottom:10px">HISTÓRICO</div>`+
+    lista.map(p=>`
+    <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:14px 16px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${formatDate(p.data)}</div>
+        <span class="badge ${tipoCor[p.tipo]||'badge-gray'}" style="margin-top:4px">${tipoLabel[p.tipo]||p.tipo}</span>
+        ${p.obs?`<div style="font-size:12px;color:var(--text-3);margin-top:4px">${p.obs}</div>`:''}
+      </div>
+      <div style="font-size:20px;font-weight:800;color:var(--green);white-space:nowrap">€${parseFloat(p.valor).toFixed(2)}</div>
+      <button onclick="deletarPagamento('${p.id}')" style="background:none;border:none;color:var(--text-3);font-size:18px;cursor:pointer;padding:4px;line-height:1" title="Apagar">×</button>
+    </div>`).join('');
+}
+async function registarPagamento(){
+  const valor=parseFloat(document.getElementById('fin-valor').value);
+  if(!valor||valor<=0){toast('VALOR INVÁLIDO');return;}
+  const payload={aluno_id:currentAlunoId,data:document.getElementById('fin-data').value,valor,tipo:document.getElementById('fin-tipo').value,obs:document.getElementById('fin-obs').value};
+  await sbFetch('pagamentos',{method:'POST',body:JSON.stringify(payload)});
+  document.getElementById('fin-valor').value='';
+  document.getElementById('fin-obs').value='';
+  toast('PAGAMENTO REGISTADO!');
+  renderFinanceiro();
+}
+async function deletarPagamento(id){
+  if(!confirm('Apagar este pagamento?'))return;
+  await sbFetch(`pagamentos?id=eq.${id}`,{method:'DELETE'});
+  toast('PAGAMENTO APAGADO');
+  renderFinanceiro();
+}
+
 async function salvarPerfil(){
   const campos=['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'];
   const dados={};campos.forEach(f=>{const el=document.getElementById('pf-'+f);if(el)dados[f]=el.value;});
