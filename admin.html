@@ -175,6 +175,7 @@ button{cursor:pointer}
 .badge{display:inline-flex;align-items:center;font-size:10px;padding:3px 9px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;margin-top:5px}
 .badge-green{background:rgba(93,202,154,.12);color:var(--green);border:1px solid rgba(93,202,154,.25)}
 .badge-gray{background:rgba(136,136,136,.1);color:var(--muted);border:1px solid var(--border)}
+.badge-warn{background:rgba(224,85,85,.12);color:#e05555;border:1px solid rgba(224,85,85,.3)}
 .modo-btn{border:none;border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;transition:transform .15s,opacity .2s;flex-shrink:0}
 .modo-btn:active{transform:scale(.94)}
 .modo-normal{background:rgba(136,136,136,.1);color:var(--muted);border:1px solid var(--border)}
@@ -998,22 +999,35 @@ async function renderDash(){
 
 // ── ALUNOS ──
 async function renderAlunos(){
-  const alunos=await sbFetch('alunos?order=nome.asc')||[];
-  const el=document.getElementById('alunos-list');
-  if(!alunos.length){
-    el.innerHTML=`<div class="empty"><div class="empty-icon">◉</div>${T('alunos_empty')}</div>`;
+  const [alunos, treinos]=await Promise.all([
+    sbFetch('alunos?order=nome.asc'),
+    sbFetch('treinos?select=aluno_id,criado_em')
+  ]);
+  if(!alunos?.length){
+    document.getElementById('alunos-list').innerHTML=`<div class="empty"><div class="empty-icon">◉</div>${T('alunos_empty')}</div>`;
     return;
   }
-  el.innerHTML=alunos.map((a,i)=>{
+  const hoje=Date.now();
+  const ultimoTreino={};
+  (treinos||[]).forEach(t=>{
+    if(!ultimoTreino[t.aluno_id]||t.criado_em>ultimoTreino[t.aluno_id]) ultimoTreino[t.aluno_id]=t.criado_em;
+  });
+  document.getElementById('alunos-list').innerHTML=alunos.map((a,i)=>{
     const modo=a.modo_treino||'normal';
     const modoLabel=modo==='overload'?'↑ Overload':modo==='deload'?'↓ Deload':'⬡ Normal';
+    const last=ultimoTreino[a.id];
+    const dias=last?Math.floor((hoje-new Date(last))/86400000):null;
+    const semAtualizar=a.ativo&&(dias===null||dias>28);
     return `
     <div class="aluno-card" style="animation:fadeUp .3s ease ${i*0.07}s both" onclick="openAluno('${a.id}')">
       <div class="av av-${i%4}">${initials(a.nome)}</div>
       <div class="aluno-info-wrap">
         <div class="aluno-nome">${a.nome}</div>
         <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
-        <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?T('badge_ativo'):T('badge_inativo')}</span>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">
+          <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?T('badge_ativo'):T('badge_inativo')}</span>
+          ${semAtualizar?`<span class="badge badge-warn">⚠ ${dias===null?'sem treino':dias+'d sem atualizar'}</span>`:''}
+        </div>
       </div>
       <button class="modo-btn modo-${modo}" onclick="cycleModo(event,'${a.id}','${modo}')">${modoLabel}</button>
       <div class="chevron">›</div>
