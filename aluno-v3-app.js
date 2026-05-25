@@ -97,6 +97,7 @@ let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
 let cargas = {}, doneSet = {};
 let sessoes = [], allCargasHist = null;
 let timerStart = null, timerInterval = null;
+let restStart = null, restInterval = null;
 let pesoCached = 0, perimetriaHist = [];
 let anamnese = null;
 
@@ -553,6 +554,18 @@ async function init(){
 
   await loadTreinos();
   renderPerfil();
+  // Restaurar timer se estava a correr antes de recarregar/fechar
+  const savedTs = lc('timerStart', null);
+  if (savedTs) {
+    timerStart = savedTs;
+    const pill = document.getElementById('timer-pill');
+    const disp = document.getElementById('timer-display');
+    if (pill) pill.classList.add('show');
+    if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
+    timerInterval = setInterval(() => {
+      if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
+    }, 1000);
+  }
   hideLoader();
 }
 
@@ -616,18 +629,21 @@ function timerFmt(ms){
 function timerStart_(){
   if (timerStart !== null) return; // já está a correr
   timerStart = Date.now();
-  const pill  = document.getElementById('timer-pill');
-  const disp  = document.getElementById('timer-display');
+  sc('timerStart', timerStart); // persiste — sobrevive a recarregamentos
+  const pill = document.getElementById('timer-pill');
+  const disp = document.getElementById('timer-display');
   if (pill) pill.classList.add('show');
   timerInterval = setInterval(() => {
     if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
   }, 1000);
 }
 function timerStop(){
-  clearInterval(timerInterval);
-  timerInterval = null;
+  clearInterval(timerInterval); timerInterval = null;
+  clearInterval(restInterval);  restInterval = null; restStart = null;
+  sc('timerStart', null);
   const pill = document.getElementById('timer-pill');
   if (pill) pill.classList.remove('show');
+  _restReset();
 }
 function timerReset(){
   timerStop();
@@ -635,6 +651,48 @@ function timerReset(){
   const disp = document.getElementById('timer-display');
   if (disp) disp.textContent = '00:00';
 }
+function _restReset(){
+  restStart = null;
+  const rd = document.getElementById('rest-display');
+  const rb = document.getElementById('rest-btn');
+  if (rd) { rd.textContent = '00:00'; rd.style.display = 'none'; }
+  if (rb) { rb.textContent = '▶ DESCANSO'; rb.style.color = ''; }
+}
+function restToggle(){
+  const rb = document.getElementById('rest-btn');
+  const rd = document.getElementById('rest-display');
+  if (restStart === null) {
+    restStart = Date.now();
+    if (rd) { rd.style.display = 'inline'; rd.textContent = '00:00'; }
+    if (rb) { rb.textContent = '⏸ PARAR'; rb.style.color = 'var(--green,#5DCA9A)'; }
+    restInterval = setInterval(() => {
+      if (rd) rd.textContent = timerFmt(Date.now() - restStart);
+    }, 1000);
+  } else {
+    clearInterval(restInterval); restInterval = null;
+    _restReset();
+  }
+}
+// Quando o aluno volta ao ecrã após sair: atualiza os displays e recria intervalos
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (timerStart !== null) {
+    clearInterval(timerInterval);
+    const disp = document.getElementById('timer-display');
+    if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
+    timerInterval = setInterval(() => {
+      if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
+    }, 1000);
+  }
+  if (restStart !== null) {
+    clearInterval(restInterval);
+    const rd = document.getElementById('rest-display');
+    if (rd) rd.textContent = timerFmt(Date.now() - restStart);
+    restInterval = setInterval(() => {
+      if (rd) rd.textContent = timerFmt(Date.now() - restStart);
+    }, 1000);
+  }
+});
 
 function renderTreino(){
   const t   = treinos.find(x => x.id === currentTreinoId);

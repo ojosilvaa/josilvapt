@@ -657,6 +657,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .ptfs-role{font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
 
 /* ════ CRONÓMETRO */
+#timer-pill button{pointer-events:auto}
 #timer-pill{
   position:fixed;top:calc(16px + var(--safe-top, 0px));left:50%;transform:translateX(-50%) translateY(-80px);
   background:rgba(16,16,16,.92);border:1.5px solid var(--gold);backdrop-filter:blur(20px);
@@ -1335,9 +1336,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 <div id="timer-pill">
   <span class="tp-icon">⏱</span>
-  <div>
+  <div style="flex:1;min-width:0">
     <div class="tp-time" id="timer-display">00:00</div>
     <div class="tp-label" data-i18n="timer_label">Treino em curso</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,255,255,.08)">
+      <button id="rest-btn" onclick="restToggle()" style="pointer-events:auto;background:none;border:none;color:var(--text-3,#555);font-family:var(--mono,'monospace');font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;white-space:nowrap">▶ DESCANSO</button>
+      <span id="rest-display" class="tp-time" style="font-size:13px;display:none;color:#5DCA9A">00:00</span>
+    </div>
   </div>
 </div>
 
