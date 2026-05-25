@@ -454,6 +454,9 @@ button{cursor:pointer;border:none;background:none}
     </div>
   </div>
 
+  <!-- Banner modo treino -->
+  <div id="modo-banner" style="display:none"></div>
+
   <!-- Lista de exercícios -->
   <div id="ex-list" class="ex-list"></div>
 
@@ -949,7 +952,7 @@ async function gamiRegistarSessao(alunoId, {exerciciosFeitos=0, prs=0}={}){
   return { ganho, xp:xpNovo, nivel:calcNivel(xpNovo), streak, badgesNovos:badges.filter(b=>!badgesAtuais.includes(b)) };
 }
 
-let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null;
+let treinos = [], exerciciosPorTreino = {}, currentTreinoId = null, modoTreino = 'normal';
 let cargas = {}, doneSet = new Set(), sessoes = [], chartInst = null;
 let alunoObjetivo = '', pesoCached = 0, alimentosList = [];
 
@@ -1007,7 +1010,7 @@ async function init() {
   cargas = lc('cargas', {});
   doneSet = new Set(lc('done', []));
 
-  const alunos = await sbFetch(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo`) || [];
+  const alunos = await sbFetch(`alunos?id=eq.${ALUNO_ID}&select=nome,ativo,objetivo,modo_treino`) || [];
   const aluno = alunos[0];
 
   if (!aluno || !aluno.ativo) {
@@ -1016,6 +1019,7 @@ async function init() {
   }
 
   alunoObjetivo = aluno.objetivo || '';
+  modoTreino = aluno.modo_treino || 'normal';
   const firstName = aluno.nome.split(' ')[0];
   document.getElementById('aluno-nome-top').textContent = firstName;
   document.getElementById('hero-name').textContent = firstName.toUpperCase();
@@ -1076,6 +1080,21 @@ function renderTreino() {
 
   updateProgress(exs);
 
+  const modBanner = document.getElementById('modo-banner');
+  if (modBanner) {
+    if (modoTreino === 'overload') {
+      modBanner.innerHTML = '↑ SEMANA OVERLOAD — +1 série em cada exercício';
+      modBanner.style.cssText = 'display:block;background:rgba(93,202,154,.1);border:1px solid rgba(93,202,154,.3);color:#5DCA9A;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:14px;text-align:center';
+    } else if (modoTreino === 'deload') {
+      modBanner.innerHTML = '↓ SEMANA DELOAD — -1 série em cada exercício';
+      modBanner.style.cssText = 'display:block;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:#C8A96E;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:14px;text-align:center';
+    } else {
+      modBanner.style.display = 'none';
+    }
+  }
+
+  const deltaSeries = modoTreino === 'overload' ? 1 : modoTreino === 'deload' ? -1 : 0;
+
   const container = document.getElementById('ex-list');
   if (!exs.length) {
     container.innerHTML = `<div class="empty">${T('sem_ex')}</div>`;
@@ -1085,6 +1104,7 @@ function renderTreino() {
   container.innerHTML = exs.map((ex, i) => {
     const isDone = doneSet.has(ex.id);
     const carga = cargas[ex.id] || 0;
+    const srs = Math.max(1, parseInt(ex.series || 3) + deltaSeries);
     return `
     <div class="ex-card${isDone ? ' done' : ''}" id="ex-${ex.id}">
       <div class="ex-card-top" onclick="toggleDone('${ex.id}')">
@@ -1093,7 +1113,7 @@ function renderTreino() {
           <div class="ex-name">${ex.nome}</div>
           ${ex.obs ? `<div class="ex-obs">${ex.obs}</div>` : ''}
           <div class="ex-pills">
-            <div class="pill"><strong>${ex.series || '3'}</strong> ${T('series')}</div>
+            <div class="pill"><strong>${srs}</strong> ${T('series')}</div>
             <div class="pill"><strong>${ex.reps || '10-12'}</strong> ${T('reps')}</div>
             ${isDone ? `<div class="pill pill-done">${T('done_pill')}</div>` : ''}
           </div>
@@ -1131,8 +1151,10 @@ function toggleDone(exId) {
       const ex = exs.find(e => e.id === exId);
       if (ex) {
         const isDone = doneSet.has(exId);
+        const delta = modoTreino === 'overload' ? 1 : modoTreino === 'deload' ? -1 : 0;
+        const srs = Math.max(1, parseInt(ex.series || 3) + delta);
         pills.innerHTML = `
-          <div class="pill"><strong>${ex.series || '3'}</strong> ${T('series')}</div>
+          <div class="pill"><strong>${srs}</strong> ${T('series')}</div>
           <div class="pill"><strong>${ex.reps || '10-12'}</strong> ${T('reps')}</div>
           ${isDone ? `<div class="pill pill-done">${T('done_pill')}</div>` : ''}`;
       }

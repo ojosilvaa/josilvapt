@@ -175,6 +175,11 @@ button{cursor:pointer}
 .badge{display:inline-flex;align-items:center;font-size:10px;padding:3px 9px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;margin-top:5px}
 .badge-green{background:rgba(93,202,154,.12);color:var(--green);border:1px solid rgba(93,202,154,.25)}
 .badge-gray{background:rgba(136,136,136,.1);color:var(--muted);border:1px solid var(--border)}
+.modo-btn{border:none;border-radius:20px;padding:4px 10px;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;transition:transform .15s,opacity .2s;flex-shrink:0}
+.modo-btn:active{transform:scale(.94)}
+.modo-normal{background:rgba(136,136,136,.1);color:var(--muted);border:1px solid var(--border)}
+.modo-overload{background:rgba(93,202,154,.15);color:var(--green);border:1px solid rgba(93,202,154,.35)}
+.modo-deload{background:rgba(200,169,110,.12);color:var(--gold);border:1px solid rgba(200,169,110,.3)}
 .badge-gold{background:var(--gold3);color:var(--gold);border:1px solid rgba(200,169,110,.25)}
 .chevron{color:var(--dim);font-size:20px;flex-shrink:0}
 
@@ -999,7 +1004,10 @@ async function renderAlunos(){
     el.innerHTML=`<div class="empty"><div class="empty-icon">◉</div>${T('alunos_empty')}</div>`;
     return;
   }
-  el.innerHTML=alunos.map((a,i)=>`
+  el.innerHTML=alunos.map((a,i)=>{
+    const modo=a.modo_treino||'normal';
+    const modoLabel=modo==='overload'?'↑ Overload':modo==='deload'?'↓ Deload':'⬡ Normal';
+    return `
     <div class="aluno-card" style="animation:fadeUp .3s ease ${i*0.07}s both" onclick="openAluno('${a.id}')">
       <div class="av av-${i%4}">${initials(a.nome)}</div>
       <div class="aluno-info-wrap">
@@ -1007,8 +1015,17 @@ async function renderAlunos(){
         <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
         <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?T('badge_ativo'):T('badge_inativo')}</span>
       </div>
+      <button class="modo-btn modo-${modo}" onclick="cycleModo(event,'${a.id}','${modo}')">${modoLabel}</button>
       <div class="chevron">›</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+async function cycleModo(event, alunoId, current){
+  event.stopPropagation();
+  const next={normal:'overload',overload:'deload',deload:'normal'}[current]||'normal';
+  await sbFetch(`alunos?id=eq.${alunoId}`,{method:'PATCH',body:JSON.stringify({modo_treino:next})});
+  renderAlunos();
 }
 
 function animateRing(ativos, total){
