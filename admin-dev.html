@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Jo Silva PT · Admin</title>
+<link rel="manifest" href="manifest-admin.json">
+<meta name="theme-color" content="#FFD96B">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#000;--surface-1:rgba(255,255,255,.04);--surface-2:rgba(255,255,255,.06);
+  --surface-3:rgba(255,255,255,.08);--hairline:rgba(255,255,255,.08);
+  --hairline-strong:rgba(255,255,255,.14);--text:#fff;--text-2:rgba(255,255,255,.62);
+  --text-3:rgba(255,255,255,.38);--gold:#FFD96B;--gold-2:#E5B23A;
+  --gold-glow:rgba(255,217,107,.35);--gold-subtle:rgba(255,217,107,.07);
+  --green:#5DCA9A;--coral:#FF6B6B;--font:'Inter',-apple-system,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --t-fast:.24s cubic-bezier(.4,0,.2,1);--t:.42s cubic-bezier(.4,0,.2,1);
+  --safe-bottom:env(safe-area-inset-bottom,0px);--radius:18px;--radius-sm:12px;
+}
+html,body{background:#000;color:var(--text);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit;border:0;background:none;cursor:pointer}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 10px;gap:8px;flex-shrink:0;border-bottom:1px solid var(--hairline);background:rgba(0,0,0,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);position:sticky;top:0;z-index:50}
+.brand{font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--gold);transition:color var(--t-fast)}
+.topbar-r{display:flex;align-items:center;gap:8px}
+.theme-picker{display:grid;grid-template-columns:repeat(5,28px) 44px;gap:4px;justify-content:end;align-items:end}
+.theme-btn{width:28px;height:28px;border-radius:8px;background:var(--surface-2);border:1.5px solid transparent;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t-fast);padding:0;line-height:1}
+.theme-btn:hover{transform:scale(1.12);border-color:var(--hairline-strong)}
+.theme-btn.on{border-color:var(--gold);transform:scale(1.15);box-shadow:0 0 10px var(--gold-glow)}
+#pt-float{width:44px;height:44px;border-radius:50%;padding:0;border:1.5px solid rgba(0,0,0,.12);overflow:hidden;cursor:pointer;transition:transform var(--t-fast);background:#3a3733;color:#fff;justify-self:end}
+#pt-float:active{transform:scale(.92)}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;z-index:100;background:rgba(20,20,22,.78);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);border-top:1px solid var(--hairline);display:flex;padding:10px 8px;padding-bottom:calc(14px + var(--safe-bottom));gap:2px}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;color:var(--text-3);transition:color var(--t-fast);position:relative;border-radius:10px;background:none;border:none}
+.bnav-lbl{font-size:10px;font-weight:600;letter-spacing:-.005em}
+.bnav-item.on{color:var(--gold)}
+.bnav-item.on::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:18px;height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 12px var(--gold-glow)}
+.bnav-badge{position:absolute;top:4px;right:calc(50% - 22px);background:var(--coral);color:#fff;font-size:9px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;font-weight:700}
+
+/* ── SCREENS ── */
+.app{position:relative;width:100vw;min-height:100vh;max-width:600px;margin:0 auto;background:#000;display:flex;flex-direction:column}
+.screen{display:none;min-height:100vh;padding-bottom:calc(110px + var(--safe-bottom))}
+.screen.active{display:block;animation:revealUp .35s cubic-bezier(.4,0,.2,1)}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+@keyframes revealUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LOGIN ── */
+.login-wrap{width:100%;max-width:340px}
+.login-logo{font-size:42px;font-weight:900;color:var(--gold);letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+.login-sub{font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.2em;text-transform:uppercase;margin-bottom:40px}
+.login-field{margin-bottom:12px}
+.login-field input{width:100%;background:var(--surface-1);border:1.5px solid var(--hairline);color:var(--text);padding:16px 18px;font-size:16px;border-radius:var(--radius-sm);outline:none;transition:border var(--t-fast)}
+.login-field input:focus{border-color:var(--gold)}
+.btn-login{width:100%;background:var(--gold);color:#000;border:none;font-weight:800;font-size:15px;letter-spacing:.05em;padding:16px;border-radius:var(--radius-sm);margin-top:6px;transition:opacity var(--t-fast)}
+.btn-login:active{opacity:.8}
+.login-err{font-size:13px;color:var(--coral);text-align:center;margin-top:10px;min-height:18px}
+
+/* ── CARDS ── */
+.card{background:var(--surface-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden;margin-bottom:12px}
+.card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,transparent 40%)}
+
+/* ── SECTION ── */
+.page-content{padding:18px 16px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.14em}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.stat-val{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
+.stat-lbl{font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-top:6px;font-weight:600}
+.stat-delta{font-family:var(--mono);font-size:10px;margin-top:6px;font-weight:600}
+.delta-up{color:var(--green)}
+.delta-dn{color:var(--coral)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--hairline-strong);background:var(--surface-1);color:var(--text);font-size:13px;font-weight:600;min-height:44px;transition:all var(--t-fast)}
+.btn:active{opacity:.7;transform:scale(.98)}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700}
+.btn-outline-gold{border-color:var(--gold);color:var(--gold)}
+.btn-danger{border-color:var(--coral);color:var(--coral)}
+.btn-sm{padding:8px 14px;font-size:12px;min-height:36px;border-radius:10px}
+.btn-full{width:100%}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:14px}
+.form-label{font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;display:block;font-weight:600}
+.form-inp{width:100%;background:var(--surface-1);border:1.5px solid var(--hairline);color:var(--text);padding:13px 15px;font-size:14px;border-radius:var(--radius-sm);outline:none;transition:border var(--t-fast);-webkit-appearance:none}
+.form-inp:focus{border-color:var(--gold)}
+.form-inp::placeholder{color:var(--text-3)}
+select.form-inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid .full{grid-column:1/-1}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(96px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:rgba(28,28,30,.95);border:1px solid var(--hairline-strong);backdrop-filter:blur(20px);color:var(--text);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;padding:12px 24px;border-radius:30px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── EMPTY ── */
+.empty{padding:48px 20px;text-align:center;color:var(--text-3);font-size:14px}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
+
+/* ── ALUNO CARD ── */
+.aluno-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:all var(--t-fast);cursor:pointer}
+.aluno-card:active{border-color:var(--gold);transform:translateX(3px)}
+.av{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#000;flex-shrink:0;letter-spacing:-.02em}
+.av-0{background:linear-gradient(135deg,#FFD96B,#E5B23A)}
+.av-1{background:linear-gradient(135deg,#378ADD,#0C447C)}
+.av-2{background:linear-gradient(135deg,#D4537E,#72243E)}
+.av-3{background:linear-gradient(135deg,#5DCA9A,#085041)}
+.aluno-info-wrap{flex:1;min-width:0}
+.aluno-nome{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.aluno-sub{font-size:12px;color:var(--text-3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-flex;align-items:center;font-size:9px;padding:3px 9px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin-top:5px}
+.badge-green{background:rgba(93,202,154,.12);color:var(--green);border:1px solid rgba(93,202,154,.25)}
+.badge-gray{background:var(--surface-2);color:var(--text-3);border:1px solid var(--hairline)}
+.badge-gold{background:var(--gold-subtle);color:var(--gold);border:1px solid rgba(255,217,107,.25)}
+.chevron{color:var(--text-3);font-size:18px;flex-shrink:0}
+
+/* ── DETAIL HEADER ── */
+.det-header{background:var(--surface-1);border-bottom:1px solid var(--hairline);padding:20px 16px}
+.det-av-big{width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#000;margin-bottom:12px;background:linear-gradient(135deg,#FFD96B,#E5B23A)}
+.det-nome{font-size:26px;font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.det-sub{font-size:13px;color:var(--text-3);margin-top:4px}
+.link-box{background:var(--surface-2);border:1.5px solid var(--gold);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:12px}
+.link-url{font-family:var(--mono);font-size:11px;color:var(--gold);word-break:break-all;flex:1;line-height:1.4}
+.copy-btn{background:var(--gold);color:#000;border:none;font-size:11px;font-weight:700;padding:8px 12px;border-radius:8px;flex-shrink:0;letter-spacing:.04em}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--hairline);background:var(--bg);position:sticky;top:58px;z-index:49;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text-3);padding:14px 18px;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:color var(--t-fast);flex-shrink:0;text-transform:uppercase}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── TREINO CARD ── */
+.treino-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;transition:all var(--t-fast)}
+.treino-card:hover{border-color:var(--hairline-strong)}
+.treino-nome{font-size:17px;font-weight:700;letter-spacing:-.015em;color:var(--text)}
+.treino-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+.treino-actions{display:flex;gap:8px;margin-top:12px}
+
+/* ── EXERCICIO BUILDER ── */
+.ex-card{background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;position:relative}
+.ex-num-label{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.1em;margin-bottom:10px}
+.ex-del{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-3);font-size:18px;padding:4px;line-height:1;cursor:pointer}
+.ex-del:active{color:var(--coral)}
+.ex-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+
+/* ── RING WIDGET ── */
+.ring-widget{display:flex;align-items:center;gap:20px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px}
+.ring-track{fill:none;stroke:var(--surface-3);stroke-width:8}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:8;stroke-linecap:round;stroke-dasharray:320;stroke-dashoffset:320;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1);transform:rotate(-90deg);transform-origin:center;filter:drop-shadow(0 0 6px var(--gold-glow))}
+.ring-info{flex:1}
+.ring-title{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.ring-desc{font-size:14px;color:var(--text-2);font-weight:500;line-height:1.4}
+
+/* ── ATIVIDADE ── */
+.atividade-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--hairline)}
+.atividade-item:last-child{border-bottom:none}
+.at-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:5px;flex-shrink:0;box-shadow:0 0 6px var(--gold-glow)}
+.at-nome{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.at-info{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px;letter-spacing:.04em}
+.at-treino{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gold);margin-left:auto;flex-shrink:0}
+
+/* ── MEDIDAS ── */
+.peri-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.peri-item{background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--radius-sm);padding:10px 12px}
+.peri-lbl{font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.peri-inp{width:100%;background:transparent;border:none;color:var(--gold);font-size:22px;font-weight:800;outline:none;padding:0;letter-spacing:-.02em}
+.peri-inp::placeholder{color:var(--surface-3)}
+.peri-unit{font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:2px;font-weight:600}
+
+/* ── HISTÓRICO ── */
+.hist-item{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--hairline)}
+.hist-item:last-child{border-bottom:none}
+.hist-label{font-size:14px;color:var(--text);font-weight:500}
+.hist-sub{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px}
+.hist-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold)}
+.pchange{font-family:var(--mono);font-size:11px;font-weight:600}
+.pchange.pos{color:var(--green)}
+.pchange.neg{color:var(--coral)}
+.pchange.zero{color:var(--text-3)}
+
+/* ── FAB ── */
+.fab{position:fixed;right:20px;bottom:calc(90px + var(--safe-bottom));width:56px;height:56px;background:var(--gold);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;color:#000;box-shadow:0 4px 20px var(--gold-glow);z-index:150;transition:transform var(--t-fast)}
+.fab:active{transform:scale(.93)}
+
+/* ── BACK BTN ── */
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--text-3);font-size:13px;font-weight:600;background:none;border:none;padding:0;margin-bottom:16px;letter-spacing:.01em;cursor:pointer}
+.back-btn:active{color:var(--gold)}
+
+/* ── CHART ── */
+.chart-wrap{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.chart-wrap select{width:100%;background:var(--surface-2);border:1.5px solid var(--hairline);color:var(--text);padding:11px 14px;border-radius:var(--radius-sm);font-size:13px;outline:none;margin-bottom:14px;-webkit-appearance:none}
+.chart-wrap select:focus{border-color:var(--gold)}
+
+/* ── CONFIG ── */
+.config-section{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.config-title{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+
+/* ── FEEDBACK CARD ── */
+.fb-card{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color var(--t-fast)}
+.fb-card.unread{border-color:rgba(255,217,107,.35);background:rgba(255,217,107,.03)}
+
+/* ── THEME FX LAYER ── */
+#theme-fx{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden;opacity:0;transition:opacity .5s ease}
+.t-ice #theme-fx,.t-rain #theme-fx,.t-fire #theme-fx,.t-sun #theme-fx,.t-moon #theme-fx,.t-happy #theme-fx{opacity:1}
+.fx-p{position:absolute;top:-30px;will-change:transform,opacity;opacity:0}
+.t-ice .fx-snow{display:block}
+.fx-snow{display:none;color:rgba(180,230,255,.55);font-size:14px;line-height:1;text-shadow:0 0 6px rgba(180,230,255,.4);animation:fxFall linear infinite}
+.t-rain .fx-rain{display:block}
+.fx-rain{display:none;width:1.5px;height:18px;background:linear-gradient(to bottom,transparent,rgba(56,189,248,.55));border-radius:1px;animation:fxFall linear infinite}
+.t-fire .fx-ember{display:block}
+.fx-ember{display:none;width:3px;height:3px;border-radius:50%;background:#FF6B00;box-shadow:0 0 6px #FF8C29;top:auto;bottom:-20px;animation:fxRise linear infinite}
+.t-moon .fx-star{display:block}
+.fx-star{display:none;width:2px;height:2px;border-radius:50%;background:rgba(196,181,253,.7);box-shadow:0 0 4px rgba(196,181,253,.9);animation:fxTwinkle 3s ease-in-out infinite}
+.t-sun .fx-ray{display:block}
+.fx-ray{display:none;width:1px;height:60px;background:linear-gradient(to bottom,transparent,rgba(255,168,39,.4),transparent);top:50%;left:50%;transform-origin:top center;animation:fxRayPulse 4s ease-in-out infinite}
+.t-happy .fx-bubble{display:block}
+.fx-bubble{display:none;width:10px;height:10px;border-radius:50%;background:rgba(52,211,153,.18);border:1px solid rgba(52,211,153,.3);top:auto;bottom:-20px;animation:fxRise linear infinite}
+@keyframes fxFall{0%{transform:translateY(-30px) translateX(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(110vh) translateX(20px);opacity:0}}
+@keyframes fxRise{0%{transform:translateY(0) scale(1);opacity:0}10%{opacity:.85}100%{transform:translateY(-110vh) scale(.4);opacity:0}}
+@keyframes fxTwinkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes fxRayPulse{0%,100%{opacity:.15}50%{opacity:.5}}
+.app{position:relative;z-index:2}
+
+/* ── THEME STRUCTURAL ── */
+.t-demon .card,.t-demon .aluno-card,.t-demon .treino-card,.t-demon .stat-card,.t-demon .config-section,.t-demon .chart-wrap{border-radius:4px!important}
+.t-demon .btn,.t-demon .form-inp,.t-demon .tab{border-radius:3px!important}
+.t-angry .card,.t-angry .aluno-card,.t-angry .treino-card,.t-angry .stat-card{border-radius:3px!important}
+.t-angry .btn,.t-angry .form-inp{border-radius:2px!important}
+.t-iphone .card,.t-iphone .aluno-card,.t-iphone .treino-card,.t-iphone .stat-card{border-radius:22px!important}
+.t-happy .card,.t-happy .aluno-card,.t-happy .treino-card{border-radius:20px!important}
+</style>
+</head>
+<body>
+
+<!-- FX layer -->
+<div id="theme-fx" aria-hidden="true"></div>
+
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-logo">JO SILVA</div>
+    <div class="login-sub">Painel Admin</div>
+    <div class="login-field"><input type="email" id="login-email" placeholder="Email" autocomplete="email"></div>
+    <div class="login-field"><input type="password" id="login-senha" placeholder="Senha" autocomplete="current-password"></div>
+    <button class="btn-login" onclick="doLogin()">ENTRAR</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<div id="app" class="app" style="display:none">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand" id="topbar-brand">JO SILVA PT</div>
+    <div class="topbar-r">
+      <div class="theme-picker" id="theme-picker">
+        <button class="theme-btn on" data-theme="padrao" title="Padrão">🏅</button>
+        <button class="theme-btn" data-theme="sun" title="Sol">☀️</button>
+        <button class="theme-btn" data-theme="demon" title="Demónio">👿</button>
+        <button class="theme-btn" data-theme="iphone" title="iPhone">📱</button>
+        <button class="theme-btn" data-theme="rain" title="Chuva">🌧️</button>
+        <button class="theme-btn" data-theme="auto" title="Auto">🌓</button>
+        <button class="theme-btn" data-theme="moon" title="Lua">🌙</button>
+        <button class="theme-btn" data-theme="happy" title="Feliz">😊</button>
+        <button class="theme-btn" data-theme="angry" title="Raiva">🤬</button>
+        <button class="theme-btn" data-theme="fire" title="Fogo">🔥</button>
+        <button class="theme-btn" data-theme="ice" title="Gelo">🧊</button>
+        <button id="pt-float" onclick="logout()" title="Sair">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+            <rect width="100" height="100" fill="#3a3733"/>
+            <circle cx="50" cy="50" r="44" stroke="#fff" stroke-width="5"/>
+            <circle cx="50" cy="50" r="33" stroke="#fff" stroke-width="4.5"/>
+            <line x1="53" y1="18" x2="53" y2="57" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+            <path d="M53 57 Q53 76 40 76 Q28 76 28 64" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bnav">
+    <button class="bnav-item on" onclick="goTab('dash')" id="nav-dash">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="bnav-lbl">Dashboard</span>
+    </button>
+    <button class="bnav-item" onclick="goTab('alunos')" id="nav-alunos">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+      <span class="bnav-lbl">Alunos</span>
+    </button>
+    <button class="bnav-item" onclick="goTab('feedbacks')" id="nav-feedbacks" style="position:relative">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="bnav-lbl">Feedbacks</span>
+      <span class="bnav-badge" id="feedback-badge" style="display:none">0</span>
+    </button>
+    <button class="bnav-item" onclick="goTab('config')" id="nav-config">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07M19.07 4.93L12 12M4.93 19.07L12 12"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <span class="bnav-lbl">Config</span>
+    </button>
+  </nav>
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div id="screen-dash" class="screen active">
+    <div class="page-content">
+      <div style="padding:8px 0 16px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600">Painel Admin</div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:4px">Jo Silva <em style="font-style:normal;color:var(--gold)">PT</em></div>
+      </div>
+      <div class="stats-row" id="dash-stats">
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Alunos</div></div>
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Ativos</div></div>
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Sessões</div></div>
+        <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Inativos</div></div>
+      </div>
+      <div class="ring-widget" id="ring-widget" style="display:none">
+        <svg width="100" height="100" viewBox="0 0 100 100" style="flex-shrink:0">
+          <circle class="ring-track" cx="50" cy="50" r="40"/>
+          <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="251"/>
+          <text x="50" y="47" text-anchor="middle" dominant-baseline="middle" id="ring-pct" style="fill:var(--gold);font-size:16px;font-weight:800;font-family:var(--font)">0%</text>
+          <text x="50" y="60" text-anchor="middle" dominant-baseline="middle" style="fill:var(--text-3);font-size:7px;font-family:var(--mono)">ativos</text>
+        </svg>
+        <div class="ring-info">
+          <div class="ring-title">Taxa de Actividade</div>
+          <div class="ring-desc" id="ring-desc"></div>
+        </div>
+      </div>
+      <div style="background:var(--surface-1);border:1.5px solid rgba(255,217,107,.2);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px">
+        <div style="width:44px;height:44px;border-radius:14px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✦</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:3px">IA · GERAR TREINO</div>
+          <div style="font-size:12px;color:var(--text-3);line-height:1.4">Preenche o perfil e a IA monta o plano em segundos.</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="location.href='ia-treino.html'">ABRIR</button>
+      </div>
+      <div class="sec-hdr"><div class="sec-title">Atividade Recente</div></div>
+      <div class="card" id="atividade-list" style="padding:0 16px"><div class="empty">A carregar...</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ ALUNOS ═══ -->
+  <div id="screen-alunos" class="screen">
+
+    <!-- Lista -->
+    <div id="view-lista">
+      <div class="page-content">
+        <div style="padding:8px 0 16px">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600">Gestão</div>
+          <div style="font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:4px">Alunos</div>
+        </div>
+        <div id="alunos-list"><div class="empty"><div class="empty-icon">◉</div>A carregar...</div></div>
+      </div>
+      <button class="fab" onclick="openView('novo')">＋</button>
+    </div>
+
+    <!-- Novo Aluno -->
+    <div id="view-novo" style="display:none">
+      <div class="page-content">
+        <button class="back-btn" onclick="openView('lista')">← Alunos</button>
+        <div style="font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:20px">Novo Aluno</div>
+        <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-inp" id="na-nome" placeholder="Ex: Maria Clara"></div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Email</label><input class="form-inp" id="na-email" type="email" placeholder="email@exemplo.com"></div>
+          <div class="form-group"><label class="form-label">Telefone</label><input class="form-inp" id="na-tel" type="tel" placeholder="+351 912 000 000"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Objetivo</label>
+          <select class="form-inp" id="na-obj"><option value="">Selecione...</option><option>Emagrecimento</option><option>Hipertrofia</option><option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option></select>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Modalidade</label>
+            <select class="form-inp" id="na-mod"><option value="presencial">Presencial</option><option value="online">Online</option><option value="hibrido">Híbrido</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Plano</label>
+            <select class="form-inp" id="na-plano"><option value="">Selecione...</option><option>Avaliação + Plano (€47)</option><option>Mensal (€45/mês)</option><option>6 Meses (€197)</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Observações</label><textarea class="form-inp" id="na-obs" placeholder="Lesões, restrições..."></textarea></div>
+        <button class="btn btn-gold btn-full" onclick="criarAluno()">CRIAR ALUNO</button>
+      </div>
+    </div>
+
+    <!-- Detalhe Aluno -->
+    <div id="view-detalhe" style="display:none">
+      <div class="page-content" style="padding-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <button class="back-btn" style="margin:0" onclick="openView('lista')">← Alunos</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-outline-gold" onclick="toggleAtivo()">ATIVAR/INATIVAR</button>
+            <button class="btn btn-sm btn-danger" onclick="deletarAluno()">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="det-header">
+        <div class="det-av-big" id="det-avatar"></div>
+        <div class="det-nome" id="det-nome"></div>
+        <div class="det-sub" id="det-sub"></div>
+        <div class="link-box"><div class="link-url" id="det-link-url"></div><button class="copy-btn" onclick="copyLink()">COPIAR</button></div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('treinos')">TREINOS</button>
+        <button class="tab" onclick="showTab('evolucao')">EVOLUÇÃO</button>
+        <button class="tab" onclick="showTab('medidas')">MEDIDAS</button>
+        <button class="tab" onclick="showTab('perfil')">PERFIL</button>
+      </div>
+
+      <!-- TAB TREINOS -->
+      <div id="tab-treinos" class="tab-content active">
+        <div class="page-content">
+          <div id="treinos-list"></div>
+          <div id="novo-treino-form" style="display:none">
+            <div style="height:1px;background:var(--hairline);margin:8px 0 20px"></div>
+            <div style="font-size:16px;font-weight:700;margin-bottom:14px" id="form-treino-title">Novo Treino</div>
+            <div class="form-group"><label class="form-label">Nome do treino *</label><input class="form-inp" id="nt-nome" placeholder="Ex: Treino A — Inferiores"></div>
+            <div class="form-group"><label class="form-label">Dia da semana</label><input class="form-inp" id="nt-desc" placeholder="Ex: Segunda-feira"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <div class="sec-title">Exercícios</div>
+              <button class="btn btn-sm btn-outline-gold" onclick="addExercicio()">＋ Adicionar</button>
+            </div>
+            <div id="ex-list"></div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <button class="btn btn-gold" style="flex:1" onclick="salvarTreino()">SALVAR</button>
+              <button class="btn" onclick="cancelarTreino()">CANCELAR</button>
+            </div>
+          </div>
+        </div>
+        <button class="fab" id="fab-treino" onclick="showNovoTreino()">＋</button>
+      </div>
+
+      <!-- TAB EVOLUÇÃO -->
+      <div id="tab-evolucao" class="tab-content">
+        <div class="page-content">
+          <div class="stats-row" id="det-stats" style="margin-bottom:14px"></div>
+          <div class="chart-wrap">
+            <select id="ev-select" onchange="renderEvoChart()"><option value="">Selecione exercício...</option></select>
+            <div style="position:relative;height:200px"><canvas id="evoChart" role="img"></canvas></div>
+          </div>
+          <div class="sec-title" style="margin-bottom:10px">HISTÓRICO DE SESSÕES</div>
+          <div class="card" style="padding:0 16px" id="sessoes-hist"></div>
+          <div class="sec-title" style="margin:20px 0 10px">FOTOS DA EVOLUÇÃO</div>
+          <div id="fotos-aluno-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px"></div>
+        </div>
+      </div>
+
+      <!-- TAB MEDIDAS -->
+      <div id="tab-medidas" class="tab-content">
+        <div class="page-content">
+          <div class="card">
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px" id="pm-card-title">Nova Avaliação</div>
+            <input type="hidden" id="pm-id">
+            <div class="form-group"><label class="form-label">Data *</label><input type="date" class="form-inp" id="pm-data"></div>
+            <div class="sec-title" style="margin-bottom:8px">BIOIMPEDÂNCIA</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-peso" placeholder="96.2"></div>
+              <div class="form-group"><label class="form-label">IMC</label><input type="number" step="0.1" class="form-inp" id="pm-imc" placeholder="29.4"></div>
+              <div class="form-group"><label class="form-label">% Gordura</label><input type="number" step="0.1" class="form-inp" id="pm-gord" placeholder="29.6"></div>
+              <div class="form-group"><label class="form-label">Gord. Abs. (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-gord-abs" placeholder="28.5"></div>
+              <div class="form-group"><label class="form-label">Massa Magra (kg)</label><input type="number" step="0.1" class="form-inp" id="pm-massa" placeholder="67.7"></div>
+              <div class="form-group"><label class="form-label">Gord. Visceral</label><input type="number" step="1" class="form-inp" id="pm-gord-visc" placeholder="12"></div>
+              <div class="form-group full"><label class="form-label">TMB (kcal)</label><input type="number" step="1" class="form-inp" id="pm-tmb" placeholder="1959"></div>
+            </div>
+            <div class="sec-title" style="margin:10px 0 8px">PERÍMETROS (cm)</div>
+            <div class="peri-grid" id="peri-inputs"></div>
+            <div class="form-group"><label class="form-label">Observações</label><textarea class="form-inp" id="pm-obs" placeholder="Postura, evolução observada..."></textarea></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-gold btn-full" onclick="salvarMedida()" id="pm-btn-salvar">SALVAR AVALIAÇÃO</button>
+              <button class="btn btn-full" onclick="cancelarEditarMedida()" id="pm-btn-cancel" style="display:none">CANCELAR</button>
+            </div>
+          </div>
+          <div class="sec-title" style="margin:16px 0 10px">HISTÓRICO</div>
+          <div id="medidas-hist"></div>
+        </div>
+      </div>
+
+      <!-- TAB PERFIL -->
+      <div id="tab-perfil" class="tab-content">
+        <div class="page-content">
+          <div class="card">
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">Dados Pessoais</div>
+            <div class="form-group"><label class="form-label">Nome completo</label><input class="form-inp" id="pf-nome"></div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Data de Nasc.</label><input type="date" class="form-inp" id="pf-nasc"></div>
+              <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-inp" id="pf-altura" placeholder="165"></div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-inp" id="pf-email"></div>
+              <div class="form-group"><label class="form-label">Telefone</label><input class="form-inp" id="pf-tel"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Profissão</label><input class="form-inp" id="pf-prof" placeholder="Ex: Enfermeira"></div>
+          </div>
+          <div class="card">
+            <div style="font-size:15px;font-weight:700;margin-bottom:14px">Saúde e Objetivos</div>
+            <div class="form-group"><label class="form-label">Doenças / Condições</label><textarea class="form-inp" id="pf-doencas" placeholder="Hipertensão, diabetes..."></textarea></div>
+            <div class="form-group"><label class="form-label">Medicamentos</label><textarea class="form-inp" id="pf-med" placeholder="Anticoncepcional..."></textarea></div>
+            <div class="form-group"><label class="form-label">Lesões / Cirurgias</label><textarea class="form-inp" id="pf-lesoes" placeholder="Lesão no joelho..."></textarea></div>
+            <div class="form-group"><label class="form-label">Dores frequentes</label><textarea class="form-inp" id="pf-dores" placeholder="Dor lombar..."></textarea></div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Objetivo</label>
+                <select class="form-inp" id="pf-obj"><option value="">Selecione...</option><option>Emagrecimento</option><option>Hipertrofia</option><option>Emagrecimento + Hipertrofia</option><option>Condicionamento</option><option>Reabilitação</option></select>
+              </div>
+              <div class="form-group"><label class="form-label">Nível</label>
+                <select class="form-inp" id="pf-nivel"><option value="">Selecione...</option><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Horas de sono</label><input type="number" class="form-inp" id="pf-sono" placeholder="7"></div>
+              <div class="form-group"><label class="form-label">Estresse (1-10)</label><input type="number" min="1" max="10" class="form-inp" id="pf-stress" placeholder="6"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Alimentação</label><textarea class="form-inp" id="pf-alim" placeholder="Come bem de dia, peca à noite..."></textarea></div>
+            <div class="form-group"><label class="form-label">Obs. do personal</label><textarea class="form-inp" id="pf-obs" placeholder="Impressões, metas..."></textarea></div>
+            <button class="btn btn-gold btn-full" onclick="salvarPerfil()">SALVAR FICHA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FEEDBACKS ═══ -->
+  <div id="screen-feedbacks" class="screen">
+    <div class="page-content">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 16px">
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600">Respostas</div>
+          <div style="font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:4px">Feedbacks</div>
+        </div>
+        <button class="btn btn-sm btn-outline-gold" onclick="marcarTodosLidos()">✓ TODOS</button>
+      </div>
+      <div id="feedbacks-list"><div class="empty">A carregar...</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ CONFIG ═══ -->
+  <div id="screen-config" class="screen">
+    <div class="page-content">
+      <div style="padding:8px 0 16px">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600">Sistema</div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:4px">Config</div>
+      </div>
+      <div class="config-section">
+        <div class="config-title">SUPABASE</div>
+        <div class="form-group"><label class="form-label">URL do projeto</label><input class="form-inp" id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
+        <div class="form-group"><label class="form-label">Anon Key</label><input class="form-inp" id="cfg-key" placeholder="eyJhbGci..."></div>
+        <button class="btn btn-gold btn-full" onclick="salvarConfig()">SALVAR</button>
+      </div>
+      <div class="config-section">
+        <div class="config-title">URL BASE DO SISTEMA</div>
+        <div style="font-size:13px;color:var(--text-3);margin-bottom:12px;line-height:1.5">URL do ficheiro <strong style="color:var(--gold)">aluno-v3.html</strong> — usada para gerar os links dos alunos.</div>
+        <div class="form-group"><label class="form-label">URL base</label><input class="form-inp" id="cfg-base-url" placeholder="https://josilvapt.vercel.app/aluno-v3.html"></div>
+        <button class="btn btn-gold btn-full" onclick="salvarBaseUrl()">SALVAR</button>
+      </div>
+      <div class="config-section">
+        <div class="config-title">IA · ANTHROPIC</div>
+        <div style="font-size:13px;color:var(--text-3);margin-bottom:12px;line-height:1.5">Chave da API Anthropic. Começa com <strong style="color:var(--gold)">sk-ant-</strong></div>
+        <div class="form-group"><label class="form-label">Anthropic API Key</label><input class="form-inp" id="cfg-anthropic-key" type="password" placeholder="sk-ant-api03-..."></div>
+        <button class="btn btn-gold btn-full" onclick="salvarAnthropicKey()">GUARDAR CHAVE</button>
+      </div>
+      <div class="config-section">
+        <div class="config-title">SESSÃO</div>
+        <button class="btn btn-danger btn-full" onclick="logout()">↪ TERMINAR SESSÃO</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<!-- FOTO LIGHTBOX -->
+<div id="admin-foto-lightbox" onclick="this.style.display='none';this.querySelector('img').src=''" style="position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.97);display:none;flex-direction:column;align-items:center;justify-content:center">
+  <button onclick="event.stopPropagation();document.getElementById('admin-foto-lightbox').style.display='none'" style="position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none">×</button>
+  <img style="max-width:100%;max-height:82vh;object-fit:contain;border-radius:4px" onclick="event.stopPropagation()">
+  <div class="foto-lb-lbl" style="color:var(--text-3);font-family:var(--mono);font-size:11px;margin-top:10px;letter-spacing:.1em;text-transform:uppercase"></div>
+</div>
+
+<script>
+// ── DADOS ──
+const PERI_CAMPOS=[
+  {id:'pescoco',label:'Pescoço'},{id:'ombro',label:'Ombro'},{id:'torax',label:'Tórax'},
+  {id:'cintura',label:'Cintura'},{id:'abdomen',label:'Abdômen'},{id:'quadril',label:'Quadril'},
+  {id:'coxa_d',label:'Coxa D'},{id:'coxa_e',label:'Coxa E'},
+  {id:'joelho_d',label:'Joelho D'},{id:'joelho_e',label:'Joelho E'},
+  {id:'panturrilha_d',label:'Pant. D'},{id:'panturrilha_e',label:'Pant. E'},
+  {id:'braco_d',label:'Braço D'},{id:'braco_e',label:'Braço E'},
+  {id:'braco_flex_d',label:'Braço Flex. D'},{id:'braco_flex_e',label:'Braço Flex. E'},
+  {id:'antebraco_d',label:'Antebr. D'},{id:'antebraco_e',label:'Antebr. E'}
+];
+let SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co';
+let SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
+let BASE_URL='https://josilvapt.vercel.app/aluno-v3.html';
+let ANTHROPIC_KEY='';
+let currentAlunoId=null,currentTreinoId=null,exerciciosList=[],evoChartInst=null,editingMedidaId=null;
+
+// ── UTILS ──
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+function initials(nome){return nome.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');}
+function formatDate(d){if(!d)return'—';const p=d.split('T')[0].split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
+const lc=(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch(e){return d;}};
+const sc=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+
+// ── TOKEN ──
+function getToken(){return sessionStorage.getItem('sb_access_token');}
+function getRefresh(){return localStorage.getItem('sb_refresh_token');}
+async function refreshSession(){
+  const rt=getRefresh();if(!rt)return false;
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:rt})});
+    if(!r.ok){localStorage.removeItem('sb_refresh_token');return false;}
+    const d=await r.json();sessionStorage.setItem('sb_access_token',d.access_token);localStorage.setItem('sb_refresh_token',d.refresh_token);return true;
+  }catch(e){return false;}
+}
+
+// ── SUPABASE FETCH ──
+async function sbFetch(path,opts={}){
+  if(!SB_URL||!SB_KEY)return null;
+  const doReq=async(token)=>fetch(SB_URL+'/rest/v1/'+path,{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(token||SB_KEY),'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+    ...opts
+  });
+  try{
+    let r=await doReq(getToken());
+    if(r.status===401){const ok=await refreshSession();if(!ok){logout();return null;}r=await doReq(getToken());}
+    if(!r.ok)return null;
+    const ct=r.headers.get('content-type');return ct&&ct.includes('json')?await r.json():[];
+  }catch(e){return null;}
+}
+
+// ── AUTH ──
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const senha=document.getElementById('login-senha').value;
+  const err=document.getElementById('login-err');err.textContent='';
+  if(!email||!senha){err.textContent='Preenche email e senha.';return;}
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:senha})});
+    const d=await r.json();
+    if(!r.ok||d.error){err.textContent=d.error_description||'Credenciais inválidas.';return;}
+    sessionStorage.setItem('sb_access_token',d.access_token);localStorage.setItem('sb_refresh_token',d.refresh_token);
+    document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';
+    loadConfig();renderDash();
+  }catch(e){err.textContent='Erro de conexão.';}
+}
+async function logout(){
+  const token=getToken();
+  if(token){try{await fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json'}});}catch(e){}}
+  sessionStorage.removeItem('sb_access_token');localStorage.removeItem('sb_refresh_token');location.reload();
+}
+
+// ── NAVIGATION ──
+function goTab(tab){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('on'));
+  const s=document.getElementById('screen-'+tab);s.style.display='block';s.classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('on');
+  if(tab==='dash')renderDash();
+  if(tab==='alunos'){openView('lista');renderAlunos();}
+  if(tab==='feedbacks')renderFeedbacks();
+  if(tab==='config')loadConfig();
+}
+function openView(view){
+  ['lista','novo','detalhe'].forEach(v=>{document.getElementById('view-'+v).style.display='none';});
+  document.getElementById('view-'+view).style.display='block';
+  if(view==='lista')renderAlunos();
+  window.scrollTo(0,0);
+}
+
+// ── CONFIG LOAD ──
+function loadConfig(){
+  BASE_URL=lc('base_url','https://josilvapt.vercel.app/aluno-v3.html');
+  ANTHROPIC_KEY=lc('anthropic_key','');
+  const u=document.getElementById('cfg-url'),k=document.getElementById('cfg-key'),b=document.getElementById('cfg-base-url'),ak=document.getElementById('cfg-anthropic-key');
+  if(u)u.value=SB_URL;if(k)k.value=SB_KEY;if(b)b.value=BASE_URL;if(ak)ak.value=ANTHROPIC_KEY;
+}
+function salvarConfig(){SB_URL=document.getElementById('cfg-url').value.trim().replace(/\/$/,'');SB_KEY=document.getElementById('cfg-key').value.trim();sc('sb_url',SB_URL);sc('sb_key',SB_KEY);toast('CONFIGURAÇÕES SALVAS!');}
+function salvarBaseUrl(){BASE_URL=document.getElementById('cfg-base-url').value.trim();sc('base_url',BASE_URL);toast('URL SALVA!');}
+async function salvarAnthropicKey(){
+  ANTHROPIC_KEY=document.getElementById('cfg-anthropic-key').value.trim();sc('anthropic_key',ANTHROPIC_KEY);
+  const existe=await sbFetch('configuracoes?chave=eq.anthropic_key')||[];
+  if(existe.length){await sbFetch('configuracoes?chave=eq.anthropic_key',{method:'PATCH',body:JSON.stringify({valor:ANTHROPIC_KEY})});}
+  else{await sbFetch('configuracoes',{method:'POST',body:JSON.stringify({chave:'anthropic_key',valor:ANTHROPIC_KEY})});}
+  toast('CHAVE IA GUARDADA!');
+}
+
+// ── DASHBOARD ──
+async function renderDash(){
+  const alunos=await sbFetch('alunos?select=id,ativo,criado_em&order=criado_em.desc')||[];
+  const sessoes=await sbFetch('sessoes?select=id,data,aluno_id,treino_id,alunos(nome),treinos(nome)&order=criado_em.desc&limit=60')||[];
+  const ativos=alunos.filter(a=>a.ativo).length;
+  loadFeedbackBadge();
+  const now=Date.now(),w7=now-7*86400000,w14=now-14*86400000;
+  const novos=alunos.filter(a=>a.criado_em&&new Date(a.criado_em).getTime()>w7).length;
+  const sesSem=sessoes.filter(s=>s.data&&new Date(s.data).getTime()>w7).length;
+  const sesPrev=sessoes.filter(s=>s.data&&new Date(s.data).getTime()>w14&&new Date(s.data).getTime()<=w7).length;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${alunos.length}</div><div class="stat-lbl">Total Alunos</div>${novos?`<div class="stat-delta delta-up">↑ +${novos}</div>`:''}</div>
+    <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">Ativos</div></div>
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div>${sesSem?`<div class="stat-delta delta-up">↑ +${sesSem}</div>`:''}</div>
+    <div class="stat-card"><div class="stat-val">${alunos.length-ativos}</div><div class="stat-lbl">Inativos</div></div>`;
+  animateRing(ativos,alunos.length);
+  const el=document.getElementById('atividade-list');
+  if(!sessoes.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◌</div>Nenhuma sessão registada.</div>`;return;}
+  el.innerHTML=sessoes.slice(0,15).map(s=>`<div class="atividade-item"><div class="at-dot"></div><div><div class="at-nome">${s.alunos?.nome||'—'}</div><div class="at-info">${formatDate(s.data)}</div></div><div class="at-treino">${s.treinos?.nome||'—'}</div></div>`).join('');
+}
+function animateRing(ativos,total){
+  const pct=total?Math.round((ativos/total)*100):0;
+  const circ=251;const offset=Math.round(circ*(1-pct/100));
+  const widget=document.getElementById('ring-widget');
+  const fill=document.getElementById('ring-fill');
+  if(!fill)return;
+  if(total>0)widget.style.display='flex';
+  requestAnimationFrame(()=>{fill.style.strokeDashoffset=offset;});
+  document.getElementById('ring-pct').textContent=pct+'%';
+  document.getElementById('ring-desc').textContent=`${ativos} de ${total} alunos com treino activo`;
+}
+
+// ── ALUNOS ──
+async function renderAlunos(){
+  const alunos=await sbFetch('alunos?order=nome.asc')||[];
+  const el=document.getElementById('alunos-list');
+  if(!alunos.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◉</div>Nenhum aluno. Toque no ＋ para adicionar.</div>`;return;}
+  el.innerHTML=alunos.map((a,i)=>`
+    <div class="aluno-card" style="animation:revealUp .3s ease ${i*0.06}s both" onclick="openAluno('${a.id}')">
+      <div class="av av-${i%4}">${initials(a.nome)}</div>
+      <div class="aluno-info-wrap">
+        <div class="aluno-nome">${a.nome}</div>
+        <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
+        <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?'ATIVO':'INATIVO'}</span>
+      </div>
+      <div class="chevron">›</div>
+    </div>`).join('');
+}
+async function openAluno(id){
+  currentAlunoId=id;
+  const alunos=await sbFetch(`alunos?id=eq.${id}`)||[];
+  const a=alunos[0];if(!a)return;
+  document.getElementById('det-avatar').textContent=initials(a.nome);
+  document.getElementById('det-nome').textContent=a.nome;
+  document.getElementById('det-sub').textContent=[a.objetivo,a.modalidade,a.plano].filter(Boolean).join(' · ');
+  document.getElementById('det-link-url').textContent=`${BASE_URL}?id=${id}`;
+  openView('detalhe');showTab('treinos');
+}
+function copyLink(){const url=document.getElementById('det-link-url').textContent;navigator.clipboard?.writeText(url).then(()=>toast('LINK COPIADO!'));}
+async function criarAluno(){
+  const nome=document.getElementById('na-nome').value.trim();
+  if(!nome){toast('NOME É OBRIGATÓRIO!');return;}
+  const data={nome,email:document.getElementById('na-email').value,telefone:document.getElementById('na-tel').value,objetivo:document.getElementById('na-obj').value,modalidade:document.getElementById('na-mod').value,plano:document.getElementById('na-plano').value,obs:document.getElementById('na-obs').value,ativo:true};
+  const res=await sbFetch('alunos',{method:'POST',body:JSON.stringify(data)});
+  if(res){toast('ALUNO CRIADO!');['na-nome','na-email','na-tel','na-obs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});openView('lista');}
+}
+async function toggleAtivo(){
+  const alunos=await sbFetch(`alunos?id=eq.${currentAlunoId}`)||[];
+  const a=alunos[0];if(!a)return;
+  await sbFetch(`alunos?id=eq.${currentAlunoId}`,{method:'PATCH',body:JSON.stringify({ativo:!a.ativo})});
+  toast(a.ativo?'ALUNO INATIVADO':'ALUNO ATIVADO');openAluno(currentAlunoId);
+}
+async function deletarAluno(){
+  if(!confirm('Tem certeza? Todos os dados serão excluídos.'))return;
+  await sbFetch(`sessao_cargas?sessao_id=in.(select id from sessoes where aluno_id=eq.${currentAlunoId})`,{method:'DELETE'});
+  await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`exercicios?treino_id=in.(select id from treinos where aluno_id=eq.${currentAlunoId})`,{method:'DELETE'});
+  await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`,{method:'DELETE'});
+  await sbFetch(`alunos?id=eq.${currentAlunoId}`,{method:'DELETE'});
+  toast('ALUNO EXCLUÍDO');openView('lista');
+}
+
+// ── TABS ──
+function showTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const tabNames=['treinos','evolucao','medidas','perfil'];
+  const idx=tabNames.indexOf(tab);
+  document.querySelectorAll('.tab')[idx]?.classList.add('active');
+  const fabTreino=document.getElementById('fab-treino');
+  if(fabTreino)fabTreino.style.display=(tab==='treinos'?'flex':'none');
+  if(tab==='treinos')renderTreinos();
+  if(tab==='evolucao')renderEvolucao();
+  if(tab==='medidas')renderMedidas();
+  if(tab==='perfil')renderPerfil();
+}
+
+// ── TREINOS ──
+async function renderTreinos(){
+  const treinos=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&order=ordem.asc`)||[];
+  const el=document.getElementById('treinos-list');
+  if(!treinos.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◻</div>Nenhum treino. Toque no ＋.</div>`;return;}
+  el.innerHTML=treinos.map(t=>`
+    <div class="treino-card">
+      <div class="treino-nome">${t.nome}</div>
+      <div class="treino-sub">${t.descricao||''}</div>
+      <div class="treino-actions">
+        <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">EDITAR</button>
+        <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">EXCLUIR</button>
+      </div>
+    </div>`).join('');
+}
+function showNovoTreino(){
+  document.getElementById('novo-treino-form').style.display='block';
+  document.getElementById('form-treino-title').textContent='Novo Treino';
+  document.getElementById('nt-nome').value='';document.getElementById('nt-desc').value='';
+  exerciciosList=[];renderExList();currentTreinoId=null;
+  document.getElementById('novo-treino-form').scrollIntoView({behavior:'smooth'});
+}
+function cancelarTreino(){document.getElementById('novo-treino-form').style.display='none';currentTreinoId=null;}
+function addExercicio(){exerciciosList.push({nome:'',obs:'',series:'3',reps:'10-12',video_url:''});renderExList();}
+function renderExList(){
+  const el=document.getElementById('ex-list');
+  if(!exerciciosList.length){el.innerHTML=`<div style="font-size:13px;color:var(--text-3);padding:12px 0">Nenhum exercício adicionado.</div>`;return;}
+  el.innerHTML=exerciciosList.map((ex,i)=>`
+    <div class="ex-card">
+      <button class="ex-del" onclick="exerciciosList.splice(${i},1);renderExList()">✕</button>
+      <div class="ex-num-label">EX ${String(i+1).padStart(2,'0')}</div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${ex.nome||''}" oninput="exerciciosList[${i}].nome=this.value"></div>
+      <div class="ex-row">
+        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${ex.series||'3'}" oninput="exerciciosList[${i}].series=this.value"></div>
+        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${ex.reps||'10-12'}" oninput="exerciciosList[${i}].reps=this.value"></div>
+      </div>
+      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="Observações (opcional)" value="${ex.obs||''}" oninput="exerciciosList[${i}].obs=this.value"></div>
+      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="Link do vídeo (YouTube, opcional)" value="${ex.video_url||''}" oninput="exerciciosList[${i}].video_url=this.value"></div>
+    </div>`).join('');
+}
+async function salvarTreino(){
+  const nome=document.getElementById('nt-nome').value.trim();
+  if(!nome){toast('NOME DO TREINO É OBRIGATÓRIO!');return;}
+  const exValidos=exerciciosList.filter(e=>e.nome.trim());
+  if(!exValidos.length){toast('ADICIONE PELO MENOS 1 EXERCÍCIO!');return;}
+  let treinoId=currentTreinoId;
+  if(treinoId){
+    await sbFetch(`treinos?id=eq.${treinoId}`,{method:'PATCH',body:JSON.stringify({nome,descricao:document.getElementById('nt-desc').value})});
+    await sbFetch(`exercicios?treino_id=eq.${treinoId}`,{method:'DELETE'});
+  }else{
+    const ex=await sbFetch(`treinos?aluno_id=eq.${currentAlunoId}&select=ordem&order=ordem.desc&limit=1`)||[];
+    const nextOrdem=(ex[0]?.ordem||0)+1;
+    const res=await sbFetch('treinos',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,nome,descricao:document.getElementById('nt-desc').value,ordem:nextOrdem})});
+    if(!res||!res[0]){toast('ERRO AO SALVAR');return;}
+    treinoId=res[0].id;
+  }
+  for(let i=0;i<exValidos.length;i++){
+    await sbFetch('exercicios',{method:'POST',body:JSON.stringify({treino_id:treinoId,ordem:i+1,nome:exValidos[i].nome.trim(),obs:exValidos[i].obs||'',series:exValidos[i].series,reps:exValidos[i].reps,video_url:exValidos[i].video_url||null})});
+  }
+  toast('TREINO SALVO!');cancelarTreino();renderTreinos();
+}
+async function editarTreino(id){
+  currentTreinoId=id;
+  const treinos=await sbFetch(`treinos?id=eq.${id}`)||[];const t=treinos[0];if(!t)return;
+  const exs=await sbFetch(`exercicios?treino_id=eq.${id}&order=ordem.asc`)||[];
+  document.getElementById('novo-treino-form').style.display='block';
+  document.getElementById('form-treino-title').textContent='Editar Treino';
+  document.getElementById('nt-nome').value=t.nome;document.getElementById('nt-desc').value=t.descricao||'';
+  exerciciosList=exs.map(e=>({nome:e.nome,obs:e.obs||'',series:e.series||'3',reps:e.reps||'10-12',video_url:e.video_url||''}));
+  renderExList();document.getElementById('novo-treino-form').scrollIntoView({behavior:'smooth'});
+}
+async function deletarTreino(id){
+  if(!confirm('Excluir este treino?'))return;
+  await sbFetch(`exercicios?treino_id=eq.${id}`,{method:'DELETE'});
+  await sbFetch(`treinos?id=eq.${id}`,{method:'DELETE'});
+  toast('TREINO EXCLUÍDO');renderTreinos();
+}
+
+// ── EVOLUÇÃO ──
+async function renderEvolucao(){
+  const sessoes=await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
+  const ids=sessoes.map(s=>s.id).join(',');
+  const todas_cargas=ids?await sbFetch(`sessao_cargas?sessao_id=in.(${ids})&select=*,exercicios(nome,treinos(nome))&order=sessoes(data).asc`)||[]:[];
+  const maxCarga=todas_cargas.length?Math.max(...todas_cargas.map(c=>c.carga_kg||0)):0;
+  document.getElementById('det-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
+    <div class="stat-card"><div class="stat-val">${Math.ceil(sessoes.length/3)||0}</div><div class="stat-lbl">Semanas</div></div>
+    <div class="stat-card"><div class="stat-val">${maxCarga?maxCarga.toFixed(1)+'kg':'—'}</div><div class="stat-lbl">Maior carga</div></div>`;
+  const sel=document.getElementById('ev-select');
+  sel.innerHTML='<option value="">Selecione exercício...</option>';
+  const exMap={};
+  todas_cargas.forEach(c=>{if(c.exercicios)exMap[c.exercicio_id]=c.exercicios.nome;});
+  Object.entries(exMap).forEach(([id,nome])=>{const o=document.createElement('option');o.value=id;o.textContent=nome;sel.appendChild(o);});
+  const hist=document.getElementById('sessoes-hist');
+  if(!sessoes.length){hist.innerHTML=`<div class="empty">Nenhuma sessão registada.</div>`;}
+  else{hist.innerHTML=sessoes.slice(0,20).map(s=>{
+    const cargas=todas_cargas.filter(c=>c.sessao_id===s.id);
+    const max=cargas.length?Math.max(...cargas.map(c=>c.carga_kg||0)):0;
+    return `<div class="hist-item"><div><div class="hist-label">${s.treino_nome||'Treino'}</div><div class="hist-sub">${formatDate(s.data)}</div></div><div class="hist-val">${max?max.toFixed(1)+'kg':'—'}</div></div>`;
+  }).join('');}
+  renderFotosAluno();
+}
+async function renderEvoChart(){
+  const exId=document.getElementById('ev-select').value;if(!exId)return;
+  const sessoes=await sbFetch(`sessoes?aluno_id=eq.${currentAlunoId}&order=data.asc`)||[];
+  if(!sessoes.length)return;
+  const ids=sessoes.map(s=>s.id).join(',');
+  const cargas=await sbFetch(`sessao_cargas?exercicio_id=eq.${exId}&sessao_id=in.(${ids})&select=*,sessoes(data)&order=sessoes(data).asc`)||[];
+  if(evoChartInst){evoChartInst.destroy();evoChartInst=null;}
+  if(!cargas.length)return;
+  const ctx=document.getElementById('evoChart').getContext('2d');
+  evoChartInst=new Chart(ctx,{type:'line',data:{labels:cargas.map(c=>formatDate(c.sessoes?.data||'')),datasets:[{label:'Carga (kg)',data:cargas.map(c=>c.carga_kg),borderColor:'var(--gold)',backgroundColor:'rgba(255,217,107,.08)',pointBackgroundColor:'var(--gold)',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.06)'}},y:{ticks:{color:'#888',font:{size:10},callback:v=>v+'kg'},grid:{color:'rgba(255,255,255,.06)'}}}}});
+}
+
+// ── MEDIDAS ──
+let _medidasCache=[];
+async function renderMedidas(){
+  document.getElementById('peri-inputs').innerHTML=PERI_CAMPOS.map(c=>`<div class="peri-item"><div class="peri-lbl">${c.label}</div><input class="peri-inp" type="number" step="0.1" id="pm-${c.id}" placeholder="—"><div class="peri-unit">cm</div></div>`).join('');
+  if(!editingMedidaId)document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+  const avs=await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
+  _medidasCache=avs;
+  const el=document.getElementById('medidas-hist');
+  if(!avs.length){el.innerHTML=`<div class="empty">Nenhuma avaliação registada.</div>`;return;}
+  el.innerHTML=avs.map((av,idx)=>{
+    const prev=avs[idx+1];const med=av.medidas||{};
+    const bioCards=[
+      av.peso?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.peso}kg</div><div class="stat-lbl">Peso</div></div>`:'',
+      med.bio_imc?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${med.bio_imc}</div><div class="stat-lbl">IMC</div></div>`:'',
+      av.gordura?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>`:'',
+      av.massa_magra?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.massa_magra}kg</div><div class="stat-lbl">Massa</div></div>`:'',
+    ].filter(Boolean).join('');
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:15px;font-weight:700">${formatDate(av.data)}</div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline-gold" onclick="editarMedida('${av.id}')">EDITAR</button><button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button></div></div>${bioCards?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">${bioCards}</div>`:''}${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{const cur=med[c.id];const prevV=prev?.medidas?.[c.id];let delta='',cls='zero';if(prevV!==undefined){const d=(cur-prevV).toFixed(1);delta=(d>0?'+':'')+d+'cm';cls=d<0?'pos':(d>0?'neg':'zero');}return`<div class="hist-item"><div class="hist-label">${c.label}</div><div style="display:flex;align-items:center;gap:10px">${delta?`<span class="pchange ${cls}">${delta}</span>`:''}<div class="hist-val">${cur}cm</div></div></div>`;}).join('')}${av.obs?`<div style="margin-top:10px;font-size:13px;color:var(--text-2);padding:10px;border-left:3px solid var(--gold);background:var(--surface-2);border-radius:0 8px 8px 0">${av.obs}</div>`:''}</div>`;
+  }).join('');
+}
+function editarMedida(id){
+  const av=_medidasCache.find(x=>x.id===id);if(!av)return;
+  editingMedidaId=av.id;const med=av.medidas||{};
+  document.getElementById('pm-id').value=av.id;document.getElementById('pm-data').value=av.data;
+  document.getElementById('pm-peso').value=av.peso||'';document.getElementById('pm-imc').value=med.bio_imc||'';
+  document.getElementById('pm-gord').value=av.gordura||'';document.getElementById('pm-gord-abs').value=med.bio_gord_abs||'';
+  document.getElementById('pm-massa').value=av.massa_magra||'';document.getElementById('pm-gord-visc').value=med.bio_gord_visc||'';
+  document.getElementById('pm-tmb').value=med.bio_tmb||'';document.getElementById('pm-obs').value=av.obs||'';
+  PERI_CAMPOS.forEach(c=>{const el=document.getElementById('pm-'+c.id);if(el)el.value=med[c.id]||'';});
+  document.getElementById('pm-card-title').textContent='Editar Avaliação';
+  document.getElementById('pm-btn-cancel').style.display='';
+  window.scrollTo(0,0);
+}
+function cancelarEditarMedida(){
+  editingMedidaId=null;document.getElementById('pm-id').value='';
+  document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+  ['peso','imc','gord','gord-abs','massa','gord-visc','tmb','obs'].forEach(f=>{const el=document.getElementById('pm-'+f);if(el)el.value='';});
+  PERI_CAMPOS.forEach(c=>{const el=document.getElementById('pm-'+c.id);if(el)el.value='';});
+  document.getElementById('pm-card-title').textContent='Nova Avaliação';
+  document.getElementById('pm-btn-cancel').style.display='none';
+}
+async function salvarMedida(){
+  const data=document.getElementById('pm-data').value;if(!data){toast('DATA É OBRIGATÓRIA!');return;}
+  const medidas={};
+  PERI_CAMPOS.forEach(c=>{const v=document.getElementById('pm-'+c.id)?.value;if(v)medidas[c.id]=parseFloat(v);});
+  const imc=document.getElementById('pm-imc').value;if(imc)medidas.bio_imc=parseFloat(imc);
+  const gordAbs=document.getElementById('pm-gord-abs').value;if(gordAbs)medidas.bio_gord_abs=parseFloat(gordAbs);
+  const gordVisc=document.getElementById('pm-gord-visc').value;if(gordVisc)medidas.bio_gord_visc=parseFloat(gordVisc);
+  const tmb=document.getElementById('pm-tmb').value;if(tmb)medidas.bio_tmb=parseFloat(tmb);
+  const payload={aluno_id:currentAlunoId,data,peso:document.getElementById('pm-peso').value||null,gordura:document.getElementById('pm-gord').value||null,massa_magra:document.getElementById('pm-massa').value||null,obs:document.getElementById('pm-obs').value,medidas};
+  if(editingMedidaId){await sbFetch(`perimetria?id=eq.${editingMedidaId}`,{method:'PATCH',body:JSON.stringify(payload)});cancelarEditarMedida();}
+  else{await sbFetch('perimetria',{method:'POST',body:JSON.stringify(payload)});}
+  toast('AVALIAÇÃO SALVA!');renderMedidas();
+}
+async function deletarMedida(id){
+  if(!confirm('Excluir esta avaliação?'))return;
+  await sbFetch(`perimetria?id=eq.${id}`,{method:'DELETE'});
+  if(editingMedidaId===id)cancelarEditarMedida();
+  toast('EXCLUÍDO');renderMedidas();
+}
+
+// ── PERFIL ──
+async function renderPerfil(){
+  const res=await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`)||[];
+  const dados=res[0]?.dados||{};
+  ['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'].forEach(f=>{const el=document.getElementById('pf-'+f);if(el&&dados[f])el.value=dados[f];});
+}
+async function salvarPerfil(){
+  const campos=['nome','nasc','altura','prof','email','tel','doencas','med','lesoes','dores','obj','nivel','sono','stress','alim','obs'];
+  const dados={};campos.forEach(f=>{const el=document.getElementById('pf-'+f);if(el)dados[f]=el.value;});
+  const existe=await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`)||[];
+  if(existe.length){await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`,{method:'PATCH',body:JSON.stringify({dados,atualizado_em:new Date().toISOString()})});}
+  else{await sbFetch('anamnese',{method:'POST',body:JSON.stringify({aluno_id:currentAlunoId,dados,atualizado_em:new Date().toISOString()})});}
+  toast('FICHA SALVA!');
+}
+
+// ── FEEDBACKS ──
+async function loadFeedbackBadge(){
+  const feedbacks=await sbFetch('feedbacks?lido=eq.false&select=id')||[];
+  const badge=document.getElementById('feedback-badge');
+  if(badge){badge.textContent=feedbacks.length;badge.style.display=feedbacks.length>0?'flex':'none';}
+}
+async function renderFeedbacks(){
+  const feedbacks=await sbFetch('feedbacks?order=criado_em.desc&limit=60&select=*,alunos(nome)')||[];
+  const unread=feedbacks.filter(f=>!f.lido).length;
+  const badge=document.getElementById('feedback-badge');
+  if(badge){badge.textContent=unread;badge.style.display=unread>0?'flex':'none';}
+  const el=document.getElementById('feedbacks-list');
+  if(!feedbacks.length){el.innerHTML=`<div class="empty"><div class="empty-icon">💬</div>Nenhum feedback ainda.</div>`;return;}
+  el.innerHTML=feedbacks.map(f=>`
+    <div class="fb-card ${!f.lido?'unread':''}" onclick="markLido('${f.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:15px;font-weight:700">${f.alunos?.nome||'—'}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">${formatDate(f.data)}</div></div>
+        ${!f.lido?`<span class="badge badge-gold">NOVO</span>`:`<span class="badge badge-gray">LIDO</span>`}
+      </div>
+      ${f.estrelas?`<div style="font-size:20px;color:var(--gold);margin-bottom:8px;letter-spacing:2px">${'★'.repeat(f.estrelas)}${'☆'.repeat(5-f.estrelas)}</div>`:''}
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:${f.mensagem?'10px':'0'}">
+        ${f.humor?`<span style="font-size:26px">${f.humor}</span>`:''}
+        ${f.esforco?`<span class="badge badge-gray">Esforço: ${f.esforco}</span>`:''}
+      </div>
+      ${f.mensagem?`<div style="font-size:14px;color:var(--text-2);line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${f.mensagem}"</div>`:''}
+      ${f.resposta?`<div style="margin-top:12px;padding:10px 12px;background:rgba(93,202,154,.08);border-left:3px solid var(--green);border-radius:0 10px 10px 0"><div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--green);letter-spacing:.1em;margin-bottom:6px">PERSONAL</div><div style="font-size:13px;color:var(--text-2);line-height:1.55">${f.resposta}</div></div>`:''}
+      <div style="margin-top:12px" onclick="event.stopPropagation()">
+        <button onclick="toggleResposta('${f.id}')" style="background:none;border:1.5px solid ${f.resposta?'var(--green)':'var(--hairline-strong)'};color:${f.resposta?'var(--green)':'var(--text-3)'};font-size:11px;font-weight:700;letter-spacing:.08em;padding:7px 16px;border-radius:10px">${f.resposta?'EDITAR RESPOSTA':'RESPONDER'}</button>
+      </div>
+      <div id="resp-area-${f.id}" style="display:none;margin-top:12px" onclick="event.stopPropagation()">
+        <textarea id="resp-txt-${f.id}" placeholder="Escreve a tua resposta..." style="width:100%;background:var(--surface-2);border:1.5px solid var(--hairline);color:var(--text);padding:12px;border-radius:10px;font-family:inherit;font-size:14px;resize:none;min-height:80px;outline:none;line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--hairline)'">${(f.resposta||'').replace(/</g,'&lt;')}</textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button onclick="enviarResposta('${f.id}','${f.aluno_id}')" style="background:var(--green);color:#000;border:none;font-size:13px;font-weight:700;padding:10px 0;border-radius:10px;flex:1;cursor:pointer">ENVIAR</button>
+          <button onclick="toggleResposta('${f.id}')" style="background:var(--surface-2);color:var(--text-3);border:1px solid var(--hairline);font-size:13px;font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer">CANCELAR</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+async function markLido(id){await sbFetch(`feedbacks?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({lido:true})});renderFeedbacks();}
+async function marcarTodosLidos(){await sbFetch('feedbacks?lido=eq.false',{method:'PATCH',body:JSON.stringify({lido:true})});toast('TODOS MARCADOS COMO LIDOS');renderFeedbacks();}
+function toggleResposta(id){const area=document.getElementById('resp-area-'+id);if(!area)return;const open=area.style.display==='none';area.style.display=open?'block':'none';if(open){document.getElementById('resp-txt-'+id)?.focus();}}
+async function enviarResposta(id,alunoId){
+  const ta=document.getElementById('resp-txt-'+id);if(!ta)return;
+  const resposta=ta.value.trim();if(!resposta){toast('ESCREVE UMA RESPOSTA!');return;}
+  await sbFetch(`feedbacks?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({resposta,resposta_em:new Date().toISOString(),lido:true})});
+  try{await fetch(SB_URL+'/functions/v1/send-push',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(getToken()||SB_KEY),'apikey':SB_KEY},body:JSON.stringify({aluno_id:alunoId,title:'Jo Silva PT',body:resposta.substring(0,100)})});}catch(e){}
+  toast('RESPOSTA ENVIADA!');renderFeedbacks();
+}
+
+// ── FOTOS EVOLUÇÃO ──
+async function renderFotosAluno(){
+  const grid=document.getElementById('fotos-aluno-grid');
+  if(!grid||!currentAlunoId)return;
+  grid.innerHTML='<div style="grid-column:1/-1;color:var(--text-3);font-size:12px">A carregar fotos...</div>';
+  try{
+    const r=await fetch(`${SB_URL}/storage/v1/object/list/fotos-evolucao`,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({prefix:currentAlunoId+'/',limit:100,offset:0})});
+    if(!r.ok){grid.innerHTML='';return;}
+    const files=await r.json();
+    if(!Array.isArray(files)||!files.length){grid.innerHTML='<div style="grid-column:1/-1" class="empty">Sem fotos ainda.</div>';return;}
+    files.sort((a,b)=>b.name.localeCompare(a.name));
+    grid.innerHTML=files.map(f=>{
+      const url=`${SB_URL}/storage/v1/object/public/fotos-evolucao/${currentAlunoId}/${f.name}`;
+      const parts=f.name.split('_');const lbl=(parts[1]||'').charAt(0).toUpperCase()+(parts[1]||'').slice(1);const dateStr=parts[0]||'';const fullPath=`${currentAlunoId}/${f.name}`;
+      return `<div><div style="position:relative;border-radius:10px;overflow:hidden;background:var(--surface-2);cursor:pointer" onclick="openFotoLightboxAdmin('${url}','${lbl} · ${formatDate(dateStr)}')"><img src="${url}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block" loading="lazy"><button style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,.75);border-radius:50%;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center" onclick="deletarFotoAdmin('${fullPath}',event)">×</button></div><div style="font-family:var(--mono);font-size:9px;color:var(--text-3);text-align:center;margin-top:3px">${lbl}<br>${formatDate(dateStr)}</div></div>`;
+    }).join('');
+  }catch(e){grid.innerHTML='';}
+}
+async function deletarFotoAdmin(path,e){e.stopPropagation();if(!confirm('Apagar esta foto?'))return;await fetch(`${SB_URL}/storage/v1/object/fotos-evolucao/${path}`,{method:'DELETE',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});await renderFotosAluno();}
+function openFotoLightboxAdmin(url,lbl){const lb=document.getElementById('admin-foto-lightbox');lb.querySelector('img').src=url;lb.querySelector('.foto-lb-lbl').textContent=lbl;lb.style.display='flex';}
+
+// ── TEMAS ──
+const THEMES={
+  padrao:{emoji:'🏅',gold:'#FFD96B',g2:'#E5B23A',glow:'rgba(255,217,107,.35)',subtle:'rgba(255,217,107,.07)',bg:'#000000'},
+  moon:  {emoji:'🌙',gold:'#C4B5FD',g2:'#7C3AED',glow:'rgba(196,181,253,.4)', subtle:'rgba(196,181,253,.08)',bg:'#06061a'},
+  sun:   {emoji:'☀️',gold:'#FFA827',g2:'#E08000',glow:'rgba(255,168,39,.4)',  subtle:'rgba(255,168,39,.08)', bg:'#0d0800'},
+  demon: {emoji:'👿',gold:'#BF5AF2',g2:'#7B2FBE',glow:'rgba(191,90,242,.4)',  subtle:'rgba(191,90,242,.08)',bg:'#08000f'},
+  iphone:{emoji:'📱',gold:'#0A84FF',g2:'#0066CC',glow:'rgba(10,132,255,.4)',  subtle:'rgba(10,132,255,.08)',bg:'#000000'},
+  rain:  {emoji:'🌧️',gold:'#38BDF8',g2:'#0284C7',glow:'rgba(56,189,248,.4)',  subtle:'rgba(56,189,248,.08)',bg:'#040810'},
+  happy: {emoji:'😊',gold:'#34D399',g2:'#059669',glow:'rgba(52,211,153,.4)',  subtle:'rgba(52,211,153,.08)',bg:'#020d07'},
+  angry: {emoji:'🤬',gold:'#FF3333',g2:'#CC0000',glow:'rgba(255,51,51,.5)',   subtle:'rgba(255,51,51,.1)',  bg:'#0a0000'},
+  fire:  {emoji:'🔥',gold:'#FF6B00',g2:'#CC4400',glow:'rgba(255,107,0,.45)',  subtle:'rgba(255,107,0,.09)',bg:'#0a0400'},
+  ice:   {emoji:'🧊',gold:'#67E8F9',g2:'#06B6D4',glow:'rgba(103,232,249,.4)', subtle:'rgba(103,232,249,.08)',bg:'#00080d'},
+};
+let _autoTimer=null;
+function _applyThemeRaw(name){
+  const t=THEMES[name]||THEMES.padrao;const r=document.documentElement;
+  r.style.setProperty('--gold',t.gold);r.style.setProperty('--gold-2',t.g2);
+  r.style.setProperty('--gold-glow',t.glow);r.style.setProperty('--gold-subtle',t.subtle);
+  document.body.style.background=t.bg;
+  document.body.className=(document.body.className||'').replace(/\bt-\w+/g,'').trim()+' t-'+name;
+  applyThemeFX(name);
+}
+function setTheme(name){
+  if(_autoTimer){clearInterval(_autoTimer);_autoTimer=null;}
+  if(name==='auto'){
+    const tick=()=>{const h=new Date().getHours();_applyThemeRaw(h>=6&&h<18?'sun':'moon');};
+    tick();_autoTimer=setInterval(tick,60000);
+    document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('on',b.dataset.theme==='auto'));
+    try{localStorage.setItem('josilvaPT_theme','auto');}catch(e){}return;
+  }
+  _applyThemeRaw(name);
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('on',b.dataset.theme===name));
+  try{localStorage.setItem('josilvaPT_theme',name);}catch(e){}
+}
+function applyThemeFX(name){
+  const fx=document.getElementById('theme-fx');if(!fx)return;fx.innerHTML='';
+  const rand=(a,b)=>Math.random()*(b-a)+a;
+  const specs={ice:{cls:'fx-snow fx-p',chars:['❄','✻','❅','❆','*'],n:18,dur:[7,16],delay:[0,12]},rain:{cls:'fx-rain fx-p',chars:[''],n:32,dur:[.6,1.4],delay:[0,2.5]},fire:{cls:'fx-ember fx-p',chars:[''],n:22,dur:[2.5,5],delay:[0,5]},happy:{cls:'fx-bubble fx-p',chars:[''],n:14,dur:[5,11],delay:[0,9]},moon:{cls:'fx-star fx-p',chars:[''],n:28,dur:[2,5],delay:[0,4],static:true},sun:{cls:'fx-ray fx-p',chars:[''],n:8,dur:[3,6],delay:[0,3],radial:true}};
+  const s=specs[name];if(!s)return;
+  for(let i=0;i<s.n;i++){
+    const el=document.createElement('div');el.className=s.cls;
+    if(s.chars&&s.chars[0])el.textContent=s.chars[Math.floor(Math.random()*s.chars.length)];
+    if(s.radial){el.style.left='50%';el.style.top='-10vh';el.style.transform=`rotate(${(i/s.n)*360}deg)`;}
+    else if(s.static){el.style.left=rand(0,100)+'vw';el.style.top=rand(0,100)+'vh';}
+    else{el.style.left=rand(0,100)+'vw';}
+    el.style.animationDuration=rand(s.dur[0],s.dur[1])+'s';
+    el.style.animationDelay='-'+rand(s.delay[0],s.delay[1])+'s';
+    if(name==='ice')el.style.fontSize=rand(9,18)+'px';
+    if(name==='rain')el.style.height=rand(12,24)+'px';
+    fx.appendChild(el);
+  }
+}
+
+// ── INIT ──
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+window.addEventListener('DOMContentLoaded',async()=>{
+  // temas
+  document.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
+  let saved=null;try{saved=localStorage.getItem('josilvaPT_theme');}catch(e){}
+  setTheme((saved==='auto'||(saved&&THEMES[saved]))?saved:'padrao');
+  // auth
+  const show=()=>{document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';loadConfig();renderDash();};
+  if(getToken()){show();}else if(getRefresh()){const ok=await refreshSession();if(ok)show();}
+  document.getElementById('login-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('login-senha').focus();});
+  document.getElementById('login-senha').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+});
+</script>
+</body>
+</html>
+</body>
+</html>
+</body>
+</html>
