@@ -128,7 +128,13 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
 .badge-green{background:rgba(93,202,154,.12);color:var(--green);border:1px solid rgba(93,202,154,.25)}
 .badge-gray{background:var(--surface-2);color:var(--text-3);border:1px solid var(--hairline)}
 .badge-gold{background:var(--gold-subtle);color:var(--gold);border:1px solid rgba(255,217,107,.25)}
+.badge-warn{background:rgba(224,85,85,.12);color:#e05555;border:1px solid rgba(224,85,85,.3)}
 .chevron{color:var(--text-3);font-size:18px;flex-shrink:0}
+.modo-btn{border:none;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:transform .15s;flex-shrink:0}
+.modo-btn:active{transform:scale(.94)}
+.modo-normal{background:var(--surface-2);color:var(--text-3);border:1px solid var(--hairline)}
+.modo-overload{background:rgba(93,202,154,.15);color:var(--green);border:1px solid rgba(93,202,154,.35)}
+.modo-deload{background:var(--gold-subtle);color:var(--gold);border:1px solid rgba(255,217,107,.3)}
 
 /* ── DETAIL HEADER ── */
 .det-header{background:var(--surface-1);border-bottom:1px solid var(--hairline);padding:20px 16px}
@@ -732,21 +738,45 @@ function animateRing(ativos,total){
 
 // ── ALUNOS ──
 async function renderAlunos(){
-  const alunos=await sbFetch('alunos?order=nome.asc')||[];
+  const [alunos,treinos]=await Promise.all([
+    sbFetch('alunos?order=nome.asc'),
+    sbFetch('treinos?select=aluno_id,criado_em')
+  ]);
   const el=document.getElementById('alunos-list');
-  const filtered=alunosFilter==='ativo'?alunos.filter(a=>a.ativo):alunosFilter==='inativo'?alunos.filter(a=>!a.ativo):alunos;
+  const filtered=alunosFilter==='ativo'?(alunos||[]).filter(a=>a.ativo):alunosFilter==='inativo'?(alunos||[]).filter(a=>!a.ativo):(alunos||[]);
   const chipHtml=alunosFilter?`<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span class="badge ${alunosFilter==='ativo'?'badge-green':'badge-gray'}">${alunosFilter==='ativo'?'ATIVOS':'INATIVOS'}</span><button onclick="alunosFilter=null;renderAlunos()" style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer">✕ ver todos</button></div>`:'';
   if(!filtered.length){el.innerHTML=chipHtml+`<div class="empty"><div class="empty-icon">◉</div>Nenhum aluno encontrado.</div>`;return;}
-  el.innerHTML=chipHtml+filtered.map((a,i)=>`
+  const hoje=Date.now();
+  const ultimoTreino={};
+  (treinos||[]).forEach(t=>{if(!ultimoTreino[t.aluno_id]||t.criado_em>ultimoTreino[t.aluno_id])ultimoTreino[t.aluno_id]=t.criado_em;});
+  el.innerHTML=chipHtml+filtered.map((a,i)=>{
+    const modo=a.modo_treino||'normal';
+    const modoLabel=modo==='overload'?'↑ Overload':modo==='deload'?'↓ Deload':'⬡ Normal';
+    const last=ultimoTreino[a.id];
+    const dias=last?Math.floor((hoje-new Date(last))/86400000):null;
+    const semAtualizar=a.ativo&&(dias===null||dias>28);
+    return `
     <div class="aluno-card" style="animation:revealUp .3s ease ${i*0.06}s both" onclick="openAluno('${a.id}')">
       <div class="av av-${i%4}">${initials(a.nome)}</div>
       <div class="aluno-info-wrap">
         <div class="aluno-nome">${a.nome}</div>
         <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
-        <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?'ATIVO':'INATIVO'}</span>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">
+          <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?'ATIVO':'INATIVO'}</span>
+          ${semAtualizar?`<span class="badge badge-warn">⚠ ${dias===null?'sem treino':dias+'d sem atualizar'}</span>`:''}
+        </div>
       </div>
+      <button class="modo-btn modo-${modo}" onclick="cycleModo(event,'${a.id}','${modo}')">${modoLabel}</button>
       <div class="chevron">›</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+async function cycleModo(event,alunoId,current){
+  event.stopPropagation();
+  const next={normal:'overload',overload:'deload',deload:'normal'}[current]||'normal';
+  await sbFetch(`alunos?id=eq.${alunoId}`,{method:'PATCH',body:JSON.stringify({modo_treino:next})});
+  renderAlunos();
 }
 async function openAluno(id){
   currentAlunoId=id;
