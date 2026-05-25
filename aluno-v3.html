@@ -659,7 +659,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 /* ════ CRONÓMETRO */
 #timer-pill button{pointer-events:auto}
 #timer-pill{
-  position:fixed;top:calc(16px + var(--safe-top, 0px));left:50%;transform:translateX(-50%) translateY(-80px);
+  position:fixed;top:calc(16px + var(--safe-top, 0px));left:50%;transform:translateX(-50%) translateY(calc(-100% - 20px));
   background:rgba(16,16,16,.92);border:1.5px solid var(--gold);backdrop-filter:blur(20px);
   border-radius:30px;padding:10px 22px;display:flex;align-items:center;gap:10px;
   z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
