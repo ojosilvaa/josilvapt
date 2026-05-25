@@ -558,7 +558,7 @@ async function init(){
   const savedTs = lc('timerStart', null);
   if (savedTs) {
     timerStart = savedTs;
-    const pill = document.getElementById('timer-pill');
+    const pill = document.getElementById('timer-wrap');
     const disp = document.getElementById('timer-display');
     if (pill) pill.classList.add('show');
     if (disp) disp.textContent = timerFmt(Date.now() - timerStart);
@@ -630,7 +630,7 @@ function timerStart_(){
   if (timerStart !== null) return; // já está a correr
   timerStart = Date.now();
   sc('timerStart', timerStart); // persiste — sobrevive a recarregamentos
-  const pill = document.getElementById('timer-pill');
+  const pill = document.getElementById('timer-wrap');
   const disp = document.getElementById('timer-display');
   if (pill) pill.classList.add('show');
   timerInterval = setInterval(() => {
@@ -641,7 +641,7 @@ function timerStop(){
   clearInterval(timerInterval); timerInterval = null;
   clearInterval(restInterval);  restInterval = null; restStart = null;
   sc('timerStart', null);
-  const pill = document.getElementById('timer-pill');
+  const pill = document.getElementById('timer-wrap');
   if (pill) pill.classList.remove('show');
   _restReset();
 }
@@ -653,18 +653,22 @@ function timerReset(){
 }
 function _restReset(){
   restStart = null;
+  const rp = document.getElementById('rest-pill');
   const rd = document.getElementById('rest-display');
   const rb = document.getElementById('rest-btn');
+  if (rp) rp.classList.remove('active');
   if (rd) { rd.textContent = '00:00'; rd.style.display = 'none'; }
-  if (rb) { rb.textContent = '▶ DESCANSO'; rb.style.color = ''; }
+  if (rb) rb.textContent = '▶ DESCANSO';
 }
 function restToggle(){
+  const rp = document.getElementById('rest-pill');
   const rb = document.getElementById('rest-btn');
   const rd = document.getElementById('rest-display');
   if (restStart === null) {
     restStart = Date.now();
+    if (rp) rp.classList.add('active');
     if (rd) { rd.style.display = 'inline'; rd.textContent = '00:00'; }
-    if (rb) { rb.textContent = '⏸ PARAR'; rb.style.color = 'var(--green,#5DCA9A)'; }
+    if (rb) rb.textContent = '⏸ PARAR';
     restInterval = setInterval(() => {
       if (rd) rd.textContent = timerFmt(Date.now() - restStart);
     }, 1000);
