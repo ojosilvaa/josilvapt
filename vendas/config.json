@@ -1,0 +1,32 @@
+{
+  "negocio": {
+    "nome": "Jo Silva",
+    "servico": "Criação de Websites + SEO Local",
+    "telefone": "",
+    "cidade": "Porto",
+    "website": "https://ojosilvaa.github.io/josilvapt/crm/"
+  },
+  "precos": {
+    "website_basico": 350,
+    "website_profissional": 600,
+    "seo_mensal": 80,
+    "pack_completo": 599,
+    "manutencao_anual": 120
+  },
+  "claude": {
+    "api_key": "COLOCA_AQUI_A_TUA_CHAVE_ANTHROPIC",
+    "modelo": "claude-3-haiku-20240307",
+    "tokens_diarios_max": 80000,
+    "tokens_alerta": 60000
+  },
+  "evolution_api": {
+    "url": "http://localhost:8080",
+    "api_key": "COLOCA_AQUI",
+    "instancia": "josilva"
+  },
+  "github": {
+    "repo": "ojosilvaa/josilvapt",
+    "branch": "main",
+    "previews_path": "crm/previews"
+  }
+}

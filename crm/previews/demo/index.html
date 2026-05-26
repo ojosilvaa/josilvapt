@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Salão Beleza Exemplo — Website Demonstração</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f8f8f8;color:#1a1a1a}
+
+/* BANNER TOPO */
+.demo-banner{background:#E91E8C;color:#fff;text-align:center;padding:10px 16px;font-size:.8rem;font-weight:600;letter-spacing:.05em;position:sticky;top:0;z-index:999}
+.demo-banner a{color:#fff;text-decoration:underline}
+
+/* HERO */
+.hero{background:#E91E8C;color:#fff;padding:60px 20px 50px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:rgba(255,255,255,.07);border-radius:50%}
+.hero-emoji{font-size:3rem;margin-bottom:12px;display:block}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.05em;margin-bottom:8px}
+.hero .sub{font-size:1rem;opacity:.9;margin-bottom:20px}
+.hero .loc{font-size:.85rem;opacity:.75;margin-bottom:24px}
+.badge-rating{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;font-size:.85rem;margin-bottom:24px}
+.hero .cta-hero{background:#fff;color:#E91E8C;border:none;border-radius:8px;padding:14px 28px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:.2s}
+.hero .cta-hero:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+
+/* SERVIÇOS */
+.sec{padding:40px 20px;max-width:680px;margin:0 auto}
+.sec h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.05em;margin-bottom:6px;color:#E91E8C}
+.sec .desc{color:#666;font-size:.9rem;margin-bottom:24px}
+.servicos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.srv{background:#fff;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.srv-ic{background:#E91E8C;color:#fff;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0}
+.srv-txt{font-size:.85rem;font-weight:600}
+
+/* DEPOIMENTOS */
+.dep{background:#fff0f8;border-radius:12px;padding:24px;margin-bottom:10px}
+.dep-stars{color:#F9A825;font-size:1rem;margin-bottom:8px}
+.dep-txt{font-size:.9rem;line-height:1.6;color:#333;margin-bottom:10px;font-style:italic}
+.dep-autor{font-size:.78rem;font-weight:700;color:#666}
+
+/* CONTACTO */
+.contacto{background:#E91E8C;color:#fff;padding:40px 20px;text-align:center}
+.contacto h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.05em;margin-bottom:6px}
+.contacto p{opacity:.85;margin-bottom:24px;font-size:.9rem}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-wa{background:#25D366;color:#fff;border:none;border-radius:8px;padding:14px 22px;font-size:.9rem;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:7px}
+.btn-tel{background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:8px;padding:13px 22px;font-size:.9rem;font-weight:700;text-decoration:none}
+.btn-tel:hover,.btn-wa:hover{opacity:.9;transform:translateY(-1px)}
+
+/* MAPA PLACEHOLDER */
+.mapa{background:#e0e0e0;height:160px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#888;font-size:.9rem;margin-top:20px}
+
+/* FOOTER */
+footer{background:#1a1a1a;color:#666;text-align:center;padding:16px;font-size:.75rem}
+footer a{color:#E91E8C;text-decoration:none}
+
+@media(max-width:480px){
+  .hero h1{font-size:2rem}
+  .servicos{grid-template-columns:1fr}
+  .hero{padding:40px 16px 36px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  ⚡ Website de demonstração criado por <a href="https://wa.me/351" target="_blank">Jo Silva</a> — Especialista em Websites para negócios locais em Portugal
+</div>
+
+<section class="hero">
+  <span class="hero-emoji">💇</span>
+  <h1>Salão Beleza Exemplo</h1>
+  <p class="sub">Cabeleireiro em Porto</p>
+  <div class="badge-rating"><span style="color:#F9A825">★★★★½</span> <span>4.7 estrelas (38 avaliações)</span></div>
+  <p class="loc">📍 Rua de Santa Catarina 100, Porto</p>
+  <a href="tel:912 345 678" class="cta-hero">📞 912 345 678</a>
+</section>
+
+<section class="sec">
+  <h2>Os Nossos Serviços</h2>
+  <p class="desc">Qualidade e profissionalismo em cada serviço. Marque a sua consulta hoje.</p>
+  <div class="servicos">
+        <div class="srv">
+          <div class="srv-ic">✓</div>
+          <div class="srv-txt">Corte Feminino & Masculino</div>
+        </div>
+        <div class="srv">
+          <div class="srv-ic">✓</div>
+          <div class="srv-txt">Coloração & Mechas</div>
+        </div>
+        <div class="srv">
+          <div class="srv-ic">✓</div>
+          <div class="srv-txt">Tratamentos Capilares</div>
+        </div>
+        <div class="srv">
+          <div class="srv-ic">✓</div>
+          <div class="srv-txt">Penteados & Festas</div>
+        </div>
+        <div class="srv">
+          <div class="srv-ic">✓</div>
+          <div class="srv-txt">Alisamento & Permanente</div>
+        </div></div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <h2>O que dizem os clientes</h2>
+  <p class="desc">A opinião dos nossos clientes é a nossa maior conquista.</p>
+  <div class="dep">
+    <div class="dep-stars">★★★★★</div>
+    <p class="dep-txt">"Excelente profissionalismo e atendimento. Recomendo a toda a gente em Porto!"</p>
+    <div class="dep-autor">— Cliente satisfeito, Porto</div>
+  </div>
+  <div class="dep">
+    <div class="dep-stars">★★★★★</div>
+    <p class="dep-txt">"Sempre muito atenciosos e com ótimos resultados. O melhor de Porto sem dúvida."</p>
+    <div class="dep-autor">— Cliente fiel, Porto</div>
+  </div>
+  <div class="mapa">📍 Ver no Google Maps — Rua de Santa Catarina 100, Porto</div>
+</section>
+
+<section class="contacto">
+  <h2>Fale Connosco</h2>
+  <p>Rua de Santa Catarina 100, Porto · 912 345 678</p>
+  <div class="btns">
+    <a class="btn-wa" href="https://wa.me/35112 345 678" target="_blank">💬 WhatsApp</a>
+    <a class="btn-tel" href="tel:912 345 678">📞 912 345 678</a>
+  </div>
+</section>
+
+<footer>
+  Website criado por <a href="#" target="_blank">Jo Silva — Especialista em Websites Locais</a> ·
+  Quer um website assim para o seu negócio? <a href="#" target="_blank">Fale connosco</a>
+</footer>
+
+</body>
+</html>
