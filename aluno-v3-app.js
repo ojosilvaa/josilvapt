@@ -2099,7 +2099,7 @@ function comPostHTML(p, idx=0){
       ${badgeHTML}
     </div>
     ${p.texto ? `<div class="com-post-text">${escapeHTML(p.texto)}</div>` : ''}
-    ${p.foto_url ? `<img class="com-post-photo" src="${p.foto_url}" loading="lazy" alt="">` : ''}
+    ${p.foto_url ? `<img class="com-post-photo" src="${escapeHTML(p.foto_url)}" loading="lazy" alt="">` : ''}
     <div class="com-post-foot">
       <div class="com-react-group">${reactHTML}</div>
       <button class="com-comment-toggle" onclick="comToggleComments('${p.id}')">
