@@ -1282,7 +1282,7 @@ async function renderFotosAluno(){
   if(!grid||!currentAlunoId)return;
   grid.innerHTML='<div style="grid-column:1/-1;color:var(--text-3);font-size:12px">A carregar fotos...</div>';
   try{
-    const r=await fetch(`${SB_URL}/storage/v1/object/list/fotos-evolucao`,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({prefix:currentAlunoId+'/',limit:100,offset:0})});
+    const r=await fetch(`${SB_URL}/storage/v1/object/list/fotos-evolucao`,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+(getToken()||SB_KEY),'Content-Type':'application/json'},body:JSON.stringify({prefix:currentAlunoId+'/',limit:100,offset:0})});
     if(!r.ok){grid.innerHTML='';return;}
     const files=await r.json();
     if(!Array.isArray(files)||!files.length){grid.innerHTML='<div style="grid-column:1/-1" class="empty">Sem fotos ainda.</div>';return;}
@@ -1294,7 +1294,7 @@ async function renderFotosAluno(){
     }).join('');
   }catch(e){grid.innerHTML='';}
 }
-async function deletarFotoAdmin(path,e){e.stopPropagation();if(!confirm('Apagar esta foto?'))return;await fetch(`${SB_URL}/storage/v1/object/fotos-evolucao/${path}`,{method:'DELETE',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});await renderFotosAluno();}
+async function deletarFotoAdmin(path,e){e.stopPropagation();if(!confirm('Apagar esta foto?'))return;await fetch(`${SB_URL}/storage/v1/object/fotos-evolucao/${path}`,{method:'DELETE',headers:{apikey:SB_KEY,Authorization:'Bearer '+(getToken()||SB_KEY)}});await renderFotosAluno();}
 function openFotoLightboxAdmin(url,lbl){const lb=document.getElementById('admin-foto-lightbox');lb.querySelector('img').src=url;lb.querySelector('.foto-lb-lbl').textContent=lbl;lb.style.display='flex';}
 
 // ── TEMAS ──
