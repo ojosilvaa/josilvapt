@@ -439,8 +439,8 @@ function selectAluno(id, nome, objetivo, modalidade) {
 // ── GERAR COM IA ──
 async function gerarTreino() {
   const ANTHROPIC_KEY = getAnthropicKey();
-  if (!ANTHROPIC_KEY) {
-    toast('CONFIGURA A CHAVE IA NAS CONFIGURAÇÕES DO ADMIN!');
+  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
+    toast('CHAVE ANTHROPIC INVÁLIDA — CONFIGURA NAS DEFINIÇÕES DO ADMIN!');
     return;
   }
   const objetivo = getChips('chips-objetivo') || 'Hipertrofia';

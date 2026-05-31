@@ -147,6 +147,8 @@ function loadConfig() {
 }
 
 // ── UTILS ─────────────────────────────────────────────────
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+
 const toast = msg => {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -371,9 +373,9 @@ async function renderDash() {
     alertasEl.innerHTML = alertas.map(a => {
       const days = daysAgo(lastSessaoByAluno[a.id]);
       return `<div class="alerta-item" onclick="goTab('alunos');openAluno('${a.id}')">
-        <div class="av av-sm" style="${avStyle(a.nome)}">${initials(a.nome)}</div>
+        <div class="av av-sm" style="${avStyle(a.nome)}">${esc(initials(a.nome))}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.nome}</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.nome)}</div>
         </div>
         <span class="alerta-pill">${days === 999 ? 'sem treino' : days + ' ' + T('alerta_dias')}</span>
       </div>`;
@@ -462,10 +464,10 @@ async function renderAlunoCards(alunos) {
     const last = lastByAluno[a.id];
     const inactive5 = daysAgo(last) >= 5;
     return `<div class="aluno-card" style="animation:fadeUp .3s ease ${i * 0.06}s both" onclick="openAluno('${a.id}')">
-      <div class="av" style="${avStyle(a.nome)}">${initials(a.nome)}</div>
+      <div class="av" style="${avStyle(a.nome)}">${esc(initials(a.nome))}</div>
       <div class="aluno-info">
-        <div class="aluno-nome">${a.nome}</div>
-        <div class="aluno-sub">${[a.objetivo, a.modalidade].filter(Boolean).join(' · ')}</div>
+        <div class="aluno-nome">${esc(a.nome)}</div>
+        <div class="aluno-sub">${esc([a.objetivo, a.modalidade].filter(Boolean).join(' · '))}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <span class="badge ${a.ativo ? 'badge-green' : 'badge-gray'}">${a.ativo ? T('badge_ativo') : T('badge_inativo')}</span>
           ${a.plano ? `<span class="badge badge-gold">${a.plano}</span>` : ''}
@@ -604,13 +606,13 @@ function renderExList() {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="ex-num-lbl">EX ${String(i + 1).padStart(2, '0')}</div>
-      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${ex.nome || ''}" oninput="exerciciosList[${i}].nome=this.value"></div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${esc(ex.nome || '')}" oninput="exerciciosList[${i}].nome=this.value"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${ex.series || '3'}" oninput="exerciciosList[${i}].series=this.value"></div>
-        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${ex.reps || '10-12'}" oninput="exerciciosList[${i}].reps=this.value"></div>
+        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${esc(ex.series || '3')}" oninput="exerciciosList[${i}].series=this.value"></div>
+        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${esc(ex.reps || '10-12')}" oninput="exerciciosList[${i}].reps=this.value"></div>
       </div>
-      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Observações (opcional)" value="${ex.obs || ''}" oninput="exerciciosList[${i}].obs=this.value"></div>
-      <div class="form-group" style="margin:0"><input class="form-inp" placeholder="Link do vídeo YouTube (opcional)" value="${ex.video_url || ''}" oninput="exerciciosList[${i}].video_url=this.value"></div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Observações (opcional)" value="${esc(ex.obs || '')}" oninput="exerciciosList[${i}].obs=this.value"></div>
+      <div class="form-group" style="margin:0"><input class="form-inp" placeholder="Link do vídeo YouTube (opcional)" value="${esc(ex.video_url || '')}" oninput="exerciciosList[${i}].video_url=this.value"></div>
     </div>`).join('');
 }
 
@@ -642,8 +644,8 @@ async function renderTreinos() {
   if (!treinos.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">📋</div>${T('treinos_empty')}</div>`; return; }
   el.innerHTML = treinos.map(t => `
     <div class="treino-card">
-      <div class="treino-nome">${t.nome}</div>
-      <div class="treino-sub">${t.descricao || ''}</div>
+      <div class="treino-nome">${esc(t.nome)}</div>
+      <div class="treino-sub">${esc(t.descricao || '')}</div>
       <div class="treino-actions">
         <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">EDITAR</button>
         <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">EXCLUIR</button>
@@ -861,7 +863,7 @@ async function renderMedidas() {
           </div>
         </div>`;
       }).join('')}
-      ${av.obs ? `<div style="margin-top:10px;font-size:13px;color:var(--text-2);padding:10px;border-left:3px solid var(--gold);background:var(--surface-1);border-radius:0 8px 8px 0;line-height:1.5">${av.obs}</div>` : ''}
+      ${av.obs ? `<div style="margin-top:10px;font-size:13px;color:var(--text-2);padding:10px;border-left:3px solid var(--gold);background:var(--surface-1);border-radius:0 8px 8px 0;line-height:1.5">${esc(av.obs)}</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -1011,7 +1013,7 @@ async function renderPeriodizacao() {
   if (msgs.length) {
     msgsEl.innerHTML = `<div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">MENSAGENS ENVIADAS</div>` +
       msgs.map(m => `<div style="padding:10px 0;border-bottom:1px solid var(--hairline)">
-        <div style="font-size:13px;color:var(--text-2);line-height:1.5">${m.texto}</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.5">${esc(m.texto)}</div>
         <div style="font-size:10px;color:var(--text-3);margin-top:4px;font-family:'JetBrains Mono',monospace">${formatDate(m.criado_em)} · ${m.lida ? '✓ lida' : 'não lida'}</div>
       </div>`).join('');
   } else {
@@ -1211,26 +1213,26 @@ function renderFbCard(f, compact = false) {
   return `<div class="fb-card ${!f.lido ? 'unread' : ''}" onclick="${compact ? "goTab('feedbacks')" : `markLido('${f.id}')`}">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
       <div>
-        <div style="font-size:15px;font-weight:700;color:var(--text)">${f.alunos?.nome || '—'}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">${esc(f.alunos?.nome || '—')}</div>
         <div style="font-size:11px;color:var(--text-3);margin-top:2px;font-family:'JetBrains Mono',monospace">${formatDate(f.data)}</div>
       </div>
       ${!f.lido ? `<span class="badge badge-gold">${T('fb_novo')}</span>` : `<span class="badge badge-gray">${T('fb_lido')}</span>`}
     </div>
     ${stars ? `<div class="fb-stars">${stars.split('').map(c => `<span class="${c === '★' ? 'fb-star-on' : 'fb-star-off'}">${c}</span>`).join('')}</div>` : ''}
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:${f.mensagem ? '10px' : '0'}">
-      ${f.humor ? `<span style="font-size:26px">${f.humor}</span>` : ''}
-      ${f.esforco ? `<span class="badge badge-gray">${T('fb_esforco')}${f.esforco}</span>` : ''}
+      ${f.humor ? `<span style="font-size:26px">${esc(f.humor)}</span>` : ''}
+      ${f.esforco ? `<span class="badge badge-gray">${T('fb_esforco')}${esc(f.esforco)}</span>` : ''}
     </div>
-    ${f.mensagem ? `<div style="font-size:14px;color:var(--text-2);line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${f.mensagem}"</div>` : ''}
+    ${f.mensagem ? `<div style="font-size:14px;color:var(--text-2);line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${esc(f.mensagem)}"</div>` : ''}
     ${!compact && f.resposta ? `<div style="margin-top:12px;padding:10px 12px;background:rgba(93,202,154,.07);border-left:3px solid var(--green);border-radius:0 8px 8px 0">
       <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.1em;margin-bottom:5px">PERSONAL</div>
-      <div style="font-size:13px;color:var(--text-2);line-height:1.55">${f.resposta}</div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.55">${esc(f.resposta)}</div>
     </div>` : ''}
     ${!compact ? `<div style="margin-top:12px" onclick="event.stopPropagation()">
       <button onclick="toggleResposta('${f.id}')" style="background:none;border:1px solid ${f.resposta ? 'rgba(93,202,154,.4)' : 'var(--hairline)'};color:${f.resposta ? 'var(--green)' : 'var(--text-3)'};font-size:12px;font-weight:700;letter-spacing:.05em;padding:7px 16px;border-radius:8px">${f.resposta ? T('fb_editar_resp') : T('fb_responder')}</button>
     </div>
     <div id="resp-area-${f.id}" style="display:none;margin-top:12px" onclick="event.stopPropagation()">
-      <textarea id="resp-txt-${f.id}" placeholder="${T('fb_resp_ph')}" style="width:100%;background:var(--surface-1);border:1px solid var(--hairline);color:var(--text);padding:12px;border-radius:10px;font-size:14px;resize:none;min-height:80px;outline:none;line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--hairline)'">${(f.resposta || '').replace(/</g,'&lt;')}</textarea>
+      <textarea id="resp-txt-${f.id}" placeholder="${T('fb_resp_ph')}" style="width:100%;background:var(--surface-1);border:1px solid var(--hairline);color:var(--text);padding:12px;border-radius:10px;font-size:14px;resize:none;min-height:80px;outline:none;line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--hairline)'">${esc(f.resposta || '')}</textarea>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button onclick="enviarResposta('${f.id}','${f.aluno_id}')" style="background:var(--green);color:#000;border:none;font-size:13px;font-weight:700;padding:10px 0;border-radius:10px;flex:1;cursor:pointer">${T('fb_enviar')}</button>
         <button onclick="toggleResposta('${f.id}')" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--hairline);font-size:13px;font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer">✕</button>
@@ -1329,11 +1331,11 @@ async function renderChallenges() {
       <div class="c-head">
         <div class="c-emoji">${c.emoji || '🏆'}</div>
         <div>
-          <div class="c-title">${c.titulo || '—'}</div>
+          <div class="c-title">${esc(c.titulo || '—')}</div>
           <span class="badge ${c.ativo ? 'badge-green' : 'badge-gray'}">${c.ativo ? 'ATIVO' : 'INATIVO'}</span>
         </div>
       </div>
-      <div class="c-desc">${c.descricao || ''}</div>
+      <div class="c-desc">${esc(c.descricao || '')}</div>
       <div class="c-meta">
         <span class="badge badge-gold">Meta: ${c.meta_valor} ${metaLabels[c.meta_tipo] || c.meta_tipo}</span>
         ${c.fim ? `<span class="badge badge-gray">Até ${formatDate(c.fim)}</span>` : ''}

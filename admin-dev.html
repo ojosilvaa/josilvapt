@@ -656,6 +656,8 @@ let currentAlunoId=null,currentTreinoId=null,exerciciosList=[],evoChartInst=null
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
 function initials(nome){return nome.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');}
 function formatDate(d){if(!d)return'—';const p=d.split('T')[0].split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
+// escapa dados vindos da BD antes de irem para innerHTML (anti-XSS armazenado)
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 const lc=(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch(e){return d;}};
 const sc=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 
@@ -764,7 +766,7 @@ async function renderDash(){
   animateRing(ativos,alunos.length);
   const el=document.getElementById('atividade-list');
   if(!sessoes.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◌</div>Nenhuma sessão registada.</div>`;return;}
-  el.innerHTML=sessoes.slice(0,15).map(s=>`<div class="atividade-item"><div class="at-dot"></div><div><div class="at-nome">${s.alunos?.nome||'—'}</div><div class="at-info">${formatDate(s.data)}</div></div><div class="at-treino">${s.treinos?.nome||'—'}</div></div>`).join('');
+  el.innerHTML=sessoes.slice(0,15).map(s=>`<div class="atividade-item"><div class="at-dot"></div><div><div class="at-nome">${esc(s.alunos?.nome||'—')}</div><div class="at-info">${formatDate(s.data)}</div></div><div class="at-treino">${esc(s.treinos?.nome||'—')}</div></div>`).join('');
 }
 function animateRing(ativos,total){
   const pct=total?Math.round((ativos/total)*100):0;
@@ -805,10 +807,10 @@ async function renderAlunos(){
     const semTreinar=a.ativo&&(diasSes===null||diasSes>7);
     return `
     <div class="aluno-card" style="animation:revealUp .3s ease ${i*0.06}s both" onclick="openAluno('${a.id}')">
-      <div class="av av-${i%4}">${initials(a.nome)}</div>
+      <div class="av av-${i%4}">${esc(initials(a.nome))}</div>
       <div class="aluno-info-wrap">
-        <div class="aluno-nome">${a.nome}</div>
-        <div class="aluno-sub">${[a.objetivo,a.modalidade].filter(Boolean).join(' · ')}</div>
+        <div class="aluno-nome">${esc(a.nome)}</div>
+        <div class="aluno-sub">${esc([a.objetivo,a.modalidade].filter(Boolean).join(' · '))}</div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">
           <span class="badge ${a.ativo?'badge-green':'badge-gray'}">${a.ativo?'ATIVO':'INATIVO'}</span>
           ${semAtualizar?`<span class="badge badge-warn">⚠ ${dias===null?'sem treino':dias+'d sem atualizar'}</span>`:''}
@@ -887,8 +889,8 @@ async function renderTreinos(){
   if(!treinos.length){el.innerHTML=`<div class="empty"><div class="empty-icon">◻</div>Nenhum treino. Toque no ＋.</div>`;return;}
   el.innerHTML=treinos.map(t=>`
     <div class="treino-card">
-      <div class="treino-nome">${t.nome}</div>
-      <div class="treino-sub">${t.descricao||''}</div>
+      <div class="treino-nome">${esc(t.nome)}</div>
+      <div class="treino-sub">${esc(t.descricao||'')}</div>
       <div class="treino-actions">
         <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">EDITAR</button>
         <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">EXCLUIR</button>
@@ -911,12 +913,12 @@ function renderExList(){
     <div class="ex-card">
       <button class="ex-del" onclick="exerciciosList.splice(${i},1);renderExList()">✕</button>
       <div class="ex-num-label">EX ${String(i+1).padStart(2,'0')}</div>
-      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${ex.nome||''}" oninput="exerciciosList[${i}].nome=this.value"></div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${esc(ex.nome||'')}" oninput="exerciciosList[${i}].nome=this.value"></div>
       <div class="ex-row">
-        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${ex.series||'3'}" oninput="exerciciosList[${i}].series=this.value"></div>
-        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${ex.reps||'10-12'}" oninput="exerciciosList[${i}].reps=this.value"></div>
+        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${esc(ex.series||'3')}" oninput="exerciciosList[${i}].series=this.value"></div>
+        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${esc(ex.reps||'10-12')}" oninput="exerciciosList[${i}].reps=this.value"></div>
       </div>
-      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="Observações (opcional)" value="${ex.obs||''}" oninput="exerciciosList[${i}].obs=this.value"></div>
+      <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="Observações (opcional)" value="${esc(ex.obs||'')}" oninput="exerciciosList[${i}].obs=this.value"></div>
       <div class="form-group" style="margin:8px 0 0"><input class="form-inp" placeholder="Link do vídeo (YouTube, opcional)" value="${ex.video_url||''}" oninput="exerciciosList[${i}].video_url=this.value"></div>
     </div>`).join('');
 }
@@ -1011,7 +1013,7 @@ async function renderMedidas(){
       av.gordura?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>`:'',
       av.massa_magra?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.massa_magra}kg</div><div class="stat-lbl">Massa</div></div>`:'',
     ].filter(Boolean).join('');
-    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:15px;font-weight:700">${formatDate(av.data)}</div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline-gold" onclick="editarMedida('${av.id}')">EDITAR</button><button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button></div></div>${bioCards?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">${bioCards}</div>`:''}${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{const cur=med[c.id];const prevV=prev?.medidas?.[c.id];let delta='',cls='zero';if(prevV!==undefined){const d=(cur-prevV).toFixed(1);delta=(d>0?'+':'')+d+'cm';cls=d<0?'pos':(d>0?'neg':'zero');}return`<div class="hist-item"><div class="hist-label">${c.label}</div><div style="display:flex;align-items:center;gap:10px">${delta?`<span class="pchange ${cls}">${delta}</span>`:''}<div class="hist-val">${cur}cm</div></div></div>`;}).join('')}${av.obs?`<div style="margin-top:10px;font-size:13px;color:var(--text-2);padding:10px;border-left:3px solid var(--gold);background:var(--surface-2);border-radius:0 8px 8px 0">${av.obs}</div>`:''}</div>`;
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:15px;font-weight:700">${formatDate(av.data)}</div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline-gold" onclick="editarMedida('${av.id}')">EDITAR</button><button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button></div></div>${bioCards?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">${bioCards}</div>`:''}${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{const cur=med[c.id];const prevV=prev?.medidas?.[c.id];let delta='',cls='zero';if(prevV!==undefined){const d=(cur-prevV).toFixed(1);delta=(d>0?'+':'')+d+'cm';cls=d<0?'pos':(d>0?'neg':'zero');}return`<div class="hist-item"><div class="hist-label">${c.label}</div><div style="display:flex;align-items:center;gap:10px">${delta?`<span class="pchange ${cls}">${delta}</span>`:''}<div class="hist-val">${cur}cm</div></div></div>`;}).join('')}${av.obs?`<div style="margin-top:10px;font-size:13px;color:var(--text-2);padding:10px;border-left:3px solid var(--gold);background:var(--surface-2);border-radius:0 8px 8px 0">${esc(av.obs)}</div>`:''}</div>`;
   }).join('');
 }
 function editarMedida(id){
@@ -1121,7 +1123,7 @@ async function renderDashFinanceiro(){
         const dias=last?Math.floor((Date.now()-new Date(last.data))/86400000):null;
         return`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--hairline)" onclick="goTab('alunos');openAluno('${a.id}')" style="cursor:pointer">
           <div>
-            <div style="font-size:14px;font-weight:700">${a.nome}</div>
+            <div style="font-size:14px;font-weight:700">${esc(a.nome)}</div>
             <div style="font-size:11px;color:var(--text-3);margin-top:2px">${last?`Último: ${formatDate(last.data)}`:'Nunca pagou'}</div>
           </div>
           <span class="badge badge-warn">${dias!==null?dias+'d':'—'}</span>
@@ -1147,7 +1149,7 @@ async function renderDashFinanceiro(){
       ${lista.slice(0,10).map(p=>`
         <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--hairline)">
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.alunos?.nome||'—'}</div>
+            <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.alunos?.nome||'—')}</div>
             <div style="font-size:11px;color:var(--text-3);margin-top:2px">${formatDate(p.data)} · ${p.tipo==='mensalidade'?'Mensalidade':p.tipo==='avulso'?'Prescrição Avulsa':'Outro'}</div>
           </div>
           <div style="font-size:16px;font-weight:800;color:var(--green);white-space:nowrap">€${parseFloat(p.valor).toFixed(2)}</div>
@@ -1195,7 +1197,7 @@ async function renderFinanceiro(){
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:700;color:var(--text)">${formatDate(p.data)}</div>
         <span class="badge ${tipoCor[p.tipo]||'badge-gray'}" style="margin-top:4px">${tipoLabel[p.tipo]||p.tipo}</span>
-        ${p.obs?`<div style="font-size:12px;color:var(--text-3);margin-top:4px">${p.obs}</div>`:''}
+        ${p.obs?`<div style="font-size:12px;color:var(--text-3);margin-top:4px">${esc(p.obs)}</div>`:''}
       </div>
       <div style="font-size:20px;font-weight:800;color:var(--green);white-space:nowrap">€${parseFloat(p.valor).toFixed(2)}</div>
       <button onclick="deletarPagamento('${p.id}')" style="background:none;border:none;color:var(--text-3);font-size:18px;cursor:pointer;padding:4px;line-height:1" title="Apagar">×</button>
@@ -1243,21 +1245,21 @@ async function renderFeedbacks(){
   el.innerHTML=feedbacks.map(f=>`
     <div class="fb-card ${!f.lido?'unread':''}" onclick="markLido('${f.id}')">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-        <div><div style="font-size:15px;font-weight:700">${f.alunos?.nome||'—'}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">${formatDate(f.data)}</div></div>
+        <div><div style="font-size:15px;font-weight:700">${esc(f.alunos?.nome||'—')}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">${formatDate(f.data)}</div></div>
         ${!f.lido?`<span class="badge badge-gold">NOVO</span>`:`<span class="badge badge-gray">LIDO</span>`}
       </div>
       ${f.estrelas?`<div style="font-size:20px;color:var(--gold);margin-bottom:8px;letter-spacing:2px">${'★'.repeat(f.estrelas)}${'☆'.repeat(5-f.estrelas)}</div>`:''}
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:${f.mensagem?'10px':'0'}">
-        ${f.humor?`<span style="font-size:26px">${f.humor}</span>`:''}
-        ${f.esforco?`<span class="badge badge-gray">Esforço: ${f.esforco}</span>`:''}
+        ${f.humor?`<span style="font-size:26px">${esc(f.humor)}</span>`:''}
+        ${f.esforco?`<span class="badge badge-gray">Esforço: ${esc(f.esforco)}</span>`:''}
       </div>
-      ${f.mensagem?`<div style="font-size:14px;color:var(--text-2);line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${f.mensagem}"</div>`:''}
-      ${f.resposta?`<div style="margin-top:12px;padding:10px 12px;background:rgba(93,202,154,.08);border-left:3px solid var(--green);border-radius:0 10px 10px 0"><div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--green);letter-spacing:.1em;margin-bottom:6px">PERSONAL</div><div style="font-size:13px;color:var(--text-2);line-height:1.55">${f.resposta}</div></div>`:''}
+      ${f.mensagem?`<div style="font-size:14px;color:var(--text-2);line-height:1.55;border-left:3px solid var(--gold);padding-left:10px;margin-top:4px">"${esc(f.mensagem)}"</div>`:''}
+      ${f.resposta?`<div style="margin-top:12px;padding:10px 12px;background:rgba(93,202,154,.08);border-left:3px solid var(--green);border-radius:0 10px 10px 0"><div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--green);letter-spacing:.1em;margin-bottom:6px">PERSONAL</div><div style="font-size:13px;color:var(--text-2);line-height:1.55">${esc(f.resposta)}</div></div>`:''}
       <div style="margin-top:12px" onclick="event.stopPropagation()">
         <button onclick="toggleResposta('${f.id}')" style="background:none;border:1.5px solid ${f.resposta?'var(--green)':'var(--hairline-strong)'};color:${f.resposta?'var(--green)':'var(--text-3)'};font-size:11px;font-weight:700;letter-spacing:.08em;padding:7px 16px;border-radius:10px">${f.resposta?'EDITAR RESPOSTA':'RESPONDER'}</button>
       </div>
       <div id="resp-area-${f.id}" style="display:none;margin-top:12px" onclick="event.stopPropagation()">
-        <textarea id="resp-txt-${f.id}" placeholder="Escreve a tua resposta..." style="width:100%;background:var(--surface-2);border:1.5px solid var(--hairline);color:var(--text);padding:12px;border-radius:10px;font-family:inherit;font-size:14px;resize:none;min-height:80px;outline:none;line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--hairline)'">${(f.resposta||'').replace(/</g,'&lt;')}</textarea>
+        <textarea id="resp-txt-${f.id}" placeholder="Escreve a tua resposta..." style="width:100%;background:var(--surface-2);border:1.5px solid var(--hairline);color:var(--text);padding:12px;border-radius:10px;font-family:inherit;font-size:14px;resize:none;min-height:80px;outline:none;line-height:1.5" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--hairline)'">${esc(f.resposta||'')}</textarea>
         <div style="display:flex;gap:8px;margin-top:8px">
           <button onclick="enviarResposta('${f.id}','${f.aluno_id}')" style="background:var(--green);color:#000;border:none;font-size:13px;font-weight:700;padding:10px 0;border-radius:10px;flex:1;cursor:pointer">ENVIAR</button>
           <button onclick="toggleResposta('${f.id}')" style="background:var(--surface-2);color:var(--text-3);border:1px solid var(--hairline);font-size:13px;font-weight:700;padding:10px 16px;border-radius:10px;cursor:pointer">CANCELAR</button>
