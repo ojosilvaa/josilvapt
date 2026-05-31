@@ -192,6 +192,30 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
 .peri-inp::placeholder{color:var(--surface-3)}
 .peri-unit{font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:2px;font-weight:600}
 
+/* ── MEDIDAS EVO ── */
+.evo-kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.evo-kpi{background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--radius);padding:14px 12px;position:relative;overflow:hidden}
+.evo-kpi-lbl{font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.evo-kpi-val{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.evo-kpi-delta{font-size:11px;font-weight:700;margin-top:5px;margin-bottom:8px}
+.evo-bar-bg{height:5px;background:var(--surface-3);border-radius:3px;overflow:hidden}
+.evo-bar{height:100%;border-radius:3px;transition:width .8s ease}
+.evo-kpi-meta{display:flex;justify-content:space-between;font-size:9px;color:var(--text-3);margin-top:5px}
+.evo-always{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;letter-spacing:.05em;padding:2px 6px;border-radius:4px;opacity:.75}
+.evo-sec-title{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text-3);text-transform:uppercase;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+.evo-m-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:10px;margin-bottom:6px;transition:border-color .3s}
+.evo-m-lbl-wrap{width:78px;flex-shrink:0}
+.evo-m-lbl{font-size:12px;color:var(--text-3)}
+.evo-m-target{font-size:9px;font-weight:700;letter-spacing:.04em;margin-top:1px}
+.evo-m-bar{flex:1;height:7px;background:var(--surface-3);border-radius:4px;position:relative;overflow:hidden}
+.evo-m-bar-p{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:var(--surface-3)}
+.evo-m-bar-c{position:absolute;left:0;top:0;height:100%;border-radius:4px;opacity:.85;transition:background .3s}
+.evo-m-val{font-family:var(--mono);font-size:14px;font-weight:700;width:48px;text-align:right;flex-shrink:0;color:var(--gold)}
+.evo-m-chg{font-size:11px;font-weight:700;width:42px;text-align:right;flex-shrink:0;transition:color .3s}
+.evo-chart-wrap{position:relative;height:180px;margin-bottom:4px}
+.evo-note{font-size:11px;color:var(--text-3);padding:10px 12px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;line-height:1.6;margin-top:8px}
+.evo-note b{color:var(--text-2)}
+
 /* ── HISTÓRICO ── */
 .hist-item{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--hairline)}
 .hist-item:last-child{border-bottom:none}
@@ -494,6 +518,7 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
               <button class="btn btn-full" onclick="cancelarEditarMedida()" id="pm-btn-cancel" style="display:none">CANCELAR</button>
             </div>
           </div>
+          <div id="medidas-evo"></div>
           <div class="sec-title" style="margin:16px 0 10px">HISTÓRICO</div>
           <div id="medidas-hist"></div>
         </div>
@@ -650,7 +675,7 @@ let SB_URL='https://oelbocimyfwwzkzbyswg.supabase.co';
 let SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 let BASE_URL='https://josilvapt.vercel.app/aluno-v3.html';
 let ANTHROPIC_KEY='';
-let currentAlunoId=null,currentTreinoId=null,exerciciosList=[],evoChartInst=null,editingMedidaId=null,alunosFilter=null;
+let currentAlunoId=null,currentAlunoData={},currentTreinoId=null,exerciciosList=[],evoChartInst=null,medidasChartInst=null,editingMedidaId=null,alunosFilter=null;
 
 // ── UTILS ──
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
@@ -833,6 +858,7 @@ async function openAluno(id){
   currentAlunoId=id;
   const alunos=await sbFetch(`alunos?id=eq.${id}`)||[];
   const a=alunos[0];if(!a)return;
+  currentAlunoData=a;
   document.getElementById('det-avatar').textContent=initials(a.nome);
   document.getElementById('det-nome').textContent=a.nome;
   document.getElementById('det-sub').textContent=[a.objetivo,a.modalidade,a.plano].filter(Boolean).join(' · ');
@@ -998,22 +1024,181 @@ async function renderEvoChart(){
 
 // ── MEDIDAS ──
 let _medidasCache=[];
+// ── Detectar modo de objetivo do aluno ──
+function detectGoalMode(obj=''){
+  const o=obj.toLowerCase();
+  if(/hipertrofia|ganho de massa|massa muscular|aumentar massa/.test(o)) return 'hipert';
+  if(/emagrecer|emagrecimento|perda de gordura|perder peso|reduzir peso/.test(o)) return 'emagrec';
+  return 'recomp'; // default: recomposição (secar + ganhar)
+}
+
+// col para cada métrica consoante o objetivo
+function _mCol(cat,diff,mode){
+  if(cat==='fat')  return diff<0?'#5DCA9A':diff>0?'#e05555':'#555';
+  if(cat==='muscle'){
+    if(mode==='emagrec') return diff<0?'#e05555':'#555'; // perder músculo é sempre mau, ganhar é neutro
+    return diff>0?'#5DCA9A':diff<0?'#e05555':'#555';
+  }
+  return '#555';
+}
+
 async function renderMedidas(){
+  // form
   document.getElementById('peri-inputs').innerHTML=PERI_CAMPOS.map(c=>`<div class="peri-item"><div class="peri-lbl">${c.label}</div><input class="peri-inp" type="number" step="0.1" id="pm-${c.id}" placeholder="—"><div class="peri-unit">cm</div></div>`).join('');
-  if(!editingMedidaId)document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+  if(!editingMedidaId) document.getElementById('pm-data').value=new Date().toISOString().split('T')[0];
+
   const avs=await sbFetch(`perimetria?aluno_id=eq.${currentAlunoId}&order=data.desc`)||[];
   _medidasCache=avs;
-  const el=document.getElementById('medidas-hist');
-  if(!avs.length){el.innerHTML=`<div class="empty">Nenhuma avaliação registada.</div>`;return;}
-  el.innerHTML=avs.map((av,idx)=>{
-    const prev=avs[idx+1];const med=av.medidas||{};
+
+  const evoEl=document.getElementById('medidas-evo');
+  const histEl=document.getElementById('medidas-hist');
+
+  if(!avs.length){
+    evoEl.innerHTML='';
+    histEl.innerHTML=`<div class="empty">Nenhuma avaliação registada.</div>`;
+    return;
+  }
+
+  const mode=detectGoalMode(currentAlunoData.objetivo||'');
+  const curr=avs[0], prev=avs[1]||null;
+  const cMed=curr.medidas||{}, pMed=prev?.medidas||{};
+
+  // ── 1. KPI cards bio ──
+  const GOAL_LABELS={hipert:'💪 Hipertrofia',recomp:'⚡ Recomposição',emagrec:'🔥 Emagrecimento'};
+  const GOAL_DESC={
+    hipert:'Verde = músculo ↑ ou gordura ↓ · Peso a subir = positivo',
+    recomp:'Verde = gordura ↓ ou músculo ↑ · Peso/quadril = ouro (neutro)',
+    emagrec:'Verde = peso/gordura ↓ · Massa magra: manter é bom'
+  };
+
+  function kpiCard(lbl,val,unit,diff,diffUnit,barPct,barColor,sempre=''){
+    const sign=diff===null?'':diff>0?'+':'';
+    const dTxt=diff===null?'—':`${sign}${diff}${diffUnit} vs anterior`;
+    const dCol=diff===null?'#555':diff===0?'#555':
+      (lbl==='GORDURA'?(diff<0?'#5DCA9A':'#e05555'):
+       lbl==='MASSA'?(diff>0?'#5DCA9A':'#e05555'):
+       mode==='hipert'?(diff>0?'#5DCA9A':diff<0?'#e05555':'#555'):
+       mode==='emagrec'?(diff<0?'#5DCA9A':diff>0?'#e05555':'#555'):'#C8A96E');
+    const alwaysTag=sempre?`<span class="evo-always" style="background:${sempre==='↓'?'rgba(224,85,85,.12)':'rgba(107,159,228,.1)'};color:${sempre==='↓'?'#e05555':'#6B9FE4'}">sempre ${sempre}</span>`:'';
+    return `<div class="evo-kpi">${alwaysTag}
+      <div class="evo-kpi-lbl">${lbl}</div>
+      <div class="evo-kpi-val">${val}${unit}</div>
+      <div class="evo-kpi-delta" style="color:${dCol}">${diff===null?'—':diff===0?'sem alteração':(diff>0?'▲':'▼')+Math.abs(diff)+diffUnit+' vs anterior'}</div>
+      ${barPct!==null?`<div class="evo-bar-bg"><div class="evo-bar" style="width:${barPct}%;background:${barColor}"></div></div>`:''}
+    </div>`;
+  }
+
+  const dp=(a,b)=>a&&b?parseFloat((parseFloat(a)-parseFloat(b)).toFixed(1)):null;
+  const pP=dp(curr.peso,prev?.peso), pG=dp(curr.gordura,prev?.gordura), pM=dp(curr.massa_magra,prev?.massa_magra);
+  const pCin=cMed.cintura&&pMed.cintura?parseFloat((cMed.cintura-pMed.cintura).toFixed(1)):null;
+
+  // progress bar: % em direcção à meta fictícia (visual apenas, base=início, topo=actual range)
+  const allPesos=avs.filter(a=>a.peso).map(a=>parseFloat(a.peso));
+  const allGords=avs.filter(a=>a.gordura).map(a=>parseFloat(a.gordura));
+  const allMassas=avs.filter(a=>a.massa_magra).map(a=>parseFloat(a.massa_magra));
+  const pBar=allPesos.length>1?Math.round((Math.max(...allPesos)-parseFloat(curr.peso||0))/(Math.max(...allPesos)-Math.min(...allPesos))*100)||5:50;
+  const gBar=allGords.length>1?Math.round((Math.max(...allGords)-parseFloat(curr.gordura||0))/(Math.max(...allGords)-Math.min(...allGords))*100)||5:50;
+  const mBar=allMassas.length>1?Math.round((parseFloat(curr.massa_magra||0)-Math.min(...allMassas))/(Math.max(...allMassas)-Math.min(...allMassas))*100)||5:50;
+
+  const kpis=`<div class="evo-kpi-grid">
+    ${curr.peso?kpiCard('PESO',curr.peso,' kg',pP,' kg',pBar,'linear-gradient(90deg,#C8A96E,#8a7449)',''):''}
+    ${curr.gordura?kpiCard('GORDURA',curr.gordura,'%',pG,'%',gBar,'linear-gradient(90deg,#5DCA9A,#3aab7b)','↓'):''}
+    ${curr.massa_magra?kpiCard('MASSA MAGRA',curr.massa_magra,' kg',pM,' kg',mBar,'linear-gradient(90deg,#6B9FE4,#4a7fc7)'):''}
+    ${cMed.cintura?kpiCard('CINTURA',cMed.cintura,' cm',pCin,' cm',null,null,'↓'):''}
+  </div>`;
+
+  // ── 2. Gráfico de evolução (peso + gordura) ──
+  const chartLabels=avs.slice().reverse().map(a=>formatDate(a.data));
+  const chartPeso=avs.slice().reverse().map(a=>parseFloat(a.peso)||null);
+  const chartGord=avs.slice().reverse().map(a=>parseFloat(a.gordura)||null);
+
+  // ── 3. Perímetros smart ──
+  const PERICAT={cintura:'fat',abdomen:'fat',peitoral:'muscle',braco_d:'muscle',braco_e:'muscle',coxa_d:'muscle',coxa_e:'muscle',panturrilha_d:'muscle',panturrilha_e:'muscle',quadril:'neutral',ombro:'neutral',pescoco:'neutral'};
+  const GOAL_DESC_NOTE={hipert:'braço/peitoral/coxa ↑ = verde · cintura/abdómen ↓ = verde · peso ↑ = positivo',recomp:'cintura/abdómen ↓ = verde · braço/peitoral/coxa ↑ = verde · quadril/peso = ouro',emagrec:'peso/cintura/abdómen ↓ = verde · massa magra estável = ouro'};
+
+  // get all perimetro keys present
+  const allKeys=PERI_CAMPOS.filter(c=>cMed[c.id]||pMed[c.id]);
+  const fatMetrics=allKeys.filter(c=>(PERICAT[c.id]||'neutral')==='fat');
+  const muscleMetrics=allKeys.filter(c=>(PERICAT[c.id]||'neutral')==='muscle');
+  const neutralMetrics=allKeys.filter(c=>(PERICAT[c.id]||'neutral')==='neutral');
+
+  function periRows(list){
+    const allVals=list.map(c=>Math.max(cMed[c.id]||0,pMed[c.id]||0));
+    const mx=Math.max(...allVals)*1.08||100;
+    return list.map(c=>{
+      const cv=cMed[c.id], pv=pMed[c.id];
+      if(!cv&&!pv) return '';
+      const diff=cv&&pv?parseFloat((cv-pv).toFixed(1)):null;
+      const cat=PERICAT[c.id]||'neutral';
+      const col=cat==='neutral'?'#C8A96E':_mCol(cat,diff||0,mode);
+      const isGood=col==='#5DCA9A', isBad=col==='#e05555';
+      const pctC=cv?(cv/mx*100):0, pctP=pv?(pv/mx*100):0;
+      const targetTxt=cat==='fat'?'↓ ideal':cat==='neutral'?'neutro':mode==='emagrec'?'≈ manter':'↑ ideal';
+      const diffTxt=diff===null?'—':(diff>0?'+':'')+diff+' cm';
+      return `<div class="evo-m-row" style="border-color:${isGood?'rgba(93,202,154,.2)':isBad?'rgba(224,85,85,.15)':'var(--hairline)'}">
+        <div class="evo-m-lbl-wrap">
+          <div class="evo-m-lbl">${c.label}</div>
+          <div class="evo-m-target" style="color:${col}">${targetTxt}</div>
+        </div>
+        <div class="evo-m-bar">
+          <div class="evo-m-bar-p" style="width:${pctP}%"></div>
+          <div class="evo-m-bar-c" style="width:${pctC}%;background:${col}"></div>
+        </div>
+        <div class="evo-m-val">${cv||'—'}</div>
+        <div class="evo-m-chg" style="color:${col}">${diffTxt}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const periHTML=`
+    ${fatMetrics.length?`<div class="evo-sec-title">🔥 GORDURA (sempre ↓ = bom)</div>${periRows(fatMetrics)}`:''}
+    ${muscleMetrics.length?`<div class="evo-sec-title">💪 MÚSCULO (${mode==='emagrec'?'≈ manter = bom':'↑ = bom para objetivo'})</div>${periRows(muscleMetrics)}`:''}
+    ${neutralMetrics.length?`<div class="evo-sec-title">📊 CONTEXTO</div>${periRows(neutralMetrics)}`:''}
+    <div class="evo-note">Objetivo <b>${GOAL_LABELS[mode]}</b> · ${GOAL_DESC_NOTE[mode]}</div>`;
+
+  evoEl.innerHTML=`
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="font-size:15px;font-weight:700">Evolução</div>
+        <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;background:var(--surface-2);border:1px solid var(--hairline);color:var(--text-3)">${GOAL_LABELS[mode]}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:14px">${GOAL_DESC[mode]}</div>
+      ${kpis}
+      ${chartPeso.some(v=>v)?`
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.1em;margin-bottom:8px">PESO & GORDURA (${avs.length} medições)</div>
+        <div class="evo-chart-wrap"><canvas id="medidasChart"></canvas></div>`:''}
+      ${allKeys.length?periHTML:''}
+    </div>`;
+
+  // render chart
+  if(chartPeso.some(v=>v)){
+    if(medidasChartInst) medidasChartInst.destroy();
+    const ctx=document.getElementById('medidasChart')?.getContext('2d');
+    if(ctx) medidasChartInst=new Chart(ctx,{
+      type:'bar',
+      data:{labels:chartLabels,datasets:[
+        {label:'Peso (kg)',data:chartPeso,backgroundColor:'rgba(200,169,110,.75)',borderRadius:4,yAxisID:'y'},
+        {label:'Gordura %',data:chartGord,backgroundColor:'rgba(224,85,85,.7)',borderRadius:4,yAxisID:'y2'}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#888',font:{size:11},boxWidth:10}}},
+        scales:{
+          x:{grid:{color:'#1a1a1a'},ticks:{color:'#555',font:{size:10}}},
+          y:{grid:{color:'#1a1a1a'},ticks:{color:'#C8A96E',font:{size:10}},position:'left'},
+          y2:{grid:{display:false},ticks:{color:'#e05555',font:{size:10}},position:'right'}
+        }}
+    });
+  }
+
+  // ── histórico compacto ──
+  histEl.innerHTML=avs.map((av,idx)=>{
+    const prev2=avs[idx+1];const med=av.medidas||{};
     const bioCards=[
-      av.peso?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.peso}kg</div><div class="stat-lbl">Peso</div></div>`:'',
-      med.bio_imc?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${med.bio_imc}</div><div class="stat-lbl">IMC</div></div>`:'',
-      av.gordura?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>`:'',
-      av.massa_magra?`<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:20px">${av.massa_magra}kg</div><div class="stat-lbl">Massa</div></div>`:'',
+      av.peso?`<div class="stat-card" style="flex:1;min-width:60px;padding:8px"><div class="stat-val" style="font-size:18px">${av.peso}kg</div><div class="stat-lbl">Peso</div></div>`:'',
+      av.gordura?`<div class="stat-card" style="flex:1;min-width:60px;padding:8px"><div class="stat-val" style="font-size:18px">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>`:'',
+      av.massa_magra?`<div class="stat-card" style="flex:1;min-width:60px;padding:8px"><div class="stat-val" style="font-size:18px">${av.massa_magra}kg</div><div class="stat-lbl">Massa</div></div>`:'',
     ].filter(Boolean).join('');
-    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:15px;font-weight:700">${formatDate(av.data)}</div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline-gold" onclick="editarMedida('${av.id}')">EDITAR</button><button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button></div></div>${bioCards?`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">${bioCards}</div>`:''}${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{const cur=med[c.id];const prevV=prev?.medidas?.[c.id];let delta='',cls='zero';if(prevV!==undefined){const d=(cur-prevV).toFixed(1);delta=(d>0?'+':'')+d+'cm';cls=d<0?'pos':(d>0?'neg':'zero');}return`<div class="hist-item"><div class="hist-label">${c.label}</div><div style="display:flex;align-items:center;gap:10px">${delta?`<span class="pchange ${cls}">${delta}</span>`:''}<div class="hist-val">${cur}cm</div></div></div>`;}).join('')}${av.obs?`<div style="margin-top:10px;font-size:13px;color:var(--text-2);padding:10px;border-left:3px solid var(--gold);background:var(--surface-2);border-radius:0 8px 8px 0">${esc(av.obs)}</div>`:''}</div>`;
+    return `<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:14px;font-weight:700">${formatDate(av.data)}</div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-outline-gold" onclick="editarMedida('${av.id}')">EDITAR</button><button class="btn btn-sm btn-danger" onclick="deletarMedida('${av.id}')">EXCLUIR</button></div></div>${bioCards?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${bioCards}</div>`:''}${PERI_CAMPOS.filter(c=>med[c.id]).map(c=>{const cur=med[c.id];const prevV=prev2?.medidas?.[c.id];let delta='',cls='zero';if(prevV!==undefined){const d=(cur-prevV).toFixed(1);delta=(d>0?'+':'')+d+'cm';cls=d<0?'pos':(d>0?'neg':'zero');}return`<div class="hist-item"><div class="hist-label">${esc(c.label)}</div><div style="display:flex;align-items:center;gap:8px">${delta?`<span class="pchange ${cls}">${delta}</span>`:''}<div class="hist-val">${cur}cm</div></div></div>`;}).join('')}${av.obs?`<div style="margin-top:8px;font-size:12px;color:var(--text-2);padding:8px 10px;border-left:3px solid var(--gold);background:var(--surface-2);border-radius:0 8px 8px 0">${esc(av.obs)}</div>`:''}</div>`;
   }).join('');
 }
 function editarMedida(id){
