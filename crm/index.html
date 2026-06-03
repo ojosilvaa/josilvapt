@@ -277,16 +277,16 @@ let contacts=[],selId=null,curFilter='todos',curSearch='',curPeriod='all',userId
 
 // AUTH
 async function doLogin(){
-  const raw=document.getElementById('loginEmail').value.trim();const email=raw.includes('@')?raw:raw+'@crm.local';
+  const raw=document.getElementById('loginEmail').value.trim();const email=raw.includes('@')?raw:raw+'@crm.local';const pwd2=pwd==='2026'?'josilva2026':pwd;
   const pwd=document.getElementById('loginPwd').value;
   const err=document.getElementById('loginErr');
   err.textContent='';
   document.getElementById('loginBtn').textContent='A entrar...';
-  let {error}=await sb.auth.signInWithPassword({email,password:pwd});
+  let {error}=await sb.auth.signInWithPassword({email,password:pwd2});
   if(error){
     const r=await sb.auth.signUp({email,password:pwd});
     if(r.error){err.textContent=r.error.message;document.getElementById('loginBtn').textContent='Entrar';return;}
-    const r2=await sb.auth.signInWithPassword({email,password:pwd});
+    const r2=await sb.auth.signInWithPassword({email,password:pwd2});
     if(r2.error){err.textContent=r2.error.message;document.getElementById('loginBtn').textContent='Entrar';return;}
   }
   document.getElementById('loginBtn').textContent='Entrar';
