@@ -7,6 +7,31 @@ const ALUNO_ID = PARAMS.get('id');
 const SB_URL   = 'https://oelbocimyfwwzkzbyswg.supabase.co';
 const SB_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 
+// ── Observabilidade: "caixa preta" de erros (sem PII — nunca nome/email/dados de saúde) ──
+const __RID = (self.crypto && crypto.randomUUID ? crypto.randomUUID() : 'r' + Date.now() + Math.random().toString(16).slice(2)).slice(0, 40);
+let __obsCount = 0;
+function obsLog(nivel, mensagem, contexto) {
+  try {
+    if (__obsCount >= 40) return;  // anti-flood por sessão
+    __obsCount++;
+    const body = {
+      nivel, origem: 'aluno',
+      mensagem: String(mensagem == null ? '' : mensagem).slice(0, 2000),
+      url: (location.pathname + location.search).slice(0, 500),
+      rid: __RID,
+      contexto: Object.assign({ aluno_id: ALUNO_ID || null, ua: navigator.userAgent.slice(0, 160) }, contexto || {})
+    };
+    (nivel === 'error' ? console.error : console.log)('[obs]', body);
+    fetch(SB_URL + '/rest/v1/client_logs', {
+      method: 'POST', keepalive: true,
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(body)
+    }).catch(() => {});
+  } catch (e) {}
+}
+window.addEventListener('error', e => obsLog('error', e.message, { stack: (e.error && e.error.stack || '').slice(0, 1500), src: e.filename, line: e.lineno }));
+window.addEventListener('unhandledrejection', e => { const r = e.reason || {}; obsLog('error', 'promise: ' + (r.message || r), { stack: (r.stack || '').slice(0, 1500) }); });
+
 // ── i18n ─────────────────────────────────────────────────
 const I18N = {
   pt: {
@@ -135,19 +160,31 @@ const calcIdade = dataNasc => {
 
 // ── SUPABASE ─────────────────────────────────────────────
 async function sb(path, opts = {}) {
+  const __t0 = performance.now();
+  const __p = path.split('?')[0];
+  const __m = opts.method || 'GET';
   try {
     const r = await fetch(SB_URL + '/rest/v1/' + path, {
       headers: {
         'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
         'Content-Type': 'application/json', 'Prefer': 'return=representation',
+        'x-rid': __RID,
         ...(opts.headers || {})
       },
       ...opts
     });
-    if (!r.ok) return null;
+    const __ms = Math.round(performance.now() - __t0);
+    if (!r.ok) {
+      if (__p !== 'client_logs') obsLog('error', 'DB ' + r.status + ' ' + __m + ' ' + __p, { status: r.status, ms: __ms, path: __p, method: __m });
+      return null;
+    }
+    if (__ms > 2500 && __p !== 'client_logs') obsLog('warn', 'DB lento ' + __p, { ms: __ms, path: __p, method: __m });
     const ct = r.headers.get('content-type');
     return ct && ct.includes('json') ? await r.json() : [];
-  } catch(e) { return null; }
+  } catch(e) {
+    if (__p !== 'client_logs') obsLog('error', 'DB falhou ' + __p, { erro: String(e).slice(0, 300), path: __p, method: __m });
+    return null;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════

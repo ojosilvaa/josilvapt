@@ -624,6 +624,14 @@ textarea.form-inp{resize:vertical;min-height:80px;line-height:1.5}
         <div style="font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:4px">Config</div>
       </div>
       <div class="config-section">
+        <div class="config-title">🩺 DIAGNÓSTICO DO SISTEMA</div>
+        <div style="font-size:13px;color:var(--text-3);margin-bottom:12px;line-height:1.5">Estado em tempo real e últimos erros registados pelo app (alunos + admin).</div>
+        <div id="diag-health" style="font-size:14px;font-weight:700;margin-bottom:10px">A verificar…</div>
+        <div id="diag-stats" style="display:flex;gap:8px;margin-bottom:12px"></div>
+        <button class="btn btn-full" onclick="renderDiag()" style="margin-bottom:12px">↻ ATUALIZAR</button>
+        <div id="diag-logs"></div>
+      </div>
+      <div class="config-section">
         <div class="config-title">SUPABASE</div>
         <div class="form-group"><label class="form-label">URL do projeto</label><input class="form-inp" id="cfg-url" placeholder="https://xxxx.supabase.co"></div>
         <div class="form-group"><label class="form-label">Anon Key</label><input class="form-inp" id="cfg-key" placeholder="eyJhbGci..."></div>
@@ -698,19 +706,37 @@ async function refreshSession(){
   }catch(e){return false;}
 }
 
+// ── Observabilidade: caixa preta de erros (sem PII) ──
+const __RID=(self.crypto&&crypto.randomUUID?crypto.randomUUID():'r'+Date.now()+Math.random().toString(16).slice(2)).slice(0,40);
+let __obsCount=0;
+function obsLog(nivel,mensagem,contexto){
+  try{
+    if(__obsCount>=40)return;
+    __obsCount++;
+    const body={nivel,origem:'admin',mensagem:String(mensagem==null?'':mensagem).slice(0,2000),url:(location.pathname+location.search).slice(0,500),rid:__RID,contexto:Object.assign({aluno_id:currentAlunoId||null,ua:navigator.userAgent.slice(0,160)},contexto||{})};
+    (nivel==='error'?console.error:console.log)('[obs]',body);
+    fetch(SB_URL+'/rest/v1/client_logs',{method:'POST',keepalive:true,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(getToken()||SB_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)}).catch(()=>{});
+  }catch(e){}
+}
+window.addEventListener('error',e=>obsLog('error',e.message,{stack:(e.error&&e.error.stack||'').slice(0,1500),src:e.filename,line:e.lineno}));
+window.addEventListener('unhandledrejection',e=>{const r=e.reason||{};obsLog('error','promise: '+(r.message||r),{stack:(r.stack||'').slice(0,1500)});});
+
 // ── SUPABASE FETCH ──
 async function sbFetch(path,opts={}){
   if(!SB_URL||!SB_KEY)return null;
+  const __t0=performance.now(),__p=path.split('?')[0],__m=opts.method||'GET';
   const doReq=async(token)=>fetch(SB_URL+'/rest/v1/'+path,{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(token||SB_KEY),'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})},
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(token||SB_KEY),'Content-Type':'application/json','Prefer':'return=representation','x-rid':__RID,...(opts.headers||{})},
     ...opts
   });
   try{
     let r=await doReq(getToken());
     if(r.status===401){const ok=await refreshSession();if(!ok){logout();return null;}r=await doReq(getToken());}
-    if(!r.ok)return null;
+    const __ms=Math.round(performance.now()-__t0);
+    if(!r.ok){if(__p!=='client_logs')obsLog('error','DB '+r.status+' '+__m+' '+__p,{status:r.status,ms:__ms,path:__p,method:__m});return null;}
+    if(__ms>2500&&__p!=='client_logs')obsLog('warn','DB lento '+__p,{ms:__ms,path:__p,method:__m});
     const ct=r.headers.get('content-type');return ct&&ct.includes('json')?await r.json():[];
-  }catch(e){return null;}
+  }catch(e){if(__p!=='client_logs')obsLog('error','DB falhou '+__p,{erro:String(e).slice(0,300),path:__p,method:__m});return null;}
 }
 
 // ── AUTH ──
@@ -743,7 +769,7 @@ function goTab(tab){
   if(tab==='dash')renderDash();
   if(tab==='alunos'){openView('lista');renderAlunos();}
   if(tab==='feedbacks')renderFeedbacks();
-  if(tab==='config')loadConfig();
+  if(tab==='config'){loadConfig();renderDiag();}
   if(tab==='financeiro')renderDashFinanceiro();
 }
 function goTabFiltered(filter){
@@ -754,6 +780,42 @@ function openView(view){
   document.getElementById('view-'+view).style.display='block';
   if(view==='lista')renderAlunos();
   window.scrollTo(0,0);
+}
+
+// ── DIAGNÓSTICO (health check + últimos erros) ──
+async function renderDiag(){
+  const health=document.getElementById('diag-health');
+  const statsEl=document.getElementById('diag-stats');
+  const logsEl=document.getElementById('diag-logs');
+  if(!health)return;
+  health.textContent='A verificar…';
+  // health check: latência a uma query trivial
+  const t0=performance.now();let ok=false;
+  try{const r=await fetch(SB_URL+'/rest/v1/alunos?select=id&limit=1',{headers:{apikey:SB_KEY,Authorization:'Bearer '+(getToken()||SB_KEY)}});ok=r.ok;}catch(e){}
+  const ms=Math.round(performance.now()-t0);
+  health.innerHTML=ok
+    ?`<span style="color:var(--green)">🟢 Tudo a funcionar</span> <span style="color:var(--text-3);font-weight:400;font-size:12px">· base de dados ${ms}ms</span>`
+    :`<span style="color:#e05555">🔴 Sem ligação à base de dados</span>`;
+  const logs=await sbFetch('client_logs?order=criado_em.desc&limit=20')||[];
+  const erros24=logs.filter(l=>l.nivel==='error'&&(Date.now()-new Date(l.criado_em))<864e5).length;
+  if(statsEl)statsEl.innerHTML=`
+    <div class="stat-card" style="flex:1;padding:10px"><div class="stat-val" style="font-size:22px;color:${erros24?'#e05555':'var(--green)'}">${erros24}</div><div class="stat-lbl">Erros 24h</div></div>
+    <div class="stat-card" style="flex:1;padding:10px"><div class="stat-val" style="font-size:22px">${logs.length}</div><div class="stat-lbl">Registos recentes</div></div>`;
+  if(!logsEl)return;
+  if(!logs.length){logsEl.innerHTML='<div class="empty" style="padding:16px 0">Sem erros registados. Tudo calmo 👌</div>';return;}
+  logsEl.innerHTML=logs.map(l=>{
+    const cor=l.nivel==='error'?'#e05555':l.nivel==='warn'?'var(--gold)':'var(--text-3)';
+    const ctx=l.contexto||{};
+    const quando=new Date(l.criado_em).toLocaleString('pt-PT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div style="padding:10px 0;border-bottom:1px solid var(--hairline)">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+        <span style="font-weight:700;color:${cor};font-size:12px">${esc(l.nivel.toUpperCase())} · ${esc(l.origem||'?')}</span>
+        <span style="font-size:11px;color:var(--text-3);font-family:var(--mono)">${esc(quando)}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text-2);margin-top:3px">${esc(l.mensagem||'')}</div>
+      ${ctx.path?`<div style="font-size:11px;color:var(--text-3);margin-top:2px;font-family:var(--mono)">${esc(ctx.path)}${ctx.ms!=null?' · '+esc(ctx.ms)+'ms':''}${ctx.status?' · HTTP '+esc(ctx.status):''}</div>`:''}
+    </div>`;
+  }).join('');
 }
 
 // ── CONFIG LOAD ──
