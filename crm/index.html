@@ -190,8 +190,8 @@ table.t td{color:#cbd5e1}
       <h1>Jo Silva Vodafone</h1>
       <p>CRM — Conversão de clientes MEO</p>
     </div>
-    <label class="lbl">Email</label>
-    <input type="email" id="loginEmail" placeholder="joaosilva@vodafone.pt" autocomplete="email">
+    <label class="lbl">Nome de utilizador</label>
+    <input type="text" id="loginEmail" placeholder="josilva" autocomplete="username">
     <label class="lbl">Password</label>
     <input type="password" id="loginPwd" placeholder="••••••••" autocomplete="current-password">
     <button class="btn-login" id="loginBtn" onclick="doLogin()">Entrar</button>
@@ -277,7 +277,7 @@ let contacts=[],selId=null,curFilter='todos',curSearch='',curPeriod='all',userId
 
 // AUTH
 async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim();
+  const raw=document.getElementById('loginEmail').value.trim();const email=raw.includes('@')?raw:raw+'@crm.local';
   const pwd=document.getElementById('loginPwd').value;
   const err=document.getElementById('loginErr');
   err.textContent='';
