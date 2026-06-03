@@ -317,7 +317,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     userId=session.user.id;
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='block';
-    await loadData();
+    try{await loadData();}catch(e){document.getElementById('contactList').innerHTML='<div style="padding:20px;color:#f87171">Erro loadData: '+e.message+'</div>';return;}
     renderAll();
     renderGuia();
   }else{
@@ -329,7 +329,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 // DATA
 async function loadData(){
   const {data:rows,error}=await sb.from('crm_contacts').select('*').eq('user_id',userId).order('nome_display');
-  if(error){console.error(error);return;}
+  if(error){document.getElementById('contactList').innerHTML='<div style="padding:20px;color:#f87171">Erro: '+error.message+'</div>';return;}
   if(!rows.length){
     const insert=SEED.map(c=>({user_id:userId,nic:c.nic,nome:c.nome,nome_display:c.nome_display,
       dif:c.dif,dip:c.dip,phones:c.phones,tarifario:c.tarifario,operadora:c.operadora||'MEO',
