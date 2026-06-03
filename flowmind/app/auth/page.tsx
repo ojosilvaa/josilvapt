@@ -15,6 +15,12 @@ export default function AuthPage() {
   const router = useRouter()
   const supabase = createClient()
 
+  // Normaliza: se não tiver @, assume @flowmind.app (permite login com username)
+  function normalizeEmail(value: string) {
+    const v = value.trim()
+    return v.includes('@') ? v : `${v}@flowmind.app`
+  }
+
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) return
     if (mode === 'register' && !name.trim()) return
@@ -22,7 +28,7 @@ export default function AuthPage() {
     setError('')
 
     if (mode === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { error } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password })
       if (error) {
         setError(error.message === 'Invalid login credentials' ? 'Email ou password incorretos.' : error.message)
       } else {
@@ -31,7 +37,7 @@ export default function AuthPage() {
       }
     } else {
       const { error } = await supabase.auth.signUp({
-        email,
+        email: normalizeEmail(email),
         password,
         options: { data: { name } }
       })
@@ -39,7 +45,7 @@ export default function AuthPage() {
         setError(error.message)
       } else {
         // Auto sign in after register
-        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password })
         if (!loginError) {
           router.push('/onboarding')
           router.refresh()
@@ -95,13 +101,13 @@ export default function AuthPage() {
           )}
 
           <div>
-            <div className="text-[12px] text-fm-text2 font-medium mb-1.5">Email</div>
+            <div className="text-[12px] text-fm-text2 font-medium mb-1.5">Email ou utilizador</div>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-              placeholder="o-teu@email.com"
+              placeholder="o-teu@email.com ou nome"
               className="w-full bg-fm-bg4 border border-fm-border2 rounded-[10px] px-[14px] py-3 text-[15px] text-fm-text outline-none focus:border-fm-green placeholder:text-fm-text3 transition-all"
             />
           </div>
