@@ -343,7 +343,7 @@ async function loadData(){
 async function attachHistory(rows){
   if(!rows.length)return[];
   const ids=rows.map(r=>r.id);
-  const {data:hist}=await sb.from('crm_call_history').select('*').in('contact_id',ids).order('called_at');
+  const {data:hist}=await sb.from('crm_call_history').select('*').eq('user_id',userId).order('called_at');
   const byId={};
   (hist||[]).forEach(h=>{(byId[h.contact_id]=byId[h.contact_id]||[]).push(h);});
   return rows.map(r=>(({...r,history:byId[r.id]||[]})));
