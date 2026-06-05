@@ -260,7 +260,7 @@ table.t td{color:#cbd5e1}
 const SUPABASE_URL='https://oelbocimyfwwzkzbyswg.supabase.co';
 const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 const {createClient}=supabase;
-const sb=createClient(SUPABASE_URL,SUPABASE_ANON);
+const sb=createClient(SUPABASE_URL,SUPABASE_ANON,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 
 const SEED=[];
 
@@ -289,7 +289,7 @@ const OBJECCOES=[
 {cat:'Específicas MEO',q:'Tenho a MEO há anos, nunca tive problemas',a:'Ainda bem, e isso fala bem de si como cliente. Mas atenção — "nunca tive problemas" é diferente de "estou a tirar o máximo partido do que pago". Com o que paga hoje à MEO, a Vodafone dá-lhe mais: Wi-Fi 7 em vez de Wi-Fi 6, fibra 100% pura, streaming incluído, mais dados nos telemóveis. Não estou a dizer que a MEO é má — estou a dizer que por um valor semelhante, ou até menos, eu consigo dar-lhe mais. Não faz sentido pelo menos comparar?',dica:'Nunca ataque a MEO diretamente — posicione a Vodafone como uma evolução natural.'}
 ];
 
-let contacts=[],selId=null,curFilter='todos',curSearch='',curPeriod='all',userId=null;
+let contacts=[],selId=null,curFilter='todos',curSearch='',curPeriod='all',userId=null,_appLoaded=false;
 
 // AUTH
 async function doLogin(){
@@ -309,11 +309,13 @@ async function doLogin(){
   }
   document.getElementById('loginBtn').textContent='Entrar';
 }
-async function doLogout(){await sb.auth.signOut();location.reload();}
+async function doLogout(){try{await sb.auth.signOut();}catch(e){}location.reload();}
 document.getElementById('loginPwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(session){
+    if(_appLoaded)return;
+    _appLoaded=true;
     userId=session.user.id;
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='block';
@@ -321,6 +323,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     renderAll();
     renderGuia();
   }else{
+    _appLoaded=false;
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('app').style.display='none';
   }
