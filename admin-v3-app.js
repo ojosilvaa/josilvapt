@@ -235,8 +235,8 @@ async function sbFetch(path, opts = {}) {
     let r = await doReq(getToken());
     if (r.status === 401) {
       const ok = await refreshSession();
-      if (!ok) { logout(); return null; }
-      r = await doReq(getToken());
+      if (ok) r = await doReq(getToken());
+      else if (!r.ok) return null;
     }
     if (!r.ok) { console.error(await r.text()); return null; }
     const ct = r.headers.get('content-type');
@@ -246,13 +246,28 @@ async function sbFetch(path, opts = {}) {
 
 // ── AUTH ──────────────────────────────────────────────────
 async function doLogin() {
-  const user = document.getElementById('login-email').value.trim().toLowerCase();
+  let user = document.getElementById('login-email').value.trim().toLowerCase();
   const senha = document.getElementById('login-senha').value;
   const err = document.getElementById('login-err');
   err.textContent = '';
   if (!user || !senha) { err.textContent = T('login_err_fill'); return; }
-  if (user === 'josilva' && senha === '2026') { sessionStorage.setItem('sb_access_token', SB_KEY); showApp(); return; }
-  err.textContent = T('login_err_inv');
+  // normaliza username para email
+  if (!user.includes('@')) {
+    if (user === 'josilva') user = 'josilva@crm.local';
+    else user = user + '@crm.local';
+  }
+  try {
+    const r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user, password: senha })
+    });
+    const d = await r.json();
+    if (!r.ok || d.error) { err.textContent = T('login_err_inv'); return; }
+    sessionStorage.setItem('sb_access_token', d.access_token);
+    localStorage.setItem('sb_refresh_token', d.refresh_token);
+    showApp();
+  } catch(e) { err.textContent = T('login_err_conn'); }
 }
 
 function showApp() {
