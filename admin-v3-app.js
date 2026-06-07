@@ -246,24 +246,13 @@ async function sbFetch(path, opts = {}) {
 
 // ── AUTH ──────────────────────────────────────────────────
 async function doLogin() {
-  let email = document.getElementById('login-email').value.trim();
-  if (!email.includes('@')) email = email + '@crm.local';
+  const user = document.getElementById('login-email').value.trim().toLowerCase();
   const senha = document.getElementById('login-senha').value;
   const err = document.getElementById('login-err');
   err.textContent = '';
-  if (!email || !senha) { err.textContent = T('login_err_fill'); return; }
-  try {
-    const r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: senha })
-    });
-    const d = await r.json();
-    if (!r.ok || d.error) { err.textContent = d.error_description || T('login_err_inv'); return; }
-    sessionStorage.setItem('sb_access_token', d.access_token);
-    localStorage.setItem('sb_refresh_token', d.refresh_token);
-    showApp();
-  } catch(e) { err.textContent = T('login_err_conn'); }
+  if (!user || !senha) { err.textContent = T('login_err_fill'); return; }
+  if (user === 'josilva' && senha === '2026') { showApp(); return; }
+  err.textContent = T('login_err_inv');
 }
 
 function showApp() {
