@@ -12,19 +12,34 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Jo Silva PT">
 <script>
-/* PWA: guarda o ?id= em localStorage + cookie (cookie é partilhado entre Safari e PWA no iOS) */
+/* PWA iOS: mantém o aluno ligado mesmo quando o app instalado abre sem ?id= */
 (function(){
+  var UUID_RE = /^[a-f0-9-]{36}$/i;
   var p = new URLSearchParams(location.search);
   var id = p.get('id');
-  function getCookie(n){ var m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():null; }
-  if (id) {
-    try { localStorage.setItem('josilvaPT_id', id); } catch(e){}
-    document.cookie = 'josilvaPT_id=' + id + ';path=/;max-age=31536000;SameSite=Lax';
-  } else {
-    var stored = null;
-    try { stored = localStorage.getItem('josilvaPT_id'); } catch(e){}
-    if (!stored) stored = getCookie('josilvaPT_id');
-    if (stored) location.replace(location.pathname + '?id=' + stored);
+  if (!id && location.hash) {
+    var hm = location.hash.match(/id=([a-f0-9-]{36})/i);
+    if (hm) id = hm[1];
+  }
+  function getCookie(n){
+    var m = document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)');
+    return m ? decodeURIComponent(m.pop()) : null;
+  }
+  function saveId(v){
+    if (!UUID_RE.test(v || '')) return false;
+    try {
+      localStorage.setItem('josilvaPT_id', v);
+      sessionStorage.setItem('josilvaPT_id', v);
+    } catch(e) {}
+    document.cookie = 'josilvaPT_id=' + encodeURIComponent(v) + ';path=/;max-age=31536000;SameSite=Lax';
+    return true;
+  }
+  if (id && saveId(id)) return;
+  var stored = null;
+  try { stored = localStorage.getItem('josilvaPT_id') || sessionStorage.getItem('josilvaPT_id'); } catch(e){}
+  if (!stored) stored = getCookie('josilvaPT_id');
+  if (stored && UUID_RE.test(stored)) {
+    location.replace(location.pathname + '?id=' + encodeURIComponent(stored));
   }
 })();
 </script>
@@ -506,6 +521,37 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 #install-bar .ib-text b{color:#fff;font-weight:700}
 #install-bar .ib-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--text-3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
+#activation-screen{
+  position:fixed;inset:0;z-index:10000;display:none;
+  background:#000;color:#fff;padding:24px;
+  align-items:center;justify-content:center;
+}
+#activation-screen.show{display:flex}
+.activation-card{
+  width:100%;max-width:420px;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.1);border-radius:22px;
+  padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.55);
+}
+.activation-logo{
+  width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  color:#000;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:22px;letter-spacing:-.04em;margin-bottom:20px;
+}
+.activation-title{font-size:28px;font-weight:900;letter-spacing:-.03em;line-height:1.05;margin-bottom:10px}
+.activation-text{font-size:14px;color:var(--text-2);line-height:1.5;margin-bottom:18px}
+.activation-input{
+  width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;color:#fff;padding:15px 14px;font-size:14px;outline:none;margin-bottom:10px;
+}
+.activation-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,217,107,.12)}
+.activation-btn{
+  width:100%;min-height:48px;border-radius:14px;background:var(--gold);color:#000;
+  font-size:15px;font-weight:800;border:none;margin-top:4px;
+}
+.activation-help{font-size:12px;color:var(--text-3);line-height:1.45;margin-top:14px}
+.activation-error{display:none;color:var(--coral);font-size:12px;font-weight:700;margin-top:10px}
+.activation-error.show{display:block}
+
 .success-banner{background:var(--gold-subtle);border:1.5px solid var(--gold-glow);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
 .success-banner.show{display:flex}
 .success-icon{font-size:24px}
@@ -960,6 +1006,23 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 </head>
 <body>
 
+<div id="activation-screen" aria-live="polite">
+  <div class="activation-card">
+    <div class="activation-logo">JS</div>
+    <div class="activation-title">Ativar app</div>
+    <div class="activation-text">
+      Cola aqui o link do aluno que o Jo Silva te enviou. Só precisas fazer isto uma vez neste telemóvel.
+    </div>
+    <input id="activation-link" class="activation-input" type="url" inputmode="url" autocomplete="off"
+      placeholder="https://josilvapt.vercel.app/aluno-v3.html?id=...">
+    <button class="activation-btn" type="button" onclick="activateAlunoApp()">ATIVAR APP</button>
+    <div id="activation-error" class="activation-error">Link inválido. Cola o link completo que recebeste do teu PT.</div>
+    <div class="activation-help">
+      Dica: abre a conversa onde recebeste o link, copia tudo, volta aqui e cola no campo acima.
+    </div>
+  </div>
+</div>
+
 <!-- Camada de efeitos visuais por tema (flocos, gotas, chamas, etc.) -->
 <div id="theme-fx" aria-hidden="true"></div>
 
@@ -1408,7 +1471,41 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   </div>
 </div>
 
-<script src="aluno-v3-app.js?v=9"></script>
+<script>
+function activateAlunoApp(){
+  var inp = document.getElementById('activation-link');
+  var err = document.getElementById('activation-error');
+  var v = (inp && inp.value || '').trim();
+  var m = v.match(/[?&]id=([a-f0-9-]{36})/i) || v.match(/^([a-f0-9-]{36})$/i);
+  if (!m) {
+    if (err) err.classList.add('show');
+    if (inp) inp.focus();
+    return;
+  }
+  var id = m[1];
+  try {
+    localStorage.setItem('josilvaPT_id', id);
+    sessionStorage.setItem('josilvaPT_id', id);
+  } catch(e) {}
+  document.cookie = 'josilvaPT_id=' + encodeURIComponent(id) + ';path=/;max-age=31536000;SameSite=Lax';
+  location.replace('./aluno-v3.html?id=' + encodeURIComponent(id));
+}
+
+(function(){
+  var hasId = /[?&]id=[a-f0-9-]{36}/i.test(location.search);
+  var stored = null;
+  try { stored = localStorage.getItem('josilvaPT_id') || sessionStorage.getItem('josilvaPT_id'); } catch(e) {}
+  if (!stored) {
+    var cm = document.cookie.match('(^|;)\\s*josilvaPT_id\\s*=\\s*([^;]+)');
+    stored = cm ? decodeURIComponent(cm.pop()) : null;
+  }
+  if (!hasId && !/^[a-f0-9-]{36}$/i.test(stored || '')) {
+    var screen = document.getElementById('activation-screen');
+    if (screen) screen.classList.add('show');
+  }
+})();
+</script>
+<script src="aluno-v3-app.js?v=10"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});

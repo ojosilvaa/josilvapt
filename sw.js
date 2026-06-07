@@ -1,10 +1,7 @@
-const CACHE_NAME = 'josilvaPT-v9';
+const CACHE_NAME = 'josilvaPT-v10';
 const CACHE_FILES = [
   './',
-  './aluno.html',
   './aluno-v3.html',
-  './aluno-dev.html',
-  './admin.html',
   './aluno-v3-app.js',
   './admin-v3.html',
   './admin-v3-app.js',
@@ -81,9 +78,9 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const c of list) {
-        if (c.url.includes('aluno.html') && 'focus' in c) return c.focus();
+        if (c.url.includes('aluno-v3.html') && 'focus' in c) return c.focus();
       }
-      return clients.openWindow('./aluno.html');
+      return clients.openWindow('./aluno-v3.html');
     })
   );
 });
