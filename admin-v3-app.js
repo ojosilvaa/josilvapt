@@ -251,7 +251,7 @@ async function doLogin() {
   const err = document.getElementById('login-err');
   err.textContent = '';
   if (!user || !senha) { err.textContent = T('login_err_fill'); return; }
-  if (user === 'josilva' && senha === '2026') { showApp(); return; }
+  if (user === 'josilva' && senha === '2026') { sessionStorage.setItem('sb_access_token', SB_KEY); showApp(); return; }
   err.textContent = T('login_err_inv');
 }
 
