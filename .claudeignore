@@ -1,0 +1,21 @@
+# Outros projetos — não ler quando a trabalhar no app PT
+flowmind/
+crm/
+vendas/
+_prospeccao/
+_sql/
+_arquivo/
+o monstro do marketing/
+design_handoff_visual_refresh/
+supabase/
+APP Personal trainer/
+
+# Build/cache
+__pycache__/
+node_modules/
+.next/
+.claude/worktrees/
+
+# Dados
+*.csv
+*.pdf

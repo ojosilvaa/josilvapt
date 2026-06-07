@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1080px; height:1080px; overflow:hidden; background:#0d0d0d; font-family:'Oswald',sans-serif; }
+
+  /* ── SLIDE CAPA ── */
+  .capa {
+    width:1080px; height:1080px; background:#0d0d0d;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding:0 0 80px 0; position:relative; overflow:hidden;
+  }
+  .capa .foto-overlay {
+    position:absolute; top:0; right:0; width:55%; height:100%;
+    background: linear-gradient(to right, #0d0d0d 0%, #0d0d0d 5%, transparent 50%);
+    z-index:2;
+  }
+  .capa .foto-bg {
+    position:absolute; top:0; right:0; width:65%; height:100%;
+    background-size:cover; background-position:center top;
+    filter: brightness(0.55) saturate(0.8);
+  }
+  .capa .content { position:relative; z-index:3; padding:0 70px; }
+  .capa .marca {
+    font-family:'Oswald',sans-serif; font-weight:400; font-size:22px;
+    letter-spacing:4px; color:#555; text-transform:uppercase;
+    margin-bottom:40px;
+  }
+  .capa .titulo {
+    font-weight:700; font-size:96px; line-height:0.92;
+    text-transform:uppercase; color:#f0f0f0; margin-bottom:28px;
+  }
+  .capa .titulo .gold { color:#C8A96E; }
+  .capa .linha-gold {
+    width:160px; height:3px; background:#C8A96E; margin-bottom:24px;
+  }
+  .capa .subtitulo {
+    font-family:'DM Sans',sans-serif; font-weight:300; font-size:22px;
+    color:#888; max-width:480px; line-height:1.5; margin-bottom:44px;
+  }
+  .capa .btn-arrasta {
+    display:inline-flex; align-items:center; gap:12px;
+    border:1.5px solid #C8A96E; padding:14px 28px;
+    font-family:'Oswald',sans-serif; font-weight:400; font-size:20px;
+    letter-spacing:2px; color:#C8A96E; text-transform:uppercase;
+  }
+  .capa .assinatura {
+    position:absolute; bottom:30px; right:40px; z-index:3;
+    font-size:18px; color:#333; letter-spacing:2px;
+  }
+
+  /* ── SLIDE INTERNO ── */
+  .interno {
+    width:1080px; height:1080px;
+    background: #0d0d0d;
+    display:flex; flex-direction:column; padding:60px 70px 50px;
+    position:relative; overflow:hidden;
+  }
+  /* número gigante decorativo no fundo */
+  .interno .deco-num {
+    position:absolute; right:-20px; bottom:-60px;
+    font-family:'Oswald',sans-serif; font-weight:700;
+    font-size:420px; line-height:1; color:transparent;
+    -webkit-text-stroke: 1.5px rgba(200,169,110,0.07);
+    user-select:none; pointer-events:none; letter-spacing:-20px;
+  }
+  /* faixa dourada lateral esquerda */
+  .interno .deco-bar {
+    position:absolute; left:0; top:0; bottom:0;
+    width:5px;
+    background: linear-gradient(to bottom, transparent 0%, #C8A96E 20%, #C8A96E 80%, transparent 100%);
+  }
+  /* círculo decorativo canto direito */
+  .interno .deco-ring {
+    position:absolute; right:-160px; top:50%;
+    transform:translateY(-50%);
+    width:480px; height:480px; border-radius:50%;
+    border: 1px solid rgba(200,169,110,0.1);
+  }
+  .interno .deco-ring2 {
+    position:absolute; right:-240px; top:50%;
+    transform:translateY(-50%);
+    width:680px; height:680px; border-radius:50%;
+    border: 1px solid rgba(200,169,110,0.05);
+  }
+  .interno .num-slide {
+    font-weight:300; font-size:24px; color:#333;
+    letter-spacing:3px; margin-bottom:44px;
+  }
+  .interno .titulo {
+    font-weight:700; font-size:78px; line-height:0.92;
+    text-transform:uppercase; color:#f0f0f0; margin-bottom:22px;
+  }
+  .interno .titulo .gold { color:#C8A96E; }
+  .interno .linha-gold {
+    width:140px; height:3px; background:#C8A96E; margin-bottom:40px;
+  }
+  .bullets { display:flex; flex-direction:column; gap:16px; }
+  .bullet {
+    background: linear-gradient(to right, #181818, #131313);
+    display:flex; align-items:stretch;
+    min-height:90px; overflow:hidden;
+    border-left: 3px solid #C8A96E;
+  }
+  .bullet .icon-box {
+    width:68px; min-width:68px; background: rgba(200,169,110,0.07);
+    display:flex; align-items:center; justify-content:center;
+    border-right: 1px solid rgba(200,169,110,0.1);
+  }
+  .bullet .icon-box .icon-inner {
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bullet .icon-box svg { width:22px; height:22px; }
+  .bullet .text-box {
+    padding:14px 20px 14px 24px; display:flex; flex-direction:column;
+    justify-content:center;
+  }
+  .bullet .b-titulo {
+    font-weight:700; font-size:28px; color:#f0f0f0;
+    text-transform:uppercase; letter-spacing:0.5px; line-height:1;
+    margin-bottom:7px;
+  }
+  .bullet .b-desc {
+    font-family:'DM Sans',sans-serif; font-weight:300; font-size:19px;
+    color:#888; line-height:1.35;
+  }
+  .interno .assinatura {
+    position:absolute; bottom:32px; left:70px;
+    font-size:18px; color:#2a2a2a; letter-spacing:2px;
+  }
+
+  /* ── SLIDE CTA ── */
+  .cta {
+    width:1080px; height:1080px;
+    background: radial-gradient(ellipse at 50% 50%, #111008 0%, #0d0d0d 65%);
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .cta::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(200,169,110,0.05) 0%, transparent 65%);
+  }
+  .cta .circulo1 {
+    position:absolute; width:680px; height:680px; border-radius:50%;
+    border:1px solid rgba(200,169,110,0.12); top:50%; left:50%;
+    transform:translate(-50%,-50%);
+  }
+  .cta .circulo2 {
+    position:absolute; width:480px; height:480px; border-radius:50%;
+    border:1px solid rgba(200,169,110,0.08); top:50%; left:50%;
+    transform:translate(-50%,-50%);
+  }
+  .cta .circulo3 {
+    position:absolute; width:860px; height:860px; border-radius:50%;
+    border:1px solid rgba(200,169,110,0.04); top:50%; left:50%;
+    transform:translate(-50%,-50%);
+  }
+  .cta .content { text-align:center; position:relative; z-index:2; }
+  .cta .titulo-top {
+    font-weight:400; font-size:40px; color:#888;
+    text-transform:uppercase; letter-spacing:4px; margin-bottom:8px;
+  }
+  .cta .titulo-main {
+    font-weight:700; font-size:72px; color:#f0f0f0;
+    text-transform:uppercase; line-height:0.9; margin-bottom:32px;
+  }
+  .cta .linha-gold {
+    width:120px; height:3px; background:#C8A96E;
+    margin:0 auto 28px;
+  }
+  .cta .cta-sub {
+    font-family:'DM Sans',sans-serif; font-weight:300;
+    font-size:24px; color:#666; margin-bottom:32px;
+  }
+  .cta .marca-cta {
+    font-weight:700; font-size:52px; color:#C8A96E;
+    text-transform:uppercase; letter-spacing:2px;
+  }
+  .cta .assinatura {
+    position:absolute; bottom:32px; left:70px;
+    font-size:18px; color:#2a2a2a; letter-spacing:2px;
+  }
+
+  /* ícones SVG inline */
+  .ico-warn { stroke:#C8A96E; fill:none; stroke-width:2; stroke-linecap:round; }
+  .ico-arrow { stroke:#C8A96E; fill:none; stroke-width:2; stroke-linecap:round; }
+  .ico-check { stroke:#5DCA9A; fill:none; stroke-width:2; stroke-linecap:round; }
+  .ico-x { stroke:#e05555; fill:none; stroke-width:2; stroke-linecap:round; }
+  .ico-info { stroke:#C8A96E; fill:none; stroke-width:2; stroke-linecap:round; }
+</style>
+</head>
+<body id="slide">
+<!-- CONTEÚDO INJETADO PELO SCRIPT -->
+</body>
+</html>

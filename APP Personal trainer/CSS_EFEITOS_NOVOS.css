@@ -1,0 +1,506 @@
+/* ════════════════════════════════════════════════════════════════════
+   🎨 EFEITOS VISUAIS NOVOS - Jo Silva PT
+   ════════════════════════════════════════════════════════════════════
+
+   Este CSS adiciona:
+   ✨ Sombras (shadows) com depth
+   ✨ Hover effects sofisticados
+   ✨ Gradientes bonitos
+   ✨ Animações suaves
+   ✨ Micro-interações
+
+   INSTRUÇÕES:
+   1. Copie o conteúdo abaixo
+   2. Cole dentro da tag <style> dos 3 arquivos:
+      - admin.html
+      - aluno.html
+      - ia-treino.html
+   3. Cole DEPOIS do :root e das animações existentes
+   4. Teste no navegador
+
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣  ELEVATION SHADOWS - Sombras por profundidade */
+/* ──────────────────────────────────────────────────────────────────── */
+
+:root {
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.5);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.7);
+  --shadow-gold: 0 0 20px rgba(200,169,110,.15);
+
+  --grad-gold: linear-gradient(135deg, #C8A96E, #8a7449);
+  --grad-gold-soft: linear-gradient(135deg, rgba(200,169,110,.1), rgba(138,116,73,.05));
+  --grad-dark: linear-gradient(180deg, #111111, #080808);
+  --grad-card: linear-gradient(135deg, rgba(17,17,17,.8), rgba(10,10,10,.95));
+
+  --ease-standard: cubic-bezier(.4,0,.2,1);
+  --ease-entrance: cubic-bezier(0,.7,.3,1);
+  --ease-exit: cubic-bezier(.4,.0,.6,1);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 2️⃣  KEYFRAME ANIMATIONS - Novas animações */
+/* ──────────────────────────────────────────────────────────────────── */
+
+@keyframes pulseGold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(200,169,110,.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(200,169,110,0);
+  }
+}
+
+@keyframes scaleBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(200,169,110,0));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(200,169,110,.4));
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 3️⃣  TOPBAR & BOTTOM NAV - Sombras melhoradas */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.topbar {
+  box-shadow: 0 2px 12px rgba(0,0,0,.6) !important;
+  transition: box-shadow .3s ease;
+}
+
+.topbar:hover {
+  box-shadow: 0 2px 16px rgba(0,0,0,.7) !important;
+}
+
+.bottom-nav {
+  box-shadow: 0 -2px 12px rgba(0,0,0,.6) !important;
+  transition: box-shadow .3s ease;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 4️⃣  CARDS - Hover e shadows sofisticados */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.card {
+  box-shadow: var(--shadow-md) !important;
+  transition: all .3s var(--ease-standard);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg), var(--shadow-gold) !important;
+  border-color: rgba(200,169,110,.3) !important;
+  transform: translateY(-2px);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 5️⃣  STAT CARDS - Com efeito shine */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.stat-card {
+  background: var(--grad-card) !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all .3s var(--ease-standard);
+  position: relative;
+  overflow: hidden;
+  border-color: var(--border) !important;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(200,169,110,.1), transparent);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+
+.stat-card:hover {
+  border-color: rgba(200,169,110,.4) !important;
+  box-shadow: var(--shadow-lg), var(--shadow-gold) !important;
+  transform: translateY(-3px);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 6️⃣  ALUNO CARD - Hover sofisticado */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.aluno-card {
+  transition: all .3s var(--ease-standard);
+  box-shadow: var(--shadow-sm);
+}
+
+.aluno-card:hover {
+  border-color: var(--gold) !important;
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md), var(--shadow-gold);
+  background: rgba(17,17,17,.8);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 7️⃣  BOTÕES - Hover com lift effect */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.btn {
+  transition: all .2s var(--ease-standard);
+  position: relative;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.4) !important;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Botão Gold com gradiente e shine */
+.btn-gold {
+  background: var(--grad-gold) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 4px 16px rgba(200,169,110,.2) !important;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s var(--ease-standard);
+}
+
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+  transition: left .5s ease;
+}
+
+.btn-gold:hover::before {
+  left: 100%;
+}
+
+.btn-gold:hover {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 8px 24px rgba(200,169,110,.4) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 8️⃣  EXERCÍCIO CARD - Hover e completion shimmer */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.ex-card {
+  transition: all .3s var(--ease-standard);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.ex-card:hover {
+  border-color: rgba(200,169,110,.4) !important;
+  box-shadow: var(--shadow-md), rgba(200,169,110,.1) 0 0 16px;
+  transform: translateY(-2px);
+}
+
+.ex-card.done {
+  background: linear-gradient(135deg, rgba(93,202,154,.03), rgba(8,80,65,.02)) !important;
+  border-color: var(--green) !important;
+}
+
+/* Shimmer ao completar exercício */
+.ex-card.done::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(93,202,154,.15), transparent);
+  animation: shimmer .6s ease once;
+}
+
+/* Número do exercício com efeito */
+.ex-number {
+  transition: all .3s ease;
+}
+
+.ex-card:hover .ex-number {
+  transform: scale(1.1);
+  text-shadow: 0 0 12px rgba(200,169,110,.3);
+}
+
+.ex-card.done .ex-number {
+  color: var(--green) !important;
+}
+
+/* Checkbox com animação */
+.ex-check {
+  transition: all .4s var(--ease-standard);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.ex-card.done .ex-check {
+  background: var(--green) !important;
+  border-color: var(--green) !important;
+  animation: scaleBounce .5s var(--ease-standard);
+  box-shadow: 0 0 12px rgba(93,202,154,.3);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 9️⃣  FORM INPUTS - Focus glow sofisticado */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.form-inp {
+  transition: all .25s var(--ease-standard);
+  box-shadow: 0 0 0 0 rgba(200,169,110,0);
+}
+
+.form-inp:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(200,169,110,.1), var(--shadow-sm);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 🔟 PROGRESS BAR - Gradient com glow */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.progress-bar {
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.5);
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #8a7449, #C8A96E, #8a7449) !important;
+  border-radius: 4px;
+  transition: width 1.2s var(--ease-standard);
+  box-shadow: 0 0 10px rgba(200,169,110,.5);
+  filter: drop-shadow(0 2px 4px rgba(200,169,110,.2));
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣1️⃣  BADGES - Hover glow */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.badge {
+  transition: all .25s var(--ease-standard);
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-green {
+  box-shadow: 0 0 0 1px rgba(93,202,154,.2);
+}
+
+.badge-green:hover {
+  box-shadow: 0 0 12px rgba(93,202,154,.4);
+  transform: scale(1.05);
+  border-color: var(--green) !important;
+}
+
+.badge-gold:hover {
+  box-shadow: 0 0 12px rgba(200,169,110,.4);
+  transform: scale(1.05);
+  border-color: var(--gold) !important;
+}
+
+.badge-gray:hover {
+  transform: scale(1.05);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣2️⃣  TABS - Indicator animado */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.tab {
+  position: relative;
+  transition: all .3s var(--ease-standard);
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  height: 2.5px;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width .4s var(--ease-standard);
+}
+
+.tab.active::after {
+  width: 100%;
+}
+
+.tab.active {
+  color: var(--gold) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣3️⃣  BOTTOM NAV - Indicator animado */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.bnav-item {
+  transition: all .3s var(--ease-standard);
+  position: relative;
+}
+
+.bnav-item .icon {
+  transition: transform .3s var(--ease-standard);
+}
+
+.bnav-item:active .icon {
+  transform: scale(1.15);
+}
+
+.bnav-item.active .icon {
+  animation: scaleBounce .4s var(--ease-standard);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣4️⃣  AVATARES - Glow ao hover */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.av {
+  transition: all .3s var(--ease-standard);
+  box-shadow: 0 0 0 2px var(--border);
+  position: relative;
+}
+
+.av:hover {
+  box-shadow: 0 0 0 2px var(--gold), 0 0 16px rgba(200,169,110,.3);
+  transform: scale(1.08);
+}
+
+.det-av-big {
+  transition: all .3s var(--ease-standard);
+  box-shadow: 0 4px 16px rgba(200,169,110,.2);
+}
+
+.det-av-big:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 28px rgba(200,169,110,.3);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣5️⃣  HERO BANNER - Gradient background */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.hero {
+  background: var(--grad-dark) !important;
+  border-bottom: 2px solid var(--gold3) !important;
+  transition: all .3s ease;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣6️⃣  LINK BOX - Glow effect */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.link-box {
+  transition: all .3s var(--ease-standard);
+  box-shadow: 0 0 0 1.5px var(--gold);
+}
+
+.link-box:hover {
+  box-shadow: 0 0 0 1.5px var(--gold), 0 0 16px rgba(200,169,110,.3);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣7️⃣  SCREEN TRANSITIONS - Fade in melhorado */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.screen.active {
+  animation: screenIn .4s var(--ease-entrance) !important;
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣8️⃣  TREINO CARD - Hover effect */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.treino-card {
+  transition: all .3s var(--ease-standard);
+  box-shadow: var(--shadow-sm);
+}
+
+.treino-card:hover {
+  box-shadow: var(--shadow-md), rgba(200,169,110,.1) 0 0 12px;
+  border-color: rgba(200,169,110,.3) !important;
+  transform: translateY(-2px);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 1️⃣9️⃣  CARGA VALUE - Animação ao incrementar */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.carga-value {
+  transition: all .2s var(--ease-standard);
+}
+
+.carga-value.increment {
+  animation: scaleBounce .4s var(--ease-standard);
+}
+
+/* ──────────────────────────────────────────────────────────────────── */
+/* 2️⃣0️⃣  PILLS - Hover com brilho */
+/* ──────────────────────────────────────────────────────────────────── */
+
+.pill {
+  transition: all .25s var(--ease-standard);
+}
+
+.pill:hover {
+  border-color: rgba(200,169,110,.4) !important;
+  box-shadow: 0 0 8px rgba(200,169,110,.15);
+  transform: translateY(-1px);
+}
+
+.pill-done {
+  box-shadow: 0 0 0 1px rgba(93,202,154,.2);
+}
+
+.pill-done:hover {
+  box-shadow: 0 0 8px rgba(93,202,154,.3);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FIM DOS EFEITOS VISUAIS
+   ══════════════════════════════════════════════════════════════════════ */
