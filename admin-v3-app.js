@@ -246,7 +246,8 @@ async function sbFetch(path, opts = {}) {
 
 // ── AUTH ──────────────────────────────────────────────────
 async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
+  let email = document.getElementById('login-email').value.trim();
+  if (!email.includes('@')) email = email + '@crm.local';
   const senha = document.getElementById('login-senha').value;
   const err = document.getElementById('login-err');
   err.textContent = '';
