@@ -300,13 +300,8 @@ async function doLogin(){
   const err=document.getElementById('loginErr');
   err.textContent='';
   document.getElementById('loginBtn').textContent='A entrar...';
-  let {error}=await sb.auth.signInWithPassword({email,password:pwd2});
-  if(error){
-    const r=await sb.auth.signUp({email,password:pwd});
-    if(r.error){err.textContent=r.error.message;document.getElementById('loginBtn').textContent='Entrar';return;}
-    const r2=await sb.auth.signInWithPassword({email,password:pwd2});
-    if(r2.error){err.textContent=r2.error.message;document.getElementById('loginBtn').textContent='Entrar';return;}
-  }
+  const {error}=await sb.auth.signInWithPassword({email,password:pwd2});
+  if(error){err.textContent='Utilizador ou password incorretos';document.getElementById('loginBtn').textContent='Entrar';return;}
   document.getElementById('loginBtn').textContent='Entrar';
 }
 async function doLogout(){try{await sb.auth.signOut();}catch(e){}location.reload();}
