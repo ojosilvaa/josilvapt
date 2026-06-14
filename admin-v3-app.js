@@ -251,6 +251,26 @@ async function sbFetch(path, opts = {}) {
 }
 
 // ── AUTH ──────────────────────────────────────────────────
+async function recuperarSenha() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase() || 'ptjuklebson@gmail.com';
+  const err = document.getElementById('login-err');
+  err.style.color = '';
+  err.textContent = 'A enviar email de recuperação...';
+  try {
+    const r = await fetch(SB_URL + '/auth/v1/recover', {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (r.ok) {
+      err.style.color = 'var(--green, #5DCA9A)';
+      err.textContent = `✓ Email enviado para ${email} — verifica a caixa de entrada`;
+    } else {
+      err.textContent = 'Erro ao enviar email. Tenta novamente.';
+    }
+  } catch(e) { err.textContent = 'Erro de ligação.'; }
+}
+
 async function doLogin() {
   let user = document.getElementById('login-email').value.trim().toLowerCase();
   const senha = document.getElementById('login-senha').value;
