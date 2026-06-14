@@ -1428,7 +1428,8 @@ async function salvarChallenge() {
     meta_tipo: document.getElementById('ch-meta-tipo').value,
     meta_valor: parseInt(document.getElementById('ch-meta-val').value) || 1,
     fim: document.getElementById('ch-fim').value || null,
-    ativo: document.getElementById('ch-ativo').checked
+    ativo: document.getElementById('ch-ativo').checked,
+    ...(editingChallengeId ? {} : { pt_id: getCurrentPtId() })
   };
 
   try {
