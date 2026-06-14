@@ -29,7 +29,7 @@ const DAYS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 // ── STATE ─────────────────────────────────────────────────
-let BASE_URL = 'https://josilvapt.vercel.app/aluno-v3.html';
+let BASE_URL = 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html';
 let ANTHROPIC_KEY = '';
 let currentLang = localStorage.getItem('lang') || 'pt';
 let currentAlunoId = null;
@@ -137,9 +137,9 @@ function loadConfig() {
   // Força sempre o URL correcto, ignorando cache antigo
   const stored = lc('base_url', '');
   if (!stored || stored.includes('aluno.html') || !stored.includes('aluno-v3')) {
-    sc('base_url', 'https://josilvapt.vercel.app/aluno-v3.html');
+    sc('base_url', 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html');
   }
-  BASE_URL = lc('base_url', 'https://josilvapt.vercel.app/aluno-v3.html');
+  BASE_URL = lc('base_url', 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html');
   ANTHROPIC_KEY = lc('anthropic_key', '');
   const b = document.getElementById('cfg-base-url'), ak = document.getElementById('cfg-anthropic-key');
   if (b) b.value = BASE_URL;
