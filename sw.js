@@ -1,10 +1,11 @@
-const CACHE_NAME = 'josilvaPT-v10';
+const CACHE_NAME = 'josilvaPT-v11';
 const CACHE_FILES = [
   './',
   './aluno-v3.html',
   './aluno-v3-app.js',
   './admin-v3.html',
   './admin-v3-app.js',
+  './ia-treino.html',
   './logo.jpg',
   './icon-192.png',
   './icon-512.png',

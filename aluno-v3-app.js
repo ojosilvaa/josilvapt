@@ -625,7 +625,7 @@ async function loadTreinos(){
 
   const chips = document.getElementById('treino-chips');
   chips.innerHTML = treinos.map((t,i) =>
-    `<button class="chip${i===0?' on':''}" data-tid="${t.id}">${t.nome}</button>`
+    `<button class="chip${i===0?' on':''}" data-tid="${t.id}">${escapeHTML(t.nome)}</button>`
   ).join('');
   chips.addEventListener('click', ev => {
     const c = ev.target.closest('.chip'); if (!c) return;
