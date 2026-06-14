@@ -336,6 +336,11 @@ select.form-inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://ww
 const SB_URL = 'https://oelbocimyfwwzkzbyswg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 
+// Usa access_token do admin se disponível (mais seguro), cai para anon key
+const getAuthToken = () => {
+  try { return sessionStorage.getItem('sb_access_token') || SB_KEY; } catch(e) { return SB_KEY; }
+};
+
 let selectedAlunoId = null, selectedAlunoNome = '', treinoGerado = null;
 
 // ── UTILS ──
@@ -515,7 +520,7 @@ Regras:
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + SB_KEY,
+        'Authorization': 'Bearer ' + getAuthToken(),
         'apikey': SB_KEY,
       },
       body: JSON.stringify({

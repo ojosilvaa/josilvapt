@@ -30,7 +30,6 @@ const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 // ── STATE ─────────────────────────────────────────────────
 let BASE_URL = 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html';
-let ANTHROPIC_KEY = '';
 let currentLang = localStorage.getItem('lang') || 'pt';
 let currentAlunoId = null;
 let currentTreinoId = null;
@@ -140,10 +139,8 @@ function loadConfig() {
     sc('base_url', 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html');
   }
   BASE_URL = lc('base_url', 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html');
-  ANTHROPIC_KEY = lc('anthropic_key', '');
-  const b = document.getElementById('cfg-base-url'), ak = document.getElementById('cfg-anthropic-key');
+  const b = document.getElementById('cfg-base-url');
   if (b) b.value = BASE_URL;
-  if (ak) ak.value = ANTHROPIC_KEY;
 }
 
 // ── UTILS ─────────────────────────────────────────────────
@@ -1304,17 +1301,6 @@ function salvarBaseUrl() {
   toast(T('t_url_salva'));
 }
 
-async function salvarAnthropicKey() {
-  ANTHROPIC_KEY = document.getElementById('cfg-anthropic-key').value.trim();
-  sc('anthropic_key', ANTHROPIC_KEY);
-  const existe = await sbFetch('configuracoes?chave=eq.anthropic_key') || [];
-  if (existe.length) {
-    await sbFetch('configuracoes?chave=eq.anthropic_key', { method: 'PATCH', body: JSON.stringify({ valor: ANTHROPIC_KEY }) });
-  } else {
-    await sbFetch('configuracoes', { method: 'POST', body: JSON.stringify({ chave: 'anthropic_key', valor: ANTHROPIC_KEY }) });
-  }
-  toast(T('t_chave_salva'));
-}
 
 // ── COMMUNITY CHALLENGES ──────────────────────────────────
 async function renderChallenges() {
