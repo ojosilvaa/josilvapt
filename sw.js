@@ -6,6 +6,7 @@ const CACHE_FILES = [
   './admin-v3.html',
   './admin-v3-app.js',
   './ia-treino.html',
+  './registo-pt.html',
   './logo.jpg',
   './icon-192.png',
   './icon-512.png',
