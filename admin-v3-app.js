@@ -377,6 +377,26 @@ async function renderDash() {
 
   const ativos = alunosArr.filter(a => a.ativo).length;
 
+  // Onboarding card — show only if zero students
+  const obCard = document.getElementById('dash-onboarding');
+  if (obCard) {
+    obCard.style.display = alunosArr.length === 0 ? 'block' : 'none';
+    if (alunosArr.length === 0) {
+      // Calculate trial days remaining from subscricoes (stored as JWT claim or just use 14)
+      try {
+        const tok = getToken();
+        if (tok) {
+          const payload = JSON.parse(atob(tok.split('.')[1]));
+          const createdAt = payload.iat ? new Date(payload.iat * 1000) : new Date();
+          const trialEnd = new Date(createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+          const daysLeft = Math.max(0, Math.ceil((trialEnd - Date.now()) / 86400000));
+          const el = document.getElementById('ob-trial-days');
+          if (el) el.textContent = daysLeft;
+        }
+      } catch(e) {}
+    }
+  }
+
   // Stats
   document.getElementById('dash-stats').innerHTML = `
     <div class="stat-card"><div class="stat-val">${alunosArr.length}</div><div class="stat-lbl">Total Alunos</div></div>
