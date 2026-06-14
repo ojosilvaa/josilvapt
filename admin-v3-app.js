@@ -146,6 +146,15 @@ function loadConfig() {
 // ── UTILS ─────────────────────────────────────────────────
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 
+// Decodes the Supabase JWT to extract the logged-in PT's UUID
+const getCurrentPtId = () => {
+  try {
+    const tok = getToken();
+    if (!tok) return null;
+    return JSON.parse(atob(tok.split('.')[1])).sub || null;
+  } catch(e) { return null; }
+};
+
 const toast = msg => {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
@@ -492,7 +501,8 @@ async function criarAluno() {
     modalidade: document.getElementById('na-mod').value,
     plano: document.getElementById('na-plano').value,
     obs: document.getElementById('na-obs').value,
-    ativo: true
+    ativo: true,
+    pt_id: getCurrentPtId()
   };
   const res = await sbFetch('alunos', { method: 'POST', body: JSON.stringify(data) });
   if (res) {
