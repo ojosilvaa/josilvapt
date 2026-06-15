@@ -29,7 +29,7 @@ const DAYS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 // ── STATE ─────────────────────────────────────────────────
-let BASE_URL = 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html';
+let BASE_URL = 'https://josilvapt.vercel.app/aluno-v3.html';
 let currentLang = localStorage.getItem('lang') || 'pt';
 let currentAlunoId = null;
 let currentTreinoId = null;
@@ -133,12 +133,13 @@ const lc = (k, d) => { try { const v = localStorage.getItem(k); return v !== nul
 const sc = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
 
 function loadConfig() {
-  // Força sempre o URL correcto, ignorando cache antigo
+  // Força sempre o URL correcto (domínio Vercel), ignorando cache antigo
+  const DEFAULT_BASE = 'https://josilvapt.vercel.app/aluno-v3.html';
   const stored = lc('base_url', '');
-  if (!stored || stored.includes('aluno.html') || !stored.includes('aluno-v3')) {
-    sc('base_url', 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html');
+  if (!stored || stored.includes('aluno.html') || !stored.includes('aluno-v3') || stored.includes('github.io')) {
+    sc('base_url', DEFAULT_BASE);
   }
-  BASE_URL = lc('base_url', 'https://ojosilvaa.github.io/josilvapt/aluno-v3.html');
+  BASE_URL = lc('base_url', DEFAULT_BASE);
   const b = document.getElementById('cfg-base-url');
   if (b) b.value = BASE_URL;
 }
