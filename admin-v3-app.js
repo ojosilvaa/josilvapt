@@ -14,7 +14,7 @@ const GRADS = [
   'linear-gradient(135deg,#a78bfa,#7c3aed)'
 ];
 
-const PERI_CAMPOS = [
+const PERI_CAMPOS_PT = [
   {id:'pescoco',label:'Pescoço'},{id:'ombro',label:'Ombro'},{id:'torax',label:'Tórax'},
   {id:'cintura',label:'Cintura'},{id:'abdomen',label:'Abdômen'},{id:'quadril',label:'Quadril'},
   {id:'coxa_d',label:'Coxa D'},{id:'coxa_e',label:'Coxa E'},
@@ -24,6 +24,65 @@ const PERI_CAMPOS = [
   {id:'braco_flex_d',label:'Braço Flex. D'},{id:'braco_flex_e',label:'Braço Flex. E'},
   {id:'antebraco_d',label:'Antebr. D'},{id:'antebraco_e',label:'Antebr. E'}
 ];
+const PERI_CAMPOS_EN = [
+  {id:'pescoco',label:'Neck'},{id:'ombro',label:'Shoulder'},{id:'torax',label:'Chest'},
+  {id:'cintura',label:'Waist'},{id:'abdomen',label:'Abdomen'},{id:'quadril',label:'Hip'},
+  {id:'coxa_d',label:'Thigh R'},{id:'coxa_e',label:'Thigh L'},
+  {id:'joelho_d',label:'Knee R'},{id:'joelho_e',label:'Knee L'},
+  {id:'panturrilha_d',label:'Calf R'},{id:'panturrilha_e',label:'Calf L'},
+  {id:'braco_d',label:'Arm R'},{id:'braco_e',label:'Arm L'},
+  {id:'braco_flex_d',label:'Arm Flex R'},{id:'braco_flex_e',label:'Arm Flex L'},
+  {id:'antebraco_d',label:'Forearm R'},{id:'antebraco_e',label:'Forearm L'}
+];
+const getPeriCampos = () => currentLang === 'en' ? PERI_CAMPOS_EN : PERI_CAMPOS_PT;
+
+// ── EXERCISE / WORKOUT NAME TRANSLATION ──────────────────
+const EXERCISE_NAMES_EN = {
+  // Workout descriptors
+  'Frontal':'Push (Front)','Posterior':'Pull (Back)','Misto':'Mixed',
+  'Superior':'Upper Body','Inferior':'Lower Body',
+  // Chest
+  'Supino Inclinado com Halteres':'Incline Dumbbell Press',
+  'Supino Inclinado':'Incline Bench Press',
+  'Supino Sentado (máquina)':'Seated Chest Press (Machine)',
+  'Supino Reto':'Flat Bench Press','Supino Declinado':'Decline Bench Press',
+  'Supino':'Bench Press',
+  // Back
+  'Puxada Aberta Pronada':'Wide Grip Lat Pulldown',
+  'Puxada com Triângulo':'Close Grip Lat Pulldown',
+  'Puxada':'Lat Pulldown',
+  'Remada Sentada com Triângulo':'Seated Cable Row (Triangle)',
+  'Remada Cavalinho':'Barbell Row','Remada Sentada':'Seated Row','Remada':'Row',
+  // Shoulders
+  'Desenvolvimento de Ombro (máquina)':'Shoulder Press (Machine)',
+  'Desenvolvimento de Ombro':'Shoulder Press','Desenvolvimento':'Shoulder Press',
+  'Elevação Lateral com Halteres':'Lateral Raise','Elevação Lateral':'Lateral Raise',
+  'Face pull cabo':'Face Pull','Face Pull':'Face Pull',
+  // Legs
+  'Leg Press Horizontal (pés altos, glúteo)':'Leg Press (High Feet – Glutes)',
+  'Leg Press Horizontal':'Horizontal Leg Press','Leg Press 45°':'Leg Press 45°',
+  'Cadeira Extensora':'Leg Extension','Cadeira Flexora':'Leg Curl',
+  'Agachamento Sumô com Kettlebell':'Sumo Squat with Kettlebell',
+  'Agachamento Sumô':'Sumo Squat','Agachamento':'Squat',
+  'Stiff':'Romanian Deadlift','Levantamento Terra':'Deadlift',
+  // Arms
+  'Rosca Direta':'Barbell Curl','Rosca Martelo':'Hammer Curl','Rosca':'Bicep Curl',
+  'Tríceps Corda':'Triceps Pushdown','Francês':'Skull Crusher','Tríceps':'Triceps Extension',
+  // Core
+  'Prancha':'Plank','Abdominal Infra':'Lower Ab Crunch','Abdominal':'Crunch',
+};
+
+function translateName(name) {
+  if (currentLang !== 'en' || !name) return name;
+  if (EXERCISE_NAMES_EN[name]) return EXERCISE_NAMES_EN[name];
+  // Replace longest matching substrings first
+  let result = name;
+  const keys = Object.keys(EXERCISE_NAMES_EN).sort((a, b) => b.length - a.length);
+  for (const key of keys) {
+    if (result.includes(key)) { result = result.replace(key, EXERCISE_NAMES_EN[key]); break; }
+  }
+  return result;
+}
 
 const DAYS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -80,6 +139,19 @@ const LANG = {
     sess_semana:'Sessões esta semana',
     no_alertas:'Todos os alunos treinaram recentemente.',
     agenda_semana:'Semana',
+    dash_total:'Total Alunos',dash_ativos:'Ativos',dash_fb_novos:'Feedbacks novos',
+    det_sessoes:'Sessões',det_ultima:'Última sessão',det_streak:'Melhor streak',det_carga:'Maior carga kg',
+    ev_carga_lbl:'Carga (kg)',ev_treino_fb:'Treino',
+    ex_nenhum:'Nenhum exercício adicionado ainda.',
+    ex_nome_ph:'Nome do exercício',ex_series_lbl:'Séries',ex_reps_lbl:'Reps',
+    ex_obs_ph:'Observações (opcional)',ex_video_ph:'Link do vídeo YouTube (opcional)',
+    med_peso_lbl:'Peso kg',med_gordura_lbl:'Gordura',med_massa_lbl:'Massa Magra',
+    med_visceral_lbl:'Visceral',med_tmb_lbl:'TMB kcal',med_imc_lbl:'IMC',
+    cmp_insuf:'Dados insuficientes para comparação.',cmp_sem:'Sem dados comuns para comparar.',
+    cmp_de:'DE',cmp_para:'PARA',
+    btn_editar:'EDITAR',btn_excluir:'EXCLUIR',btn_cancelar:'CANCELAR',
+    t_err_email:'Erro ao enviar email. Tenta novamente.',t_err_conn_rec:'Erro de ligação.',
+    med_campo_peso:'Peso',med_campo_gordura:'% Gordura',med_campo_massa:'Massa Magra',
   },
   en: {
     nav_dash:'Dashboard',nav_alunos:'Students',nav_agenda:'Schedule',nav_feedbacks:'Feedbacks',nav_config:'Settings',
@@ -117,6 +189,19 @@ const LANG = {
     sess_semana:'Sessions this week',
     no_alertas:'All students trained recently.',
     agenda_semana:'Week',
+    dash_total:'Total Students',dash_ativos:'Active',dash_fb_novos:'New Feedbacks',
+    det_sessoes:'Sessions',det_ultima:'Last session',det_streak:'Best streak',det_carga:'Max weight kg',
+    ev_carga_lbl:'Weight (kg)',ev_treino_fb:'Workout',
+    ex_nenhum:'No exercises added yet.',
+    ex_nome_ph:'Exercise name',ex_series_lbl:'Sets',ex_reps_lbl:'Reps',
+    ex_obs_ph:'Notes (optional)',ex_video_ph:'YouTube video link (optional)',
+    med_peso_lbl:'Weight kg',med_gordura_lbl:'Body Fat',med_massa_lbl:'Lean Mass',
+    med_visceral_lbl:'Visceral',med_tmb_lbl:'BMR kcal',med_imc_lbl:'BMI',
+    cmp_insuf:'Not enough data for comparison.',cmp_sem:'No common data to compare.',
+    cmp_de:'FROM',cmp_para:'TO',
+    btn_editar:'EDIT',btn_excluir:'DELETE',btn_cancelar:'CANCEL',
+    t_err_email:'Error sending email. Try again.',t_err_conn_rec:'Connection error.',
+    med_campo_peso:'Weight',med_campo_gordura:'% Body Fat',med_campo_massa:'Lean Mass',
   }
 };
 const T = key => (LANG[currentLang] || LANG.pt)[key] ?? LANG.pt[key] ?? key;
@@ -267,9 +352,9 @@ async function recuperarSenha() {
       err.style.color = 'var(--green, #5DCA9A)';
       err.textContent = `✓ Email enviado para ${email} — verifica a caixa de entrada`;
     } else {
-      err.textContent = 'Erro ao enviar email. Tenta novamente.';
+      err.textContent = T('t_err_email');
     }
-  } catch(e) { err.textContent = 'Erro de ligação.'; }
+  } catch(e) { err.textContent = T('t_err_conn_rec'); }
 }
 
 async function doLogin() {
@@ -400,10 +485,10 @@ async function renderDash() {
 
   // Stats
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val">${alunosArr.length}</div><div class="stat-lbl">Total Alunos</div></div>
-    <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">Ativos</div></div>
+    <div class="stat-card"><div class="stat-val">${alunosArr.length}</div><div class="stat-lbl">${T('dash_total')}</div></div>
+    <div class="stat-card"><div class="stat-val">${ativos}</div><div class="stat-lbl">${T('dash_ativos')}</div></div>
     <div class="stat-card"><div class="stat-val">${sesSemana.length}</div><div class="stat-lbl">${T('sess_semana')}</div></div>
-    <div class="stat-card"><div class="stat-val">${fbCount}</div><div class="stat-lbl">Feedbacks novos</div></div>`;
+    <div class="stat-card"><div class="stat-val">${fbCount}</div><div class="stat-lbl">${T('dash_fb_novos')}</div></div>`;
 
   // Alertas — alunos without session in 5+ days
   const lastSessaoByAluno = {};
@@ -650,7 +735,7 @@ function addExercicio() {
 function renderExList() {
   const el = document.getElementById('ex-list');
   if (!exerciciosList.length) {
-    el.innerHTML = `<div style="font-size:13px;color:var(--text-3);padding:12px 0;font-weight:500">Nenhum exercício adicionado ainda.</div>`;
+    el.innerHTML = `<div style="font-size:13px;color:var(--text-3);padding:12px 0;font-weight:500">${T('ex_nenhum')}</div>`;
     return;
   }
   el.innerHTML = exerciciosList.map((ex, i) => `
@@ -659,13 +744,13 @@ function renderExList() {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="ex-num-lbl">EX ${String(i + 1).padStart(2, '0')}</div>
-      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Nome do exercício" value="${esc(ex.nome || '')}" oninput="exerciciosList[${i}].nome=this.value"></div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="${T('ex_nome_ph')}" value="${esc(ex.nome || '')}" oninput="exerciciosList[${i}].nome=this.value"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <div><label class="form-label">Séries</label><input class="form-inp" placeholder="3" value="${esc(ex.series || '3')}" oninput="exerciciosList[${i}].series=this.value"></div>
-        <div><label class="form-label">Reps</label><input class="form-inp" placeholder="10-12" value="${esc(ex.reps || '10-12')}" oninput="exerciciosList[${i}].reps=this.value"></div>
+        <div><label class="form-label">${T('ex_series_lbl')}</label><input class="form-inp" placeholder="3" value="${esc(ex.series || '3')}" oninput="exerciciosList[${i}].series=this.value"></div>
+        <div><label class="form-label">${T('ex_reps_lbl')}</label><input class="form-inp" placeholder="10-12" value="${esc(ex.reps || '10-12')}" oninput="exerciciosList[${i}].reps=this.value"></div>
       </div>
-      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="Observações (opcional)" value="${esc(ex.obs || '')}" oninput="exerciciosList[${i}].obs=this.value"></div>
-      <div class="form-group" style="margin:0"><input class="form-inp" placeholder="Link do vídeo YouTube (opcional)" value="${esc(ex.video_url || '')}" oninput="exerciciosList[${i}].video_url=this.value"></div>
+      <div class="form-group" style="margin:0 0 8px"><input class="form-inp" placeholder="${T('ex_obs_ph')}" value="${esc(ex.obs || '')}" oninput="exerciciosList[${i}].obs=this.value"></div>
+      <div class="form-group" style="margin:0"><input class="form-inp" placeholder="${T('ex_video_ph')}" value="${esc(ex.video_url || '')}" oninput="exerciciosList[${i}].video_url=this.value"></div>
     </div>`).join('');
 }
 
@@ -697,11 +782,11 @@ async function renderTreinos() {
   if (!treinos.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">📋</div>${T('treinos_empty')}</div>`; return; }
   el.innerHTML = treinos.map(t => `
     <div class="treino-card">
-      <div class="treino-nome">${esc(t.nome)}</div>
-      <div class="treino-sub">${esc(t.descricao || '')}</div>
+      <div class="treino-nome">${esc(translateName(t.nome))}</div>
+      <div class="treino-sub">${esc(translateName(t.descricao || ''))}</div>
       <div class="treino-actions">
-        <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">EDITAR</button>
-        <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">EXCLUIR</button>
+        <button class="btn btn-sm btn-outline-gold" style="flex:1" onclick="editarTreino('${t.id}')">${T('btn_editar')}</button>
+        <button class="btn btn-sm btn-danger" onclick="deletarTreino('${t.id}')">${T('btn_excluir')}</button>
       </div>
     </div>`).join('');
 }
@@ -754,15 +839,15 @@ async function renderEvolucao() {
   todas_cargas.forEach(c => { if (c.exercicios) exMap[c.exercicio_id] = c.exercicios.nome; });
 
   document.getElementById('det-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">Sessões</div></div>
-    <div class="stat-card"><div class="stat-val">${sessoes.length ? formatDate(sessoes[0].data) : '—'}</div><div class="stat-lbl" style="font-size:9px">Última sessão</div></div>
-    <div class="stat-card"><div class="stat-val">${streak}</div><div class="stat-lbl">Melhor streak</div></div>
-    <div class="stat-card"><div class="stat-val">${maxCarga ? maxCarga.toFixed(1) : '—'}</div><div class="stat-lbl">Maior carga kg</div></div>`;
+    <div class="stat-card"><div class="stat-val">${sessoes.length}</div><div class="stat-lbl">${T('det_sessoes')}</div></div>
+    <div class="stat-card"><div class="stat-val">${sessoes.length ? formatDate(sessoes[0].data) : '—'}</div><div class="stat-lbl" style="font-size:9px">${T('det_ultima')}</div></div>
+    <div class="stat-card"><div class="stat-val">${streak}</div><div class="stat-lbl">${T('det_streak')}</div></div>
+    <div class="stat-card"><div class="stat-val">${maxCarga ? maxCarga.toFixed(1) : '—'}</div><div class="stat-lbl">${T('det_carga')}</div></div>`;
 
   const sel = document.getElementById('ev-select');
   sel.innerHTML = `<option value="">${T('ev_sel_ex')}</option>`;
   Object.entries(exMap).forEach(([id, nome]) => {
-    const o = document.createElement('option'); o.value = id; o.textContent = nome; sel.appendChild(o);
+    const o = document.createElement('option'); o.value = id; o.textContent = translateName(nome); sel.appendChild(o);
   });
 
   // Session history
@@ -773,7 +858,7 @@ async function renderEvolucao() {
       const cargas = todas_cargas.filter(c => c.sessao_id === s.id);
       const max = cargas.length ? Math.max(...cargas.map(c => c.carga_kg || 0)) : 0;
       return `<div class="hist-item">
-        <div><div class="hist-label">${s.treino_nome || 'Treino'}</div><div class="hist-sub">${formatDate(s.data)}</div></div>
+        <div><div class="hist-label">${translateName(s.treino_nome) || T('ev_treino_fb')}</div><div class="hist-sub">${formatDate(s.data)}</div></div>
         <div class="hist-val">${max ? max.toFixed(1) + 'kg' : '—'}</div>
       </div>`;
     }).join('');
@@ -795,7 +880,7 @@ async function renderEvoChart() {
     type: 'line',
     data: {
       labels: cargas.map(c => formatDate(c.sessoes?.data || '')),
-      datasets: [{ label: 'Carga (kg)', data: cargas.map(c => c.carga_kg), borderColor: '#FFD96B', backgroundColor: 'rgba(255,217,107,0.08)', pointBackgroundColor: '#FFD96B', pointRadius: 5, tension: 0.3, fill: true }]
+      datasets: [{ label: T('ev_carga_lbl'), data: cargas.map(c => c.carga_kg), borderColor: '#FFD96B', backgroundColor: 'rgba(255,217,107,0.08)', pointBackgroundColor: '#FFD96B', pointRadius: 5, tension: 0.3, fill: true }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -823,13 +908,13 @@ async function renderComparativo() {
 
   const medA = findNearest(dateA);
   const medB = findNearest(dateB);
-  if (!medA || !medB) { el.innerHTML = `<div style="font-size:13px;color:var(--text-3);text-align:center;padding:12px">Dados insuficientes para comparação.</div>`; return; }
+  if (!medA || !medB) { el.innerHTML = `<div style="font-size:13px;color:var(--text-3);text-align:center;padding:12px">${T('cmp_insuf')}</div>`; return; }
 
   const fields = [
-    { key: 'peso', label: 'Peso', unit: 'kg', src: 'root' },
-    { key: 'gordura', label: '% Gordura', unit: '%', src: 'root' },
-    { key: 'massa_magra', label: 'Massa Magra', unit: 'kg', src: 'root' },
-    ...PERI_CAMPOS.map(c => ({ key: c.id, label: c.label, unit: 'cm', src: 'medidas' }))
+    { key: 'peso', label: T('med_campo_peso'), unit: 'kg', src: 'root' },
+    { key: 'gordura', label: T('med_campo_gordura'), unit: '%', src: 'root' },
+    { key: 'massa_magra', label: T('med_campo_massa'), unit: 'kg', src: 'root' },
+    ...getPeriCampos().map(c => ({ key: c.id, label: c.label, unit: 'cm', src: 'medidas' }))
   ];
 
   const getVal = (med, f) => {
@@ -863,14 +948,14 @@ async function renderComparativo() {
 
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:11px;color:var(--text-3);font-weight:700;letter-spacing:.08em">
-      <span>DE ${formatDate(medA.data)}</span><span>PARA ${formatDate(medB.data)}</span>
+      <span>${T('cmp_de')} ${formatDate(medA.data)}</span><span>${T('cmp_para')} ${formatDate(medB.data)}</span>
     </div>
-    ${rows || '<div class="empty" style="padding:12px">Sem dados comuns para comparar.</div>'}`;
+    ${rows || `<div class="empty" style="padding:12px">${T('cmp_sem')}</div>`}`;
 }
 
 // ── MEDIDAS ───────────────────────────────────────────────
 async function renderMedidas() {
-  document.getElementById('peri-inputs').innerHTML = PERI_CAMPOS.map(c => `
+  document.getElementById('peri-inputs').innerHTML = getPeriCampos().map(c => `
     <div class="peri-item">
       <div class="peri-lbl">${c.label}</div>
       <input class="peri-inp" type="number" step="0.1" id="pm-${c.id}" placeholder="—">
@@ -887,12 +972,12 @@ async function renderMedidas() {
     const prev = avs[idx + 1];
     const med = av.medidas || {};
     const bioCards = [
-      av.peso ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${av.peso}</div><div class="stat-lbl">Peso kg</div></div>` : '',
-      med.bio_imc ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${med.bio_imc}</div><div class="stat-lbl">IMC</div></div>` : '',
-      av.gordura ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${av.gordura}%</div><div class="stat-lbl">Gordura</div></div>` : '',
-      av.massa_magra ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${av.massa_magra}</div><div class="stat-lbl">Massa Magra</div></div>` : '',
-      med.bio_gord_visc ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${med.bio_gord_visc}</div><div class="stat-lbl">Visceral</div></div>` : '',
-      med.bio_tmb ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${med.bio_tmb}</div><div class="stat-lbl">TMB kcal</div></div>` : '',
+      av.peso ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${av.peso}</div><div class="stat-lbl">${T('med_peso_lbl')}</div></div>` : '',
+      med.bio_imc ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${med.bio_imc}</div><div class="stat-lbl">${T('med_imc_lbl')}</div></div>` : '',
+      av.gordura ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${av.gordura}%</div><div class="stat-lbl">${T('med_gordura_lbl')}</div></div>` : '',
+      av.massa_magra ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${av.massa_magra}</div><div class="stat-lbl">${T('med_massa_lbl')}</div></div>` : '',
+      med.bio_gord_visc ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${med.bio_gord_visc}</div><div class="stat-lbl">${T('med_visceral_lbl')}</div></div>` : '',
+      med.bio_tmb ? `<div class="stat-card" style="flex:1;min-width:70px;padding:10px"><div class="stat-val" style="font-size:18px;font-family:'JetBrains Mono',monospace">${med.bio_tmb}</div><div class="stat-lbl">${T('med_tmb_lbl')}</div></div>` : '',
     ].filter(Boolean).join('');
 
     return `<div class="card" style="margin-bottom:10px">
@@ -904,7 +989,7 @@ async function renderMedidas() {
         </div>
       </div>
       ${bioCards ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${bioCards}</div>` : ''}
-      ${PERI_CAMPOS.filter(c => med[c.id]).map(c => {
+      ${getPeriCampos().filter(c => med[c.id]).map(c => {
         const cur = med[c.id]; const prevV = prev?.medidas?.[c.id];
         let delta = '', cls = 'zero';
         if (prevV !== undefined) { const d = (cur - prevV).toFixed(1); delta = (d > 0 ? '+' : '') + d + 'cm'; cls = d < 0 ? 'pos' : (d > 0 ? 'neg' : 'zero'); }
@@ -935,7 +1020,7 @@ function editarMedida(id) {
   document.getElementById('pm-gord-visc').value = med.bio_gord_visc || '';
   document.getElementById('pm-tmb').value = med.bio_tmb || '';
   document.getElementById('pm-obs').value = av.obs || '';
-  PERI_CAMPOS.forEach(c => { const el = document.getElementById('pm-' + c.id); if (el) el.value = med[c.id] || ''; });
+  getPeriCampos().forEach(c => { const el = document.getElementById('pm-' + c.id); if (el) el.value = med[c.id] || ''; });
   document.getElementById('pm-card-title').textContent = T('med_editar_aval');
   document.getElementById('pm-btn-cancel').style.display = '';
   window.scrollTo(0, 0);
@@ -946,7 +1031,7 @@ function cancelarEditarMedida() {
   document.getElementById('pm-id').value = '';
   document.getElementById('pm-data').value = todayISO();
   ['peso', 'imc', 'gord', 'gord-abs', 'massa', 'gord-visc', 'tmb', 'obs'].forEach(f => { const el = document.getElementById('pm-' + f); if (el) el.value = ''; });
-  PERI_CAMPOS.forEach(c => { const el = document.getElementById('pm-' + c.id); if (el) el.value = ''; });
+  getPeriCampos().forEach(c => { const el = document.getElementById('pm-' + c.id); if (el) el.value = ''; });
   document.getElementById('pm-card-title').textContent = T('med_nova_aval');
   document.getElementById('pm-btn-cancel').style.display = 'none';
 }
@@ -955,7 +1040,7 @@ async function salvarMedida() {
   const data = document.getElementById('pm-data').value;
   if (!data) { toast(T('t_data_obrig')); return; }
   const medidas = {};
-  PERI_CAMPOS.forEach(c => { const v = document.getElementById('pm-' + c.id)?.value; if (v) medidas[c.id] = parseFloat(v); });
+  getPeriCampos().forEach(c => { const v = document.getElementById('pm-' + c.id)?.value; if (v) medidas[c.id] = parseFloat(v); });
   const imc = document.getElementById('pm-imc').value; if (imc) medidas.bio_imc = parseFloat(imc);
   const gordAbs = document.getElementById('pm-gord-abs').value; if (gordAbs) medidas.bio_gord_abs = parseFloat(gordAbs);
   const gordVisc = document.getElementById('pm-gord-visc').value; if (gordVisc) medidas.bio_gord_visc = parseFloat(gordVisc);
