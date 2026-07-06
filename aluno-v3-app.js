@@ -1689,9 +1689,9 @@ function renderBiometria(container){
   const massaMagra = parseFloat(p.massa_magra) || 0;
   const massaGorda = +(peso * gordura / 100).toFixed(1);
   const altura     = an.altura_cm || m.altura_cm || 0;
-  const imc        = m.bio_imc || an.imc || (altura ? +(peso/((altura/100)**2)).toFixed(1) : 0);
-  const tmb        = m.bio_tmb || an.tmb_kcal || 0;
-  const gordVisc   = m.bio_gord_visc || an.gordura_visceral || 0;
+  const imc        = m.bio_imc || m.imc || an.imc || (altura ? +(peso/((altura/100)**2)).toFixed(1) : 0);
+  const tmb        = m.bio_tmb || m.tmb_kcal || m.taxa_metabolica_basal_kcal || 0;
+  const gordVisc   = m.bio_gord_visc || m.gordura_visceral_nivel || an.gordura_visceral || 0;
   const gordAbs    = m.bio_gord_abs  || 0;
 
   const imcLabel = imc < 18.5 ? (LANG==='pt'?'Abaixo peso':'Underweight')
@@ -1712,8 +1712,58 @@ function renderBiometria(container){
   const card = document.createElement('div');
   card.id = 'bio-card'; card.className = 'bio-card in'; card.style.animationDelay = '.04s';
 
+  // ── Progression header (only when 2+ evaluations) ──────────────────
+  const fmtDate = d => {
+    if (!d) return '—';
+    const [y,mo] = d.split('-');
+    const ms = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    return ms[+mo-1] + ' ' + y.slice(2);
+  };
+  const getMet = ev => ({
+    peso: parseFloat(ev.peso) || 0,
+    gordura: parseFloat(ev.gordura) || 0,
+    magra: parseFloat(ev.massa_magra) || 0,
+    imc: (ev.medidas||{}).bio_imc || (ev.medidas||{}).imc || 0,
+    tmb: (ev.medidas||{}).bio_tmb || (ev.medidas||{}).tmb_kcal || (ev.medidas||{}).taxa_metabolica_basal_kcal || 0
+  });
+  const progHTML = (() => {
+    if (perimetriaHist.length < 2) return '';
+    const first = getMet(perimetriaHist[0]);
+    const last  = getMet(perimetriaHist[perimetriaHist.length-1]);
+    const diff  = (v,f,u='',inv=false) => {
+      const d = +(v-f).toFixed(1); if (!d) return `<span class="bpd-v neu">→</span>`;
+      const pos = inv ? d<0 : d>0;
+      return `<span class="bpd-v ${pos?'pos':'neg'}">${d>0?'+':''}${d}${u}</span>`;
+    };
+    const cards = perimetriaHist.map((ev,i) => {
+      const mt = getMet(ev);
+      const isLast = i === perimetriaHist.length-1;
+      return `<div class="bpc${isLast?' bpc-latest':''}">
+        <div class="bpc-date">${fmtDate(ev.data)}</div>
+        <div class="bpc-peso">${mt.peso}<small>kg</small></div>
+        <div class="bpc-gord">${mt.gordura}<small>%</small></div>
+      </div>`;
+    }).join('');
+    const deltaRows = [
+      [pt?'Peso':'Weight', first.peso, last.peso, 'kg', true],
+      [pt?'Gordura':'Body fat', first.gordura, last.gordura, '%', true],
+      [pt?'Massa magra':'Lean mass', first.magra, last.magra, 'kg', false],
+      ['IMC', first.imc, last.imc, '', true],
+      ['TMB', first.tmb, last.tmb, ' kcal', false],
+    ].filter(r => r[1] && r[2]).map(([l,f,v,u,inv]) =>
+      `<div class="bpd-row"><span class="bpd-l">${l}</span><span class="bpd-f">${f}${u}</span>${diff(v,f,u,inv)}<span class="bpd-v2">${v}${u}</span></div>`
+    ).join('');
+    return `
+      <div class="bio-divider">${pt?'Progressão · '+perimetriaHist.length+' avaliações':'Progress · '+perimetriaHist.length+' assessments'}</div>
+      <div class="bpc-scroll">${cards}</div>
+      ${deltaRows ? `<div class="bpd-grid">${deltaRows}</div>` : ''}
+    `;
+  })();
+  // ────────────────────────────────────────────────────────────────────
+
   card.innerHTML = `
     <div class="bio-title">${pt?'Avaliação física':'Physical assessment'} · <span style="color:var(--gold)">${dataFmt}</span></div>
+    ${progHTML}
     <div class="bio-kpis">
       <div class="bio-kpi accent">
         <div class="bio-kpi-v">${peso}<span>kg</span></div>
