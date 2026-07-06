@@ -612,9 +612,9 @@ async function init(){
 async function loadTreinos(){
   treinos = await sb(`treinos?aluno_id=eq.${ALUNO_ID}&order=criado_em.asc`) || [];
   treinos.sort((a, b) => {
-    const na = parseInt(a.nome) || 999;
-    const nb = parseInt(b.nome) || 999;
-    return na - nb;
+    const na = parseInt(a.nome), nb = parseInt(b.nome);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return a.nome.localeCompare(b.nome);
   });
   const loading = document.getElementById('treino-loading');
   if (!treinos.length){
