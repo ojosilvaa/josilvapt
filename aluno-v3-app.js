@@ -34,7 +34,7 @@ const EXERCISE_GIFS = {
   'cadeira extensora unilateral':                '0585-my33uHU',
   'coice na polia':                              '0860-HEJ6DIX',
   'face pull na polia alta':                     '0233-ZfyAGhK',
-  'pulldown supinado':                           '0673-ecpY0rH',
+  'pulldown supinado':                           '0237-DT14T9T',
   'puxada pronada barra larga':                  '0150-eYnzaCm',
   'puxada neutra barra h':                       '0818-rkg41Fb',
   'remada sentada na polia':                     '0180-hvV79Si',
