@@ -7,6 +7,57 @@ const ALUNO_ID = PARAMS.get('id');
 const SB_URL   = 'https://oelbocimyfwwzkzbyswg.supabase.co';
 const SB_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lbGJvY2lteWZ3d3premJ5c3dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwMDI2OTksImV4cCI6MjA5MzU3ODY5OX0.S2V54XWWnF58lTQNkvFU9JL1-toCQxacICvtITYL_3E';
 
+// ── Exercise GIF library (hasaneyldrm/exercises-dataset via jsDelivr) ──────────────
+const _GIF_BASE = 'https://cdn.jsdelivr.net/gh/hasaneyldrm/exercises-dataset@main/videos/';
+const EXERCISE_GIFS = {
+  'supino reto com halteres':                    '0289-SpYC0Kp',
+  'supino inclinado com halteres':               '0314-ns0SIbU',
+  'crucifixo com halteres no banco inclinado':   '0319-ESOd5Pl',
+  'desenvolvimento com halteres':                '0405-znQUdHY',
+  'elevação lateral com halteres':               '0334-DsgkuIt',
+  'elevacao lateral com halteres':               '0334-DsgkuIt',
+  'tríceps testa':                               '0060-h8LFzo9',
+  'triceps testa':                               '0060-h8LFzo9',
+  'tríceps corda pushdown':                      '0241-gAwDzB3',
+  'triceps corda pushdown':                      '0241-gAwDzB3',
+  'abdominal supra solo':                        '0274-TFqbd8t',
+  'abdominal infra no solo':                     '0620-WhuFnR7',
+  'abdominal infra com as pernas':               '0620-WhuFnR7',
+  'elevação de quadril com barra':               '1409-qKBpF7I',
+  'elevacao de quadril com barra':               '1409-qKBpF7I',
+  'stiff pés afastados com barra':               '0085-wQ2c4XD',
+  'stiff pes afastados com barra':               '0085-wQ2c4XD',
+  'búlgaro com halter':                          '0410-qx4fgX7',
+  'bulgaro com halter':                          '0410-qx4fgX7',
+  'cadeira flexora':                             '0586-17lJ1kr',
+  'cadeira extensora':                           '0585-my33uHU',
+  'cadeira extensora unilateral':                '0585-my33uHU',
+  'coice na polia':                              '0860-HEJ6DIX',
+  'face pull na polia alta':                     '0233-ZfyAGhK',
+  'pulldown supinado':                           '2736-ky8FLU8',
+  'puxada pronada barra larga':                  '2330-LEprlgG',
+  'puxada neutra barra h':                       '0818-rkg41Fb',
+  'remada sentada na polia':                     '0180-hvV79Si',
+  'remada curvada com barra':                    '0027-eZyBC3j',
+  'rosca direta com halteres':                   '0416-3s4NnTh',
+  'rosca martelo':                               '0313-slDvUAU',
+  'panturrilha no step unilateral':              '0409-1kB3Wmk',
+  'agachamento sumô com kettlebell':             '1760-yn8yg1r',
+  'agachamento sumo com kettlebell':             '1760-yn8yg1r',
+  'agachamento sumô com halter':                 '1760-yn8yg1r',
+  'agachamento sumo com halter':                 '1760-yn8yg1r',
+  'leg press 45°':                               '2287-V07qpXy',
+  'leg press 45':                                '2287-V07qpXy',
+  'leg press horizontal':                        '2611-9KU9TYF',
+  'levantamento terra':                          '0032-ila4NZS',
+  'supino reto com halteres (banco plano)':      '0289-SpYC0Kp',
+};
+function getExGif(nome) {
+  if (!nome) return null;
+  const key = nome.toLowerCase().trim();
+  const id = EXERCISE_GIFS[key];
+  return id ? _GIF_BASE + id + '.gif' : null;
+}
 // ── Observabilidade: "caixa preta" de erros (sem PII — nunca nome/email/dados de saúde) ──
 const __RID = (self.crypto && crypto.randomUUID ? crypto.randomUUID() : 'r' + Date.now() + Math.random().toString(16).slice(2)).slice(0, 40);
 let __obsCount = 0;
@@ -791,14 +842,14 @@ function renderTreino(){
           <div class="ex-meta">${series} ${LANG==='pt'?'séries':'sets'} · ${reps} reps</div>
           ${ex.obs ? `<div class="ex-obs">${escapeHTML(ex.obs)}</div>` : ''}
         </div>
-        ${ex.video_url ? `<button class="ex-video-btn" data-video="${ex.id}" title="Ver vídeo do exercício">
+        ${(ex.video_url || getExGif(ex.nome)) ? `<button class="ex-video-btn" data-video="${ex.id}" title="Ver demonstração">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="2" y="5" width="13" height="14" rx="2"/>
             <path d="M15 9l5-2.5v9L15 13" stroke-linejoin="round"/>
           </svg>
         </button>` : ''}
       </div>
-      ${ex.video_url ? `<div class="ex-video-wrap" id="vid-${ex.id}"></div>` : ''}
+      ${(ex.video_url || getExGif(ex.nome)) ? `<div class="ex-video-wrap" id="vid-${ex.id}"></div>` : ''}
       <div class="carga-block">
         <button class="carga-btn" data-act="-" data-id="${ex.id}">−</button>
         <div class="carga-mid">
@@ -859,15 +910,25 @@ function onExListClick(ev){
     vidBtn.classList.toggle('active', opening);
     if (opening && !wrap.dataset.loaded){
       const ex = (exerciciosPorTreino[currentTreinoId] || []).find(x => x.id === id);
-      const embedUrl = ex ? exVideoEmbedUrl(ex.video_url) : null;
-      if (embedUrl){
-        const ifr = document.createElement('iframe');
-        ifr.src = embedUrl;
-        ifr.allowFullscreen = true;
-        ifr.allow = 'autoplay; fullscreen; picture-in-picture';
-        ifr.loading = 'lazy';
-        wrap.appendChild(ifr);
+      const gifUrl = ex ? getExGif(ex.nome) : null;
+      if (gifUrl) {
+        const img = document.createElement('img');
+        img.src = gifUrl;
+        img.alt = ex.nome;
+        img.style.cssText = 'width:100%;max-width:320px;display:block;margin:0 auto;border-radius:10px';
+        wrap.appendChild(img);
         wrap.dataset.loaded = '1';
+      } else {
+        const embedUrl = ex ? exVideoEmbedUrl(ex.video_url) : null;
+        if (embedUrl){
+          const ifr = document.createElement('iframe');
+          ifr.src = embedUrl;
+          ifr.allowFullscreen = true;
+          ifr.allow = 'autoplay; fullscreen; picture-in-picture';
+          ifr.loading = 'lazy';
+          wrap.appendChild(ifr);
+          wrap.dataset.loaded = '1';
+        }
       }
     }
     return;
