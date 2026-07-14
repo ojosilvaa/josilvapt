@@ -35,7 +35,7 @@ const EXERCISE_GIFS = {
   'coice na polia':                              '0860-HEJ6DIX',
   'face pull na polia alta':                     '0233-ZfyAGhK',
   'pulldown supinado':                           '2736-ky8FLU8',
-  'puxada pronada barra larga':                  '2330-LEprlgG',
+  'puxada pronada barra larga':                  '0150-eYnzaCm',
   'puxada neutra barra h':                       '0818-rkg41Fb',
   'remada sentada na polia':                     '0180-hvV79Si',
   'remada curvada com barra':                    '0027-eZyBC3j',
