@@ -968,7 +968,10 @@ function onExListClick(ev){
     const out = {};
     Object.keys(doneSet).forEach(k => out[k] = [...doneSet[k]]);
     sc('doneSet', out);
-    renderTreino();
+    // feedback imediato antes do rebuild do DOM, senão a transição nunca corre
+    pip.classList.toggle('on', doneSet[id].has(k));
+    pip.classList.add('pop');
+    setTimeout(renderTreino, 140);
   }
 }
 
@@ -1085,6 +1088,9 @@ async function registrar(){
 
   btn.textContent = T('reg_default');
   renderTreino();
+  // recalcula gamificação para que badges novos sejam anunciados já,
+  // sem esperar que o aluno abra o perfil
+  try { renderPerfil(); } catch(e){}
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1672,6 +1678,8 @@ function renderPerfil(){
     { cat:'🌟', ico:'💧', l:'Hidratado',         u:'8 copos num dia',     ok: false },
   ];
 
+  checkNewBadges();
+
   // Update card values
   const lp = LANG==='pt'?'Nv ':'Lv ';
   document.getElementById('pfc-lvl-v').textContent = lp + lvl;
@@ -1683,6 +1691,25 @@ function renderPerfil(){
   // Show default section (nivel)
   pfSelectCard('nivel');
 }
+
+// Deteta badges desbloqueados desde a última visita e anuncia-os.
+// Na primeira execução guarda em silêncio, senão desbloqueava tudo de uma vez.
+function checkNewBadges(){
+  const now = _pfBadges.filter(b => b.ok).map(b => b.l);
+  const seen = lc('seenBadges', null);
+  if (seen === null){ sc('seenBadges', now); return; }
+  const fresh = now.filter(l => !seen.includes(l));
+  sc('seenBadges', now);
+  if (!fresh.length) return;
+  fresh.slice(0, 3).forEach((l, i) => {
+    setTimeout(() => {
+      const b = _pfBadges.find(x => x.l === l);
+      toast(`${b ? b.ico : '🏅'} ${LANG==='pt' ? 'Badge desbloqueado' : 'Badge unlocked'}: ${l}`);
+    }, 2600 + i * 2600); // deixa o toast de sessão registada terminar primeiro
+  });
+  _freshBadges = fresh;
+}
+let _freshBadges = [];
 
 function pfSelectCard(name){
   document.querySelectorAll('.pf-card').forEach(c => c.classList.toggle('on', c.dataset.pfc === name));
@@ -1743,7 +1770,7 @@ function pfSelectCard(name){
         <div class="badge-grid" id="badge-grid">
           ${cats.map(cat => `<div class="badge-cat-label">${cat}</div>` +
             _pfBadges.filter(b => b.cat===cat).map(b => `
-              <div class="badge ${b.ok?'on':'locked'}">
+              <div class="badge ${b.ok?'on':'locked'}${b.ok && _freshBadges.includes(b.l) ? ' fresh' : ''}">
                 <div class="badge-ico">${b.ico}</div>
                 <div class="badge-lbl">${b.l}</div>
                 <div class="badge-sub">${b.ok?(LANG==='pt'?'✓ desbloqueado':'✓ unlocked'):b.u}</div>

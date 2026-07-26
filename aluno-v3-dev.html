@@ -219,7 +219,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 }
 .ex.done .ex-num{background:var(--gold);color:#000;border-color:var(--gold)}
 .ex-info{flex:1;min-width:0}
-.ex-name{font-size:16px;font-weight:700;letter-spacing:-.015em;line-height:1.2}
+.ex-name{font-size:18px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
 .ex-meta{font-size:12px;color:var(--text-2);margin-top:4px;font-weight:500}
 .ex-obs{font-size:12px;color:var(--text-3);margin-top:6px;font-style:italic;line-height:1.4}
 .ex-video-btn{
@@ -272,6 +272,8 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 }
 .set-pip:hover{border-color:var(--hairline-strong);color:#fff}
 .set-pip.on{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 0 12px var(--gold-glow)}
+.set-pip.pop{animation:pipPop .18s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pipPop{0%{transform:scale(1)}50%{transform:scale(1.14)}100%{transform:scale(1)}}
 
 .btn-register{
   width:calc(100% - 32px);margin:18px 16px 0;padding:17px;
@@ -288,7 +290,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px 8px}
 .kpi{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:12px}
 .kpi-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
-.kpi-v{font-size:24px;font-weight:800;letter-spacing:-.025em;margin-top:6px;line-height:1;color:#fff}
+.kpi-v{font-size:28px;font-weight:800;letter-spacing:-.025em;margin-top:6px;line-height:1;color:#fff;font-feature-settings:'tnum'}
 .kpi-d{font-family:var(--mono);font-size:10px;color:var(--green);margin-top:4px;font-weight:600;letter-spacing:.02em}
 .kpi-d.dn{color:var(--coral)}
 .kpi-d.flat{color:var(--text-3)}
@@ -349,7 +351,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .cmp-bar:first-of-type{border-top:0}
 .cmp-label{font-size:13px;color:var(--text);font-weight:500;letter-spacing:-.01em}
 .cmp-track{position:relative;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
-.cmp-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--gold-2),var(--gold));border-radius:4px;transition:width 1.4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--gold-glow)}
+.cmp-fill{position:absolute;left:0;top:0;height:100%;background:var(--gold);border-radius:4px;transition:width 1.4s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--gold-glow)}
 .cmp-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--gold);text-align:right;letter-spacing:-.02em}
 
 .pr-list{margin:0 16px}
@@ -443,7 +445,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 /* ── BIOMETRIA ── */
 .bio-card{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
-.bio-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:14px}
+.bio-title{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-2);font-weight:600;margin-bottom:14px}
 .bio-kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
 .bio-kpi{background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;padding:10px 10px 8px;text-align:center}
 .bio-kpi-v{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff}
@@ -463,12 +465,12 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .level-card{margin:14px 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:16px}
 .level-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
 .level-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
-.level-num{font-size:32px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.level-num{font-size:36px;font-weight:900;letter-spacing:-.03em;line-height:1}
 .level-num em{font-style:normal;color:var(--gold)}
 .level-xp{font-family:var(--mono);font-size:12px;color:var(--text-2);font-weight:600}
 .level-xp b{color:var(--gold);font-weight:700}
 .xp-bar{height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;position:relative}
-.xp-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold-2),var(--gold));border-radius:5px;transition:width 1.6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px var(--gold-glow);position:relative}
+.xp-fill{height:100%;width:0;background:var(--gold);border-radius:5px;transition:width 1.6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px var(--gold-glow);position:relative}
 .xp-fill::after{
   content:'';position:absolute;inset:0;border-radius:5px;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
@@ -477,9 +479,9 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 .level-footer{display:flex;justify-content:space-between;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.04em}
 
-.streak-card{margin:0 16px 12px;background:linear-gradient(135deg,rgba(255,107,107,.12),rgba(255,217,107,.06));border:1px solid rgba(255,107,107,.24);border-radius:18px;padding:16px;display:flex;align-items:center;gap:16px;overflow:hidden;position:relative}
+.streak-card{margin:0 16px 12px;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.24);border-radius:18px;padding:16px;display:flex;align-items:center;gap:16px;overflow:hidden;position:relative}
 .streak-card::before{content:'🔥';position:absolute;right:-14px;bottom:-24px;font-size:120px;opacity:.08;pointer-events:none}
-.streak-icon{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#FF6B6B,#FFD96B);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 8px 20px rgba(255,107,107,.3)}
+.streak-icon{width:54px;height:54px;border-radius:16px;background:var(--coral);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 8px 20px rgba(255,107,107,.3)}
 .streak-mid{flex:1;min-width:0;z-index:1}
 .streak-num{font-size:36px;font-weight:900;letter-spacing:-.03em;line-height:1;color:#fff}
 .streak-num small{font-size:14px;color:var(--text-2);font-weight:600;margin-left:4px;letter-spacing:-.01em}
@@ -489,10 +491,12 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .badges{padding:6px 16px 12px}
 .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .badge{background:var(--surface-1);border:1px solid var(--hairline);border-radius:14px;padding:14px 8px;text-align:center;transition:all var(--t-fast);position:relative}
-.badge.on{background:linear-gradient(180deg,rgba(255,217,107,.1),var(--surface-1));border-color:rgba(255,217,107,.32)}
+.badge.on{background:var(--gold-subtle);border-color:rgba(255,217,107,.32)}
 .badge.locked{opacity:.42}
+.badge.fresh{animation:badgePulse 1.6s ease 3}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 rgba(255,217,107,0)}50%{box-shadow:0 0 22px var(--gold-glow)}}
 .badge-ico{width:42px;height:42px;border-radius:13px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--hairline);font-size:18px;color:var(--text-3)}
-.badge.on .badge-ico{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#000;border-color:transparent;box-shadow:0 4px 14px rgba(255,217,107,.4)}
+.badge.on .badge-ico{background:var(--gold);color:#000;border-color:transparent;box-shadow:0 4px 14px var(--gold-glow)}
 .badge-lbl{font-size:11px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
 .badge-sub{font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:3px;font-weight:600;letter-spacing:.04em}
 .badge.on .badge-sub{color:var(--gold)}
@@ -512,7 +516,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .pt-link svg{color:var(--gold);flex-shrink:0}
 
 .orient{margin:0 16px 12px;background:var(--surface-1);border:1px solid var(--hairline);border-radius:18px;padding:18px}
-.orient-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-bottom:14px}
+.orient-title{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--text-2);font-weight:600;margin-bottom:14px}
 .orient-row{display:flex;gap:14px;padding:12px 0;border-top:1px solid var(--hairline)}
 .orient-row:first-of-type{border-top:0;padding-top:0}
 .orient-num{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:rgba(255,217,107,.12);border:1px solid rgba(255,217,107,.24);font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);display:flex;align-items:center;justify-content:center}
@@ -1534,7 +1538,7 @@ function activateAlunoApp(){
   }
 })();
 </script>
-<script src="aluno-v3-dev-app.js?v=2"></script>
+<script src="aluno-v3-dev-app.js?v=3"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});
