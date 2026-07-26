@@ -797,6 +797,18 @@ function renderTreino(){
     : `Today · ${T('months')[now.getMonth()]} ${now.getDate()}`;
   document.getElementById('t-kicker').textContent = kicker;
 
+  const gamiPill = document.getElementById('t-gami-pill');
+  if (gamiPill){
+    const lvl = lvlOfTotal(sessoes.length);
+    const streak = computeStreak();
+    gamiPill.textContent = `Nv.${lvl}` + (streak > 0 ? ` · 🔥${streak}` : '');
+    gamiPill.style.display = 'flex';
+    if (!gamiPill.dataset.bound){
+      gamiPill.dataset.bound = '1';
+      gamiPill.addEventListener('click', () => { go('perfil'); pfSelectCard('nivel'); });
+    }
+  }
+
   document.getElementById('t-label').textContent = t.descricao || (LANG==='pt'?'Treino':'Workout');
   document.getElementById('t-name').textContent  = t.nome || '';
   document.getElementById('t-meta').innerHTML =
@@ -1000,11 +1012,20 @@ function updateRing(){
   }
 }
 
+function lvlOfTotal(total){
+  const xp = total * 50;
+  let lvl = 1, cumul = 0;
+  while (xp >= cumul + 200*lvl){ cumul += 200*lvl; lvl++; }
+  return lvl;
+}
+
 async function registrar(){
   const t = treinos.find(x => x.id === currentTreinoId);
   const exs = exerciciosPorTreino[currentTreinoId] || [];
   const btn = document.getElementById('btn-reg');
   btn.textContent = T('reg_saving'); btn.disabled = true;
+
+  const lvlBefore = lvlOfTotal(sessoes.length);
 
   const duracao_seg = timerStart !== null ? Math.round((Date.now() - timerStart) / 1000) : null;
   const sessaoData = {
@@ -1039,14 +1060,28 @@ async function registrar(){
 
   // mostra tempo no banner e para o cronómetro
   const bannerSub = document.querySelector('#success-banner .success-sub');
-  if (bannerSub && duracao_seg !== null) {
-    bannerSub.textContent = timerFmt(duracao_seg * 1000) + ' · ' + (LANG==='pt' ? 'Duração do treino' : 'Workout duration');
+  const bannerIcon = document.querySelector('#success-banner .success-icon');
+  const bannerText = document.querySelector('#success-banner .success-text');
+  const lvlAfter = lvlOfTotal(sessoes.length);
+  const leveledUp = lvlAfter > lvlBefore;
+
+  if (leveledUp){
+    bannerIcon.textContent = '🎉';
+    bannerText.textContent = LANG==='pt' ? `Subiste para o nível ${lvlAfter}!` : `Level up! You're now level ${lvlAfter}!`;
+    if (bannerSub) bannerSub.textContent = LANG==='pt' ? 'Continua assim, estás imparável.' : "Keep it up, you're unstoppable.";
+  } else {
+    bannerIcon.textContent = '🏆';
+    bannerText.textContent = T('sucesso');
+    if (bannerSub && duracao_seg !== null) {
+      bannerSub.textContent = timerFmt(duracao_seg * 1000) + ' · ' + (LANG==='pt' ? 'Duração do treino' : 'Workout duration');
+    }
   }
   timerReset();
 
   const banner = document.getElementById('success-banner');
+  banner.classList.toggle('levelup', leveledUp);
   banner.classList.add('show');
-  setTimeout(() => banner.classList.remove('show'), 4500);
+  setTimeout(() => { banner.classList.remove('show'); banner.classList.remove('levelup'); }, 4500);
 
   btn.textContent = T('reg_default');
   renderTreino();
@@ -1985,7 +2020,7 @@ function _applyThemeRaw(name){
   r.style.setProperty('--gold-2', t.g2);
   r.style.setProperty('--gold-glow', t.glow);
   r.style.setProperty('--gold-subtle', t.subtle);
-  document.body.style.background = t.bg;
+  r.style.setProperty('--bg', t.bg);
   document.body.className = (document.body.className||'').replace(/\bt-\w+/g,'').trim() + ' t-' + name;
   document.querySelectorAll('#chart-dots circle').forEach((c,i,arr) => {
     c.setAttribute('fill', t.gold);

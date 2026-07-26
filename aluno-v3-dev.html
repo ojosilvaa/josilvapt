@@ -58,7 +58,8 @@
   --hairline-strong:rgba(255,255,255,.14);
   --text:#fff;
   --text-2:rgba(255,255,255,.62);
-  --text-3:rgba(255,255,255,.38);
+  --text-3:rgba(255,255,255,.5);
+  --brand:#FFD96B;
   --gold:#FFD96B;
   --gold-2:#E5B23A;
   --gold-glow:rgba(255,217,107,.35);
@@ -75,12 +76,13 @@
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 
-html,body{background:#000;color:var(--text);font-family:var(--font);min-height:100vh;font-feature-settings:'ss01','cv11';-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;font-feature-settings:'ss01','cv11';-webkit-font-smoothing:antialiased;overflow-x:hidden}
 button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 .app{
   position:relative;width:100vw;min-height:100vh;
-  max-width:600px;margin:0 auto;background:#000;
+  max-width:600px;margin:0 auto;background:var(--bg);
   display:flex;flex-direction:column;
 }
 
@@ -91,7 +93,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   background:rgba(0,0,0,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   position:sticky;top:0;z-index:50;
 }
-.brand{font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--gold);transition:color var(--t-fast)}
+.brand{font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--brand);transition:color var(--t-fast)}
 .topbar-r{display:flex;align-items:center;gap:8px}
 .lang-toggle{display:flex;gap:6px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.05em;align-items:center}
 .lang-toggle span{color:var(--text-3);cursor:pointer;transition:color var(--t-fast);padding:2px 1px}
@@ -137,7 +139,13 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .bnav-item.on::after{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:18px;height:3px;background:var(--gold);border-radius:2px;box-shadow:0 0 12px var(--gold-glow)}
 
 .hero{padding:18px 22px 4px;display:flex;flex-direction:column;gap:6px}
+.hero-kicker-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .hero-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.gami-pill{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;
+  background:var(--surface-2);border:1px solid var(--hairline);
+  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);
+  letter-spacing:.02em;cursor:pointer;transition:border-color var(--t-fast)}
+.gami-pill:active{border-color:var(--gold)}
 .hero-title{font-size:34px;font-weight:800;letter-spacing:-.025em;line-height:1.05;color:#fff}
 .hero-title em{font-style:normal;color:var(--gold)}
 .hero-sub{font-size:14px;color:var(--text-2);font-weight:500}
@@ -215,7 +223,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .ex-meta{font-size:12px;color:var(--text-2);margin-top:4px;font-weight:500}
 .ex-obs{font-size:12px;color:var(--text-3);margin-top:6px;font-style:italic;line-height:1.4}
 .ex-video-btn{
-  flex-shrink:0;width:36px;height:36px;border-radius:50%;
+  flex-shrink:0;width:44px;height:44px;border-radius:50%;
   background:var(--surface-2);border:1.5px solid var(--hairline);
   color:var(--text-2);display:flex;align-items:center;justify-content:center;
   transition:background var(--t-fast),color var(--t-fast),border-color var(--t-fast);
@@ -236,16 +244,16 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   background:var(--surface-2);border-radius:14px;padding:10px 14px;margin-bottom:10px;
 }
 .carga-btn{
-  width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.06);
-  border:1px solid var(--hairline);font-size:18px;font-weight:600;color:#fff;
+  width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.06);
+  border:1px solid var(--hairline);font-size:20px;font-weight:600;color:#fff;
   display:flex;align-items:center;justify-content:center;transition:all var(--t-fast);
 }
 .carga-btn:active{transform:scale(.92);background:var(--gold);color:#000}
 .carga-mid{text-align:center}
 .carga-val{display:flex;align-items:baseline;justify-content:center;gap:2px}
 .carga-inp{background:none;border:none;border-bottom:2px solid transparent;outline:none;
-  font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;
-  width:72px;text-align:center;padding:0;-moz-appearance:textfield;
+  font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;
+  width:88px;text-align:center;padding:0;-moz-appearance:textfield;
   transition:border-color var(--t-fast),color var(--t-fast)}
 .carga-inp::-webkit-outer-spin-button,.carga-inp::-webkit-inner-spin-button{-webkit-appearance:none}
 .carga-inp:focus{color:var(--gold);border-bottom-color:var(--gold)}
@@ -257,7 +265,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 .sets{display:flex;gap:6px}
 .set-pip{
-  flex:1;height:36px;border-radius:10px;background:var(--surface-2);
+  flex:1;height:44px;border-radius:10px;background:var(--surface-2);
   border:1px solid var(--hairline);color:var(--text-2);
   font-size:13px;font-weight:700;letter-spacing:-.02em;
   transition:all var(--t-fast);
@@ -533,7 +541,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
   padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.55);
 }
 .activation-logo{
-  width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  width:58px;height:58px;border-radius:18px;background:var(--brand);
   color:#000;display:flex;align-items:center;justify-content:center;
   font-weight:900;font-size:22px;letter-spacing:-.04em;margin-bottom:20px;
 }
@@ -554,6 +562,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 
 .success-banner{background:var(--gold-subtle);border:1.5px solid var(--gold-glow);border-radius:18px;padding:16px;margin:14px 16px;display:none;align-items:center;gap:12px;animation:revealUp .4s ease}
 .success-banner.show{display:flex}
+.success-banner.levelup{box-shadow:0 0 30px var(--gold-glow);animation:revealUp .4s ease,pulse 1.8s ease infinite}
 .success-icon{font-size:24px}
 .success-text{font-size:14px;color:var(--gold);font-weight:600}
 .success-sub{font-size:12px;color:var(--text-2);margin-top:2px}
@@ -1083,7 +1092,10 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
     <!-- ════ TREINO ════ -->
     <div class="screen" data-screen="treino" data-state="active">
       <div class="hero treino-hero">
-        <div class="hero-kicker" id="t-kicker">Hoje</div>
+        <div class="hero-kicker-row">
+          <div class="hero-kicker" id="t-kicker">Hoje</div>
+          <div class="gami-pill" id="t-gami-pill" data-pfc="nivel" style="display:none"></div>
+        </div>
         <div class="hero-row">
           <div class="ring">
             <svg viewBox="0 0 100 100">
@@ -1522,7 +1534,7 @@ function activateAlunoApp(){
   }
 })();
 </script>
-<script src="aluno-v3-dev-app.js?v=1"></script>
+<script src="aluno-v3-dev-app.js?v=2"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});
