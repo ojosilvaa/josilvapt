@@ -1193,6 +1193,8 @@ async function renderEvolucao(){
     if (on) buildChart(on.dataset.exId);
   }
 
+  renderCorpo();
+  renderMedidas();
   renderPRs();
   renderHeatmap();
 }
@@ -1223,18 +1225,28 @@ function renderPRs(){
   prs.sort((a,b) => b.val - a.val);
   const top5 = prs.slice(0,5);
   if (!top5.length){ el.innerHTML = `<div class="empty">${T('evo_no_pr')}</div>`; return; }
-  el.innerHTML = top5.map(p => `
+
+  // barra de magnitude relativa ao recorde mais pesado — série única,
+  // por isso não precisa de legenda
+  const maxVal = Math.max(...top5.map(p => p.val));
+  el.innerHTML = top5.map((p, i) => `
     <div class="pr-row">
-      <div class="pr-ico">●</div>
+      <div class="pr-ico"><span class="pr-rank">${i+1}</span></div>
       <div class="pr-mid">
         <div class="pr-name">${escapeHTML(p.name)}</div>
         <div class="pr-date">${formatDate(p.date)}</div>
+        <div class="pr-bar-track"><div class="pr-bar-fill" data-w="${((p.val/maxVal)*100).toFixed(1)}"></div></div>
       </div>
       <div>
         <div class="pr-val">${p.val} kg</div>
         ${p.delta > 0 ? `<div class="pr-delta">+${p.delta} kg</div>` : ''}
       </div>
     </div>`).join('');
+
+  // anima a partir do zero depois de estar no DOM
+  requestAnimationFrame(() => {
+    el.querySelectorAll('.pr-bar-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
+  });
 }
 
 function renderHeatmap(){
@@ -1314,6 +1326,422 @@ function buildChart(exId){
   if (delta > 0){ dEl.textContent = `+${delta} kg ${LANG==='pt'?'em':'in'} ${d.length} ${LANG==='pt'?'sessões':'sessions'}`; dEl.className = 'chart-stat-d'; }
   else if (delta < 0){ dEl.textContent = `${delta} kg ${LANG==='pt'?'em':'in'} ${d.length}`; dEl.className = 'chart-stat-d dn'; }
   else { dEl.textContent = `${LANG==='pt'?'Estável em':'Stable over'} ${d.length} ${LANG==='pt'?'sessões':'sessions'}`; dEl.className = 'chart-stat-d flat'; }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CORPO · MEDIDAS — dataviz
+//  Cor: série única com o accent do tema; a polaridade vem da
+//  direcção da barra e do sinal, não da cor — assim não se julga
+//  ganho/perda como bom/mau e funciona nos 9 temas.
+//  Excepção: composição corporal precisa de 2 identidades →
+//  aqua/violeta, validadas para daltonismo (ΔE 18.9 deutan).
+// ═══════════════════════════════════════════════════════════
+const MED_DEFS = [
+  { k:'torax',   l:'Tórax',   le:'Chest' },
+  { k:'cintura', l:'Cintura', le:'Waist' },
+  { k:'quadril', l:'Quadril', le:'Hips' },
+  { k:'coxa',        l:'Coxa',        le:'Thigh',    pair:['coxa_d','coxa_e'] },
+  { k:'braco',       l:'Braço',       le:'Arm',      pair:['braco_d','braco_e'] },
+  { k:'braco_flex',  l:'Braço flex.', le:'Arm flex', pair:['braco_flex_d','braco_flex_e'] },
+  { k:'panturrilha', l:'Gémeo',       le:'Calf',     pair:['panturrilha_d','panturrilha_e'] },
+];
+
+const numOr = v => { const n = parseFloat(v); return isNaN(n) ? null : n; };
+
+// Pares D/E são apresentados como média; o tooltip mostra os dois lados.
+function medVal(m, def){
+  if (!m) return null;
+  if (def.pair){
+    const vs = def.pair.map(k => numOr(m[k])).filter(v => v !== null);
+    return vs.length ? vs.reduce((s,v)=>s+v,0)/vs.length : null;
+  }
+  return numOr(m[def.k]);
+}
+
+let _dvTipEl = null;
+function dvTipShow(html, x, y){
+  if (!_dvTipEl){
+    _dvTipEl = document.createElement('div');
+    _dvTipEl.className = 'dv-tip';
+    document.body.appendChild(_dvTipEl);
+  }
+  _dvTipEl.innerHTML = html;
+  _dvTipEl.classList.add('show');
+  const r = _dvTipEl.getBoundingClientRect();
+  let left = Math.max(8, Math.min(x - r.width/2, window.innerWidth - r.width - 8));
+  let top = y - r.height - 14;
+  if (top < 8) top = y + 18;
+  _dvTipEl.style.left = left + 'px';
+  _dvTipEl.style.top  = top + 'px';
+}
+function dvTipHide(){ if (_dvTipEl) _dvTipEl.classList.remove('show'); }
+
+function perimOrdenada(){
+  return (typeof perimetriaHist !== 'undefined' ? perimetriaHist : [])
+    .filter(p => p && p.data)
+    .slice()
+    .sort((a,b) => new Date(a.data) - new Date(b.data));
+}
+
+function renderCorpo(){
+  const el = document.getElementById('corpo-body');
+  if (!el) return;
+  const hist = perimOrdenada();
+  const pt = LANG === 'pt';
+
+  if (!hist.length){
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📏</div>${
+      pt ? 'Ainda sem avaliações físicas.<br>Fala com o Jo para marcares a primeira.'
+         : 'No body assessments yet.<br>Talk to Jo to book your first.'}</div>`;
+    return;
+  }
+
+  const last = hist[hist.length - 1];
+  const prev = hist.length > 1 ? hist[hist.length - 2] : null;
+
+  // ── indicadores: valor actual + variação desde a avaliação anterior ──
+  const tile = (label, cur, before, unit, dec = 1) => {
+    if (cur === null) return '';
+    let d = '';
+    if (before !== null){
+      const diff = +(cur - before).toFixed(dec);
+      const cls = diff > 0 ? 'up' : diff < 0 ? 'dn' : '';
+      d = `<div class="bstat-d ${cls}">${diff > 0 ? '+' : ''}${diff || '='} ${diff ? unit : ''}</div>`;
+    } else {
+      d = `<div class="bstat-d">${pt ? '1.ª avaliação' : '1st assessment'}</div>`;
+    }
+    return `<div class="bstat"><div class="bstat-l">${label}</div>
+      <div class="bstat-v">${cur.toFixed(dec)}<span>${unit}</span></div>${d}</div>`;
+  };
+
+  const pesoC = numOr(last.peso),  pesoP = prev ? numOr(prev.peso) : null;
+  const gordC = numOr(last.gordura), gordP = prev ? numOr(prev.gordura) : null;
+  const magrC = numOr(last.massa_magra), magrP = prev ? numOr(prev.massa_magra) : null;
+
+  let html = `<div class="bstat-row">
+    ${tile(pt ? 'Peso' : 'Weight', pesoC, pesoP, 'kg')}
+    ${tile(pt ? 'Gordura' : 'Body fat', gordC, gordP, '%')}
+    ${tile(pt ? 'M. magra' : 'Lean mass', magrC, magrP, 'kg')}
+  </div>`;
+
+  html += buildPesoBlock(hist);
+  html += buildComposicaoBlock(hist);
+
+  el.innerHTML = html;
+  wirePesoChart(hist);
+  wireComposicao(hist);
+  wireTableToggles(el);
+}
+
+// Peso ao longo das avaliações — série única, sem legenda (o título nomeia-a).
+function buildPesoBlock(hist){
+  const pt = LANG === 'pt';
+  const pts = hist.map(p => ({ d: p.data, v: numOr(p.peso) })).filter(p => p.v !== null);
+  const title = pt ? 'Peso corporal' : 'Body weight';
+  if (pts.length < 2){
+    return `<div class="bblock"><div class="bblock-l">${title}</div>
+      <div class="empty" style="padding:20px 8px;font-size:13px">${
+        pt ? 'Precisas de 2 avaliações para veres a linha de evolução.'
+           : 'Two assessments are needed to draw the trend.'}</div></div>`;
+  }
+  return `<div class="bblock">
+    <div class="bblock-l">${title}</div>
+    <div class="bchart-wrap"><svg id="peso-svg" preserveAspectRatio="none"></svg></div>
+    <div class="x-axis" id="peso-axis"></div>
+    ${dvTableMarkup('peso', [pt?'Data':'Date', pt?'Peso (kg)':'Weight (kg)'],
+      pts.map(p => [formatDate(p.d), p.v.toFixed(1)]))}
+  </div>`;
+}
+
+function wirePesoChart(hist){
+  const svg = document.getElementById('peso-svg');
+  if (!svg) return;
+  const pts = hist.map(p => ({ d: p.data, v: numOr(p.peso) })).filter(p => p.v !== null);
+  if (pts.length < 2) return;
+
+  const wrap = svg.parentElement;
+  const W = Math.max(240, wrap.clientWidth || 300), H = 120;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.removeAttribute('preserveAspectRatio');
+
+  const vals = pts.map(p => p.v);
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = (hi - lo) < .6 ? 1.2 : (hi - lo) * .35;
+  const min = lo - pad, max = hi + pad;
+  const PX = 14, PT_ = 14, PB = 18;
+  const xs = pts.map((_, i) => PX + i * ((W - PX*2) / (pts.length - 1)));
+  const ys = pts.map(p => PT_ + (1 - (p.v - min)/(max - min)) * (H - PT_ - PB));
+
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#FFD96B';
+  const line = xs.map((x,i) => (i?'L':'M') + x.toFixed(1) + ' ' + ys[i].toFixed(1)).join(' ');
+  const area = line + ` L${xs[xs.length-1].toFixed(1)} ${H-PB} L${xs[0].toFixed(1)} ${H-PB} Z`;
+
+  const grid = [0,.5,1].map(f => {
+    const y = PT_ + f * (H - PT_ - PB);
+    return `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="rgba(255,255,255,.06)" stroke-dasharray="2 3"/>`;
+  }).join('');
+
+  svg.innerHTML = `
+    <defs><linearGradient id="g-peso" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="${accent}" stop-opacity=".28"/>
+      <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <line class="dv-cross" id="peso-cross" y1="${PT_}" y2="${H-PB}" x1="0" x2="0"/>
+    <path d="${area}" fill="url(#g-peso)"/>
+    <path id="peso-line" d="${line}" fill="none" stroke="${accent}" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          filter="drop-shadow(0 2px 6px ${accent}55)"/>
+    ${xs.map((x,i) => {
+      const isLast = i === xs.length-1;
+      // anel de 2px na cor da superfície separa a marca do traço
+      return `<circle cx="${x.toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${isLast?5:4}"
+        fill="${accent}" stroke="#000" stroke-width="2" opacity="${isLast?1:.75}"/>`;
+    }).join('')}
+    ${xs.map((x,i) => `<rect class="dv-hit" data-i="${i}" x="${(x-18).toFixed(1)}" y="0" width="36" height="${H}"/>`).join('')}
+  `;
+
+  // animação de entrada da linha
+  const path = document.getElementById('peso-line');
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+  requestAnimationFrame(() => {
+    path.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)';
+    path.style.strokeDashoffset = 0;
+  });
+
+  // eixo x
+  const ax = document.getElementById('peso-axis');
+  if (ax){
+    const step = Math.max(1, Math.ceil(pts.length/5));
+    ax.innerHTML = pts.map((p,i) => {
+      const show = i % step === 0 || i === pts.length-1;
+      const dt = new Date(p.d);
+      return `<span>${show ? dt.getDate()+'/'+(dt.getMonth()+1) : ''}</span>`;
+    }).join('');
+  }
+
+  // camada de hover: crosshair + tooltip
+  const cross = document.getElementById('peso-cross');
+  const pt_ = LANG === 'pt';
+  const onHit = (rect, ev) => {
+    const i = +rect.dataset.i;
+    const p = pts[i];
+    const d0 = i > 0 ? +(p.v - pts[i-1].v).toFixed(1) : null;
+    cross.setAttribute('x1', xs[i]); cross.setAttribute('x2', xs[i]);
+    cross.classList.add('on');
+    const box = svg.getBoundingClientRect();
+    dvTipShow(
+      `<div class="dv-tip-t">${formatDate(p.d)}</div>
+       <div class="dv-tip-r"><span>${pt_?'Peso':'Weight'}</span><b>${p.v.toFixed(1)} kg</b></div>
+       ${d0 !== null ? `<div class="dv-tip-r"><span>${pt_?'Variação':'Change'}</span><b>${d0>0?'+':''}${d0} kg</b></div>` : ''}`,
+      box.left + (xs[i] / W) * box.width,
+      box.top + ys[i] * (box.height / H)
+    );
+  };
+  svg.querySelectorAll('.dv-hit').forEach(r => {
+    r.addEventListener('mouseenter', ev => onHit(r, ev));
+    r.addEventListener('touchstart', ev => { onHit(r, ev); }, { passive:true });
+  });
+  const leave = () => { cross.classList.remove('on'); dvTipHide(); };
+  svg.addEventListener('mouseleave', leave);
+  svg.addEventListener('touchend', leave);
+}
+
+// Composição corporal — 2 identidades (magra/gorda) → legenda obrigatória.
+// Comprimento total da barra = peso relativo ao máximo, para se ver também
+// a variação de peso; a divisão interna mostra a composição.
+function buildComposicaoBlock(hist){
+  const pt = LANG === 'pt';
+  const rows = hist.map(p => {
+    const peso = numOr(p.peso), magra = numOr(p.massa_magra);
+    if (peso === null || magra === null) return null;
+    return { d: p.data, peso, magra, gorda: +(peso - magra).toFixed(2) };
+  }).filter(Boolean);
+  if (!rows.length) return '';
+
+  const title = pt ? 'Composição corporal' : 'Body composition';
+  const lMagra = pt ? 'Massa magra' : 'Lean mass';
+  const lGorda = pt ? 'Massa gorda' : 'Fat mass';
+  const maxPeso = Math.max(...rows.map(r => r.peso));
+
+  const bars = rows.map((r, i) => {
+    const wTot = (r.peso / maxPeso) * 100;
+    const pMagra = (r.magra / r.peso) * 100;
+    const pGorda = 100 - pMagra;
+    return `<div class="comp-row" data-ci="${i}">
+      <div class="comp-head">
+        <span class="comp-date">${formatDate(r.d)}</span>
+        <span class="comp-tot">${r.peso.toFixed(1)} kg</span>
+      </div>
+      <div class="comp-bar" style="width:${wTot.toFixed(1)}%">
+        <div class="comp-seg magra" style="width:${pMagra.toFixed(1)}%">
+          ${pMagra > 26 ? `<span class="comp-seg-t">${pMagra.toFixed(0)}%</span>` : ''}
+        </div>
+        <div class="comp-seg gorda">
+          ${pGorda > 26 ? `<span class="comp-seg-t">${pGorda.toFixed(0)}%</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="bblock">
+    <div class="bblock-l">${title}</div>
+    <div class="blegend">
+      <span class="blegend-item"><span class="blegend-dot" style="background:var(--aqua)"></span>${lMagra}</span>
+      <span class="blegend-item"><span class="blegend-dot" style="background:var(--violet)"></span>${lGorda}</span>
+    </div>
+    ${bars}
+    ${dvTableMarkup('comp',
+      [pt?'Data':'Date', lMagra+' (kg)', lGorda+' (kg)', pt?'Total':'Total'],
+      rows.map(r => [formatDate(r.d), r.magra.toFixed(1), r.gorda.toFixed(1), r.peso.toFixed(1)]))}
+  </div>`;
+}
+
+function wireComposicao(hist){
+  const rows = hist.map(p => {
+    const peso = numOr(p.peso), magra = numOr(p.massa_magra);
+    if (peso === null || magra === null) return null;
+    return { d: p.data, peso, magra, gorda: +(peso - magra).toFixed(2) };
+  }).filter(Boolean);
+  const pt = LANG === 'pt';
+  document.querySelectorAll('#corpo-body .comp-row').forEach(el => {
+    const r = rows[+el.dataset.ci];
+    if (!r) return;
+    const show = ev => {
+      const b = el.getBoundingClientRect();
+      const t = ev.touches ? ev.touches[0] : ev;
+      dvTipShow(
+        `<div class="dv-tip-t">${formatDate(r.d)}</div>
+         <div class="dv-tip-r"><span>${pt?'Massa magra':'Lean'}</span><b>${r.magra.toFixed(1)} kg</b></div>
+         <div class="dv-tip-r"><span>${pt?'Massa gorda':'Fat'}</span><b>${r.gorda.toFixed(1)} kg</b></div>
+         <div class="dv-tip-r"><span>${pt?'Peso total':'Total'}</span><b>${r.peso.toFixed(1)} kg</b></div>`,
+        t.clientX || (b.left + b.width/2), b.top + 10);
+    };
+    el.addEventListener('mouseenter', show);
+    el.addEventListener('touchstart', show, { passive:true });
+    el.addEventListener('mouseleave', dvTipHide);
+    el.addEventListener('touchend', dvTipHide);
+  });
+}
+
+// Tabela alternativa — a identidade nunca depende só da cor.
+function dvTableMarkup(id, headers, rows){
+  if (!rows.length) return '';
+  const pt = LANG === 'pt';
+  return `<button class="dv-table-btn" data-dvt="${id}" type="button">
+      <span>▸</span>${pt ? 'Ver números' : 'View numbers'}</button>
+    <table class="dv-table" id="dvt-${id}">
+      <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function wireTableToggles(root){
+  root.querySelectorAll('.dv-table-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = document.getElementById('dvt-' + btn.dataset.dvt);
+      if (!t) return;
+      const open = t.classList.toggle('open');
+      btn.querySelector('span').textContent = open ? '▾' : '▸';
+    });
+  });
+}
+
+// Medidas — barras divergentes a partir de um eixo central.
+// Polaridade = direcção + sinal (não a cor), por isso ganhar ou perder
+// não é pintado como bom ou mau.
+function renderMedidas(){
+  const el = document.getElementById('medidas-body');
+  if (!el) return;
+  const hist = perimOrdenada();
+  const pt = LANG === 'pt';
+
+  if (hist.length < 2){
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📐</div>${
+      hist.length === 1
+        ? (pt ? 'Só tens uma avaliação.<br>A próxima mostra a variação de cada medida.'
+              : 'Only one assessment so far.<br>The next one will show per-measure change.')
+        : (pt ? 'Ainda sem medidas registadas.' : 'No measurements recorded yet.')}</div>`;
+    return;
+  }
+
+  const first = hist[0].medidas || {};
+  const last  = hist[hist.length - 1].medidas || {};
+
+  const items = MED_DEFS.map(def => {
+    const a = medVal(first, def), b = medVal(last, def);
+    if (a === null || b === null) return null;
+    return { def, from: a, to: b, delta: +(b - a).toFixed(1) };
+  }).filter(Boolean);
+
+  if (!items.length){
+    el.innerHTML = `<div class="empty">${pt ? 'Sem medidas comparáveis.' : 'No comparable measurements.'}</div>`;
+    return;
+  }
+
+  const maxAbs = Math.max(...items.map(i => Math.abs(i.delta)), .5);
+  const ordered = items.slice().sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta));
+
+  const rows = ordered.map((it, idx) => {
+    const w = (Math.abs(it.delta) / maxAbs) * 50; // 50% = meia largura da pista
+    const cls = it.delta > 0 ? 'pos' : it.delta < 0 ? 'neg' : 'zero';
+    const sign = it.delta > 0 ? '+' : '';
+    return `<div class="med-row" data-mi="${idx}">
+      <div class="med-lbl">${pt ? it.def.l : it.def.le}</div>
+      <div class="med-track">
+        <div class="med-axis"></div>
+        <div class="med-bar ${cls}" style="width:${w.toFixed(1)}%"></div>
+      </div>
+      <div>
+        <div class="med-val">${sign}${it.delta} <span style="font-size:9px;color:var(--text-3)">cm</span></div>
+        <div class="med-cur">${it.to.toFixed(1)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const periodo = `${formatDate(hist[0].data)} → ${formatDate(hist[hist.length-1].data)}`;
+  el.innerHTML = `
+    <div class="bblock-l" style="margin-bottom:4px">${periodo}</div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:14px;line-height:1.5">${
+      pt ? 'Barra para a direita = aumentou · para a esquerda = diminuiu. Braços, coxas e gémeos são a média dos dois lados.'
+         : 'Bar right = increased · left = decreased. Arms, thighs and calves are the average of both sides.'}</div>
+    ${rows}
+    ${dvTableMarkup('med',
+      [pt?'Medida':'Measure', pt?'Antes':'Before', pt?'Agora':'Now', 'Δ cm'],
+      ordered.map(i => [pt ? i.def.l : i.def.le, i.from.toFixed(1), i.to.toFixed(1),
+                        (i.delta>0?'+':'') + i.delta]))}`;
+
+  // tooltip: mostra os dois lados quando a medida é um par D/E
+  el.querySelectorAll('.med-row').forEach(row => {
+    const it = ordered[+row.dataset.mi];
+    if (!it) return;
+    const show = ev => {
+      const b = row.getBoundingClientRect();
+      const t = ev.touches ? ev.touches[0] : ev;
+      let extra = '';
+      if (it.def.pair){
+        extra = it.def.pair.map((k, i) => {
+          const va = numOr(first[k]), vb = numOr(last[k]);
+          if (va === null || vb === null) return '';
+          const lado = i === 0 ? (pt?'Direito':'Right') : (pt?'Esquerdo':'Left');
+          return `<div class="dv-tip-r"><span>${lado}</span><b>${va} → ${vb} cm</b></div>`;
+        }).join('');
+      }
+      dvTipShow(
+        `<div class="dv-tip-t">${pt ? it.def.l : it.def.le}</div>
+         <div class="dv-tip-r"><span>${pt?'Antes':'Before'}</span><b>${it.from.toFixed(1)} cm</b></div>
+         <div class="dv-tip-r"><span>${pt?'Agora':'Now'}</span><b>${it.to.toFixed(1)} cm</b></div>
+         ${extra}`,
+        t.clientX || (b.left + b.width/2), b.top + 8);
+    };
+    row.addEventListener('mouseenter', show);
+    row.addEventListener('touchstart', show, { passive:true });
+    row.addEventListener('mouseleave', dvTipHide);
+    row.addEventListener('touchend', dvTipHide);
+  });
+
+  wireTableToggles(el);
 }
 
 function computeStreak(){

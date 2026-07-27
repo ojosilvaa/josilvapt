@@ -378,6 +378,88 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .heat-legend .swatch.l3{background:rgba(255,217,107,.52)}
 .heat-legend .swatch.l4{background:var(--gold)}
 
+/* ── CORPO / MEDIDAS (dataviz) ── */
+.bstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.bstat{background:var(--surface-2);border:1px solid var(--hairline);border-radius:12px;padding:11px 10px}
+.bstat-l{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:600}
+.bstat-v{font-size:21px;font-weight:800;letter-spacing:-.03em;margin-top:5px;line-height:1;color:#fff;font-feature-settings:'tnum'}
+.bstat-v span{font-size:10px;color:var(--text-2);font-weight:500;letter-spacing:0;margin-left:1px}
+.bstat-d{font-family:var(--mono);font-size:9px;font-weight:600;margin-top:4px;letter-spacing:.02em;color:var(--text-3)}
+.bstat-d.up{color:var(--green)}
+.bstat-d.dn{color:var(--coral)}
+
+.bblock{margin-top:4px}
+.bblock+.bblock{margin-top:22px;padding-top:18px;border-top:1px solid var(--hairline)}
+.bblock-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2);font-weight:600;margin-bottom:12px}
+.bchart-wrap{position:relative;height:120px;margin:4px -2px 0}
+.bchart-wrap svg{width:100%;height:100%;overflow:visible;display:block}
+
+/* legenda — o texto usa tokens de texto, o ponto colorido carrega a identidade */
+.blegend{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.blegend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-2);font-weight:600}
+.blegend-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+
+/* barras empilhadas: 2px de superfície entre segmentos */
+.comp-row{margin-bottom:14px}
+.comp-row:last-child{margin-bottom:0}
+.comp-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;gap:8px}
+.comp-date{font-family:var(--mono);font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.04em}
+.comp-tot{font-family:var(--mono);font-size:11px;color:var(--text-2);font-weight:700}
+.comp-bar{display:flex;gap:2px;height:28px;border-radius:7px;overflow:hidden}
+.comp-seg{height:100%;position:relative;transition:width 1.1s cubic-bezier(.4,0,.2,1);min-width:2px}
+.comp-seg.magra{background:var(--aqua)}
+.comp-seg.gorda{background:var(--violet);flex:1}
+.comp-seg-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;font-weight:700;color:#000;letter-spacing:-.01em}
+
+/* medidas — barras divergentes: a polaridade vem da direcção e do sinal, não da cor */
+.med-row{display:grid;grid-template-columns:74px 1fr 56px;gap:10px;align-items:center;
+  padding:9px 0;border-top:1px solid var(--hairline);cursor:default}
+.med-row:first-child{border-top:0}
+.med-lbl{font-size:12px;color:var(--text-2);font-weight:600;letter-spacing:-.01em}
+.med-track{position:relative;height:20px}
+.med-axis{position:absolute;left:50%;top:1px;bottom:1px;width:1px;background:var(--hairline-strong)}
+.med-bar{position:absolute;top:50%;transform:translateY(-50%);height:9px;
+  background:var(--gold);box-shadow:0 0 8px var(--gold-glow);
+  transition:width 1s cubic-bezier(.4,0,.2,1)}
+.med-bar.pos{left:50%;border-radius:0 4px 4px 0}
+.med-bar.neg{right:50%;border-radius:4px 0 0 4px}
+.med-bar.zero{left:50%;width:3px!important;border-radius:2px;background:var(--text-3);box-shadow:none}
+.med-val{font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;color:var(--text)}
+.med-cur{font-family:var(--mono);font-size:9px;color:var(--text-3);font-weight:600;text-align:right;margin-top:1px}
+
+/* recordes com barra de magnitude */
+.pr-bar-track{height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-top:7px}
+.pr-bar-fill{height:100%;background:var(--gold);border-radius:3px;box-shadow:0 0 6px var(--gold-glow);
+  width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.pr-rank{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold)}
+
+/* tooltip partilhado */
+.dv-tip{position:fixed;pointer-events:none;background:rgba(28,28,30,.97);
+  border:1px solid var(--hairline-strong);backdrop-filter:blur(16px);
+  border-radius:10px;padding:8px 11px;z-index:9998;opacity:0;transition:opacity .15s;
+  white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5);max-width:210px}
+.dv-tip.show{opacity:1}
+.dv-tip-t{font-size:11px;font-weight:700;color:#fff;margin-bottom:3px}
+.dv-tip-r{font-family:var(--mono);font-size:10px;color:var(--text-2);font-weight:600;display:flex;gap:8px;justify-content:space-between}
+.dv-tip-r b{color:var(--gold);font-weight:700}
+.dv-hit{fill:transparent;cursor:pointer}
+.dv-cross{stroke:var(--hairline-strong);stroke-width:1;stroke-dasharray:3 3;opacity:0;transition:opacity .12s}
+.dv-cross.on{opacity:1}
+
+/* tabela alternativa — identidade nunca depende só da cor */
+.dv-table-btn{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-3);font-weight:600;background:none;border:0;padding:8px 2px;cursor:pointer;
+  min-height:44px;display:flex;align-items:center;gap:5px}
+.dv-table-btn:active{color:var(--gold)}
+.dv-table{display:none;margin-top:8px;width:100%;border-collapse:collapse}
+.dv-table.open{display:table}
+.dv-table th,.dv-table td{font-family:var(--mono);font-size:10px;text-align:right;padding:6px 4px;
+  border-top:1px solid var(--hairline);font-weight:600}
+.dv-table th{color:var(--text-3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:8px}
+.dv-table td{color:var(--text-2)}
+.dv-table th:first-child,.dv-table td:first-child{text-align:left;color:var(--text)}
+
 /* ════ NUTRIÇÃO */
 .macro-rings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px 6px}
 .m-ring{
@@ -1177,7 +1259,21 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         </div>
       </div>
 
-      <div class="section in" style="animation-delay:.24s">
+      <div class="section in" style="animation-delay:.22s" id="sec-corpo">
+        <div class="sec-header"><div class="sec-title" data-i18n="evo_corpo">Corpo · avaliações</div></div>
+        <div class="card">
+          <div id="corpo-body"></div>
+        </div>
+      </div>
+
+      <div class="section in" style="animation-delay:.28s" id="sec-medidas">
+        <div class="sec-header"><div class="sec-title" data-i18n="evo_medidas">Medidas · variação</div></div>
+        <div class="card">
+          <div id="medidas-body"></div>
+        </div>
+      </div>
+
+      <div class="section in" style="animation-delay:.34s">
         <div class="sec-header"><div class="sec-title" data-i18n="evo_chart_title">Progressão de carga</div></div>
         <div class="card chart-card">
           <div class="chart-head">
@@ -1220,7 +1316,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         </div>
       </div>
 
-      <div class="section in" style="animation-delay:.4s">
+      <div class="section in" style="animation-delay:.44s">
         <div class="sec-header"><div class="sec-title" data-i18n="evo_pr">Recordes pessoais</div></div>
         <div class="card">
           <div class="pr-list" id="pr-list">
@@ -1229,7 +1325,7 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
         </div>
       </div>
 
-      <div class="section in" style="animation-delay:.48s">
+      <div class="section in" style="animation-delay:.52s">
         <div class="sec-header"><div class="sec-title" data-i18n="evo_heat">Atividade · 13 semanas</div></div>
         <div class="card heat-card">
           <div class="heat-grid" id="heat-grid"></div>
@@ -1538,7 +1634,7 @@ function activateAlunoApp(){
   }
 })();
 </script>
-<script src="aluno-v3-dev-app.js?v=3"></script>
+<script src="aluno-v3-dev-app.js?v=4"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});
