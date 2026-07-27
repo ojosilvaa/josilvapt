@@ -93,6 +93,7 @@ const I18N = {
     'vol_week':'Esta semana','vol_month':'Este mês','vol_total':'Total',
     'evo_chart_title':'Progressão de carga','sel_ex':'Selecione um exercício…',
     'evo_cmp':'Composição corporal','evo_pr':'Recordes pessoais','evo_no_pr':'Ainda sem recordes. Treina mais sessões!',
+    'evo_corpo':'Corpo · avaliações','evo_medidas':'Medidas · variação',
     'evo_heat':'Atividade · 13 semanas','heat_less':'Menos','heat_more':'Mais',
     'n_meta_sub':'da tua meta','n_prot':'Proteína','n_carb':'Carbo','n_gord':'Gordura',
     'water':'copos água','water_save':'Guardar','n_meals':'Refeições','n_no_meal':'Sem refeições hoje.',
@@ -132,6 +133,7 @@ const I18N = {
     'vol_week':'This week','vol_month':'This month','vol_total':'Total',
     'evo_chart_title':'Load progression','sel_ex':'Select an exercise…',
     'evo_cmp':'Body composition','evo_pr':'Personal records','evo_no_pr':'No records yet. Train more!',
+    'evo_corpo':'Body · assessments','evo_medidas':'Measurements · change',
     'evo_heat':'Activity · 13 weeks','heat_less':'Less','heat_more':'More',
     'n_meta_sub':'of your goal','n_prot':'Protein','n_carb':'Carb','n_gord':'Fat',
     'water':'water cups','water_save':'Save','n_meals':'Meals','n_no_meal':'No meals today.',
@@ -1460,6 +1462,23 @@ function wirePesoChart(hist){
   if (pts.length < 2) return;
 
   const wrap = svg.parentElement;
+  // Se ainda não há layout (ecrã escondido, primeiro paint), volta a
+  // desenhar assim que o contentor ganhar largura — senão o gráfico
+  // ficava preso na largura de recurso.
+  if (!wrap.clientWidth){
+    if (!svg.dataset.pending){
+      svg.dataset.pending = '1';
+      requestAnimationFrame(() => { delete svg.dataset.pending; wirePesoChart(hist); });
+    }
+  } else if (!svg.dataset.ro && typeof ResizeObserver !== 'undefined'){
+    svg.dataset.ro = '1';
+    let lastW = wrap.clientWidth;
+    new ResizeObserver(() => {
+      if (!wrap.clientWidth || Math.abs(wrap.clientWidth - lastW) < 8) return;
+      lastW = wrap.clientWidth;
+      wirePesoChart(hist);
+    }).observe(wrap);
+  }
   const W = Math.max(240, wrap.clientWidth || 300), H = 120;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.removeAttribute('preserveAspectRatio');
