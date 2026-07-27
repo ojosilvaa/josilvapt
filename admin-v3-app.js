@@ -1205,10 +1205,17 @@ async function enviarMensagemPT() {
 async function renderPerfil() {
   const res = await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`) || [];
   const dados = res[0]?.dados || {};
-  ['nome', 'nasc', 'altura', 'prof', 'email', 'tel', 'doencas', 'med', 'lesoes', 'dores', 'obj', 'nivel', 'sono', 'stress', 'alim', 'obs'].forEach(f => {
+  ['nome', 'nasc', 'prof', 'email', 'tel', 'doencas', 'med', 'lesoes', 'dores', 'obj', 'nivel', 'sono', 'stress', 'alim', 'obs'].forEach(f => {
     const el = document.getElementById('pf-' + f);
     if (el && dados[f] !== undefined) el.value = dados[f];
   });
+  // altura fica à parte: os dados existentes usam a chave "altura_cm"
+  // (a mesma que a app do aluno lê), não "altura"
+  const alturaEl = document.getElementById('pf-altura');
+  if (alturaEl) {
+    const v = dados.altura_cm ?? dados.altura;
+    if (v !== undefined) alturaEl.value = v;
+  }
   // Nutrition targets
   if (dados.kcal_alvo !== undefined) document.getElementById('pf-kcal').value = dados.kcal_alvo || '';
   if (dados.prot_alvo !== undefined) document.getElementById('pf-prot').value = dados.prot_alvo || '';
@@ -1217,9 +1224,11 @@ async function renderPerfil() {
 }
 
 async function salvarPerfil() {
-  const campos = ['nome', 'nasc', 'altura', 'prof', 'email', 'tel', 'doencas', 'med', 'lesoes', 'dores', 'obj', 'nivel', 'sono', 'stress', 'alim', 'obs'];
+  const campos = ['nome', 'nasc', 'prof', 'email', 'tel', 'doencas', 'med', 'lesoes', 'dores', 'obj', 'nivel', 'sono', 'stress', 'alim', 'obs'];
   const dados = {};
   campos.forEach(f => { const el = document.getElementById('pf-' + f); if (el) dados[f] = el.value; });
+  const alturaVal = document.getElementById('pf-altura')?.value;
+  if (alturaVal) dados.altura_cm = parseFloat(alturaVal);
   // Nutrition
   const kcal = document.getElementById('pf-kcal')?.value;
   const prot = document.getElementById('pf-prot')?.value;
@@ -1232,7 +1241,11 @@ async function salvarPerfil() {
 
   const existe = await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`) || [];
   if (existe.length) {
-    await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`, { method: 'PATCH', body: JSON.stringify({ dados, atualizado_em: new Date().toISOString() }) });
+    // funde com o dados existente em vez de o substituir por inteiro —
+    // este formulário não cobre todos os campos (sexo, idade, objetivo,
+    // histórico de treino, etc.) e um PATCH a substituir apagava-os
+    const merged = { ...(existe[0].dados || {}), ...dados };
+    await sbFetch(`anamnese?aluno_id=eq.${currentAlunoId}`, { method: 'PATCH', body: JSON.stringify({ dados: merged, atualizado_em: new Date().toISOString() }) });
   } else {
     await sbFetch('anamnese', { method: 'POST', body: JSON.stringify({ aluno_id: currentAlunoId, dados, atualizado_em: new Date().toISOString() }) });
   }
