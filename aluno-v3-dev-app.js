@@ -1207,29 +1207,37 @@ function renderPRs(){
     el.innerHTML = `<div class="empty">${T('evo_no_pr')}</div>`;
     return;
   }
-  const groups = {};
-  allCargasHist.forEach(c => {
-    if (!groups[c.exercicio_id]) groups[c.exercicio_id] = [];
-    groups[c.exercicio_id].push(c);
-  });
   const exNames = {};
   Object.values(exerciciosPorTreino).flat().forEach(ex => exNames[ex.id] = ex.nome);
 
+  // Agrupa por NOME e não por exercicio_id: o mesmo exercício existe em
+  // vários treinos com ids diferentes e aparecia repetido no top 5.
+  const groups = {};
+  allCargasHist.forEach(c => {
+    const nome = exNames[c.exercicio_id];
+    if (!nome) return;
+    const k = nome.trim().toLowerCase();
+    if (!groups[k]) groups[k] = { nome, rows: [] };
+    groups[k].rows.push(c);
+  });
+
   const prs = [];
-  Object.entries(groups).forEach(([exId, rows]) => {
-    if (!exNames[exId]) return;
+  Object.values(groups).forEach(({ nome, rows }) => {
     const sorted = rows.slice().sort((a,b) => parseFloat(b.carga_kg) - parseFloat(a.carga_kg));
     const top = sorted[0];
     const second = sorted[1];
     const delta = second ? +(parseFloat(top.carga_kg) - parseFloat(second.carga_kg)).toFixed(1) : 0;
-    prs.push({ name: exNames[exId], val: parseFloat(top.carga_kg), delta, date: top.sessoes?.data || '' });
+    prs.push({ name: nome, val: parseFloat(top.carga_kg), delta, date: top.sessoes?.data || '' });
   });
   prs.sort((a,b) => b.val - a.val);
   const top5 = prs.slice(0,5);
   if (!top5.length){ el.innerHTML = `<div class="empty">${T('evo_no_pr')}</div>`; return; }
 
   // barra de magnitude relativa ao recorde mais pesado — série única,
-  // por isso não precisa de legenda
+  // por isso não precisa de legenda.
+  // A largura vai já no HTML e o crescimento é uma animação CSS: assim o
+  // estado final está correcto mesmo que o browser suspenda as animações
+  // (separador em segundo plano), em vez de ficar preso a zero.
   const maxVal = Math.max(...top5.map(p => p.val));
   el.innerHTML = top5.map((p, i) => `
     <div class="pr-row">
@@ -1237,18 +1245,13 @@ function renderPRs(){
       <div class="pr-mid">
         <div class="pr-name">${escapeHTML(p.name)}</div>
         <div class="pr-date">${formatDate(p.date)}</div>
-        <div class="pr-bar-track"><div class="pr-bar-fill" data-w="${((p.val/maxVal)*100).toFixed(1)}"></div></div>
+        <div class="pr-bar-track"><div class="pr-bar-fill" style="width:${((p.val/maxVal)*100).toFixed(1)}%"></div></div>
       </div>
       <div>
         <div class="pr-val">${p.val} kg</div>
         ${p.delta > 0 ? `<div class="pr-delta">+${p.delta} kg</div>` : ''}
       </div>
     </div>`).join('');
-
-  // anima a partir do zero depois de estar no DOM
-  requestAnimationFrame(() => {
-    el.querySelectorAll('.pr-bar-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
-  });
 }
 
 function renderHeatmap(){
@@ -1468,7 +1471,8 @@ function wirePesoChart(hist){
   if (!wrap.clientWidth){
     if (!svg.dataset.pending){
       svg.dataset.pending = '1';
-      requestAnimationFrame(() => { delete svg.dataset.pending; wirePesoChart(hist); });
+      // setTimeout e não rAF: o rAF fica suspenso em separadores ocultos
+      setTimeout(() => { delete svg.dataset.pending; wirePesoChart(hist); }, 60);
     }
   } else if (!svg.dataset.ro && typeof ResizeObserver !== 'undefined'){
     svg.dataset.ro = '1';
@@ -1520,14 +1524,13 @@ function wirePesoChart(hist){
     ${xs.map((x,i) => `<rect class="dv-hit" data-i="${i}" x="${(x-18).toFixed(1)}" y="0" width="36" height="${H}"/>`).join('')}
   `;
 
-  // animação de entrada da linha
+  // Animação de entrada por CSS (não por rAF): se o browser suspender
+  // animações, a linha fica na mesma desenhada em vez de invisível.
   const path = document.getElementById('peso-line');
-  const len = path.getTotalLength();
-  path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
-  requestAnimationFrame(() => {
-    path.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)';
-    path.style.strokeDashoffset = 0;
-  });
+  const len = Math.ceil(path.getTotalLength());
+  path.style.setProperty('--len', len);
+  path.style.strokeDasharray = len;
+  path.style.animation = 'lineDraw 1.4s cubic-bezier(.4,0,.2,1) both';
 
   // eixo x
   const ax = document.getElementById('peso-axis');
