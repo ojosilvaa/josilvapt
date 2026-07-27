@@ -1530,7 +1530,9 @@ function wirePesoChart(hist){
   const len = Math.ceil(path.getTotalLength());
   path.style.setProperty('--len', len);
   path.style.strokeDasharray = len;
-  path.style.animation = 'lineDraw 1.4s cubic-bezier(.4,0,.2,1) both';
+  // sem fill-mode: em repouso a linha fica desenhada (dashoffset 0) e a
+  // animação é só um extra, em vez de o estado correcto depender dela
+  path.style.animation = 'lineDraw 1.4s cubic-bezier(.4,0,.2,1)';
 
   // eixo x
   const ax = document.getElementById('peso-axis');
