@@ -1702,18 +1702,27 @@ function renderMedidas(){
   const maxAbs = Math.max(...items.map(i => Math.abs(i.delta)), .5);
   const ordered = items.slice().sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta));
 
+  // Eixo central só faz sentido se houver variações nos dois sentidos;
+  // caso contrário a barra ancora-se ao lado do sinal e usa a pista toda.
+  const temPos = items.some(i => i.delta > 0);
+  const temNeg = items.some(i => i.delta < 0);
+  const divergente = temPos && temNeg;
+  const escala = divergente ? 50 : 100;
+
   const rows = ordered.map((it, idx) => {
-    const w = (Math.abs(it.delta) / maxAbs) * 50; // 50% = meia largura da pista
-    const cls = it.delta > 0 ? 'pos' : it.delta < 0 ? 'neg' : 'zero';
-    const sign = it.delta > 0 ? '+' : '';
+    const w = (Math.abs(it.delta) / maxAbs) * escala;
+    const cls = divergente
+      ? (it.delta > 0 ? 'pos' : it.delta < 0 ? 'neg' : 'zero')
+      : (it.delta === 0 ? 'solo-zero' : temNeg ? 'solo-neg' : 'solo-pos');
+    const sign = it.delta > 0 ? '+' : it.delta < 0 ? '−' : '';
     return `<div class="med-row" data-mi="${idx}">
       <div class="med-lbl">${pt ? it.def.l : it.def.le}</div>
-      <div class="med-track">
+      <div class="med-track${divergente ? '' : ' solo'}">
         <div class="med-axis"></div>
         <div class="med-bar ${cls}" style="width:${w.toFixed(1)}%"></div>
       </div>
       <div>
-        <div class="med-val">${sign}${it.delta} <span style="font-size:9px;color:var(--text-3)">cm</span></div>
+        <div class="med-val">${sign}${Math.abs(it.delta).toFixed(1)} <span style="font-size:9px;color:var(--text-3)">cm</span></div>
         <div class="med-cur">${it.to.toFixed(1)}</div>
       </div>
     </div>`;
@@ -1723,13 +1732,18 @@ function renderMedidas(){
   el.innerHTML = `
     <div class="bblock-l" style="margin-bottom:4px">${periodo}</div>
     <div style="font-size:11px;color:var(--text-3);margin-bottom:14px;line-height:1.5">${
-      pt ? 'Barra para a direita = aumentou · para a esquerda = diminuiu. Braços, coxas e gémeos são a média dos dois lados.'
-         : 'Bar right = increased · left = decreased. Arms, thighs and calves are the average of both sides.'}</div>
+      (divergente
+        ? (pt ? 'Barra para a direita = aumentou · para a esquerda = diminuiu. '
+              : 'Bar right = increased · left = decreased. ')
+        : (pt ? `Barra mais comprida = maior ${temNeg ? 'redução' : 'aumento'}. `
+              : `Longer bar = bigger ${temNeg ? 'decrease' : 'increase'}. `))
+      + (pt ? 'Braços, coxas e gémeos são a média dos dois lados.'
+            : 'Arms, thighs and calves are the average of both sides.')}</div>
     ${rows}
     ${dvTableMarkup('med',
       [pt?'Medida':'Measure', pt?'Antes':'Before', pt?'Agora':'Now', 'Δ cm'],
       ordered.map(i => [pt ? i.def.l : i.def.le, i.from.toFixed(1), i.to.toFixed(1),
-                        (i.delta>0?'+':'') + i.delta]))}`;
+                        (i.delta>0?'+':i.delta<0?'−':'') + Math.abs(i.delta).toFixed(1)]))}`;
 
   // tooltip: mostra os dois lados quando a medida é um par D/E
   el.querySelectorAll('.med-row').forEach(row => {

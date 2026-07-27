@@ -425,6 +425,12 @@ button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit
 .med-bar.pos{left:50%;border-radius:0 4px 4px 0}
 .med-bar.neg{right:50%;border-radius:4px 0 0 4px}
 .med-bar.zero{left:50%;width:3px!important;border-radius:2px;background:var(--text-3);box-shadow:none}
+/* quando todas as variações têm o mesmo sinal, o eixo central só
+   desperdiçava metade da pista — ancora-se ao lado respectivo */
+.med-track.solo .med-axis{display:none}
+.med-bar.solo-pos{left:0;border-radius:0 4px 4px 0}
+.med-bar.solo-neg{right:0;border-radius:4px 0 0 4px}
+.med-bar.solo-zero{left:0;width:3px!important;border-radius:2px;background:var(--text-3);box-shadow:none}
 .med-val{font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;color:var(--text)}
 .med-cur{font-family:var(--mono);font-size:9px;color:var(--text-3);font-weight:600;text-align:right;margin-top:1px}
 
@@ -1634,7 +1640,7 @@ function activateAlunoApp(){
   }
 })();
 </script>
-<script src="aluno-v3-dev-app.js?v=5"></script>
+<script src="aluno-v3-dev-app.js?v=6"></script>
 <script>
 if ('serviceWorker' in navigator)
   navigator.serviceWorker.register('./sw.js').catch(function(){});
