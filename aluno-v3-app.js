@@ -51,6 +51,22 @@ const EXERCISE_GIFS = {
   'leg press horizontal':                        '2611-9KU9TYF',
   'levantamento terra':                          '0032-ila4NZS',
   'supino reto com halteres (banco plano)':      '0289-SpYC0Kp',
+  'búlgaro com halteres (pé apoiado no step)':   '0410-qx4fgX7',
+  'bulgaro com halteres (pe apoiado no step)':   '0410-qx4fgX7',
+  'abdominal supra':                             '0274-TFqbd8t',
+  'abdominal infra':                             '0620-WhuFnR7',
+  'leg press 45° (pirâmide)':                    '2287-V07qpXy',
+  'leg press 45 (piramide)':                     '2287-V07qpXy',
+  'face pull na polia':                          '0233-ZfyAGhK',
+  'puxada alta pegada neutra':                   '0818-rkg41Fb',
+  'flexão de braço no chão':                     '0662-I4hDWkc',
+  'flexao de braco no chao':                     '0662-I4hDWkc',
+  'cadeira abdutora':                            '0597-CHpahtl',
+  'cadeira adutora':                             '0598-oHsrypV',
+  'remada máquina pegada neutra':                '1350-7I6LNUG',
+  'remada maquina pegada neutra':                '1350-7I6LNUG',
+  'desenvolvimento de ombro máquina':            '0603-67n3r98',
+  'desenvolvimento de ombro maquina':            '0603-67n3r98',
 };
 function getExGif(nome) {
   if (!nome) return null;
