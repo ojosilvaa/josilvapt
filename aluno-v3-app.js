@@ -29,7 +29,7 @@ const EXERCISE_GIFS = {
   'stiff pes afastados com barra':               '0085-wQ2c4XD',
   'búlgaro com halter':                          '0410-qx4fgX7',
   'bulgaro com halter':                          '0410-qx4fgX7',
-  'cadeira flexora':                             '0586-17lJ1kr',
+  'cadeira flexora':                             '0599-Zg3XY7P',
   'cadeira extensora':                           '0585-my33uHU',
   'cadeira extensora unilateral':                '0585-my33uHU',
   'coice na polia':                              '0860-HEJ6DIX',
@@ -55,18 +55,18 @@ const EXERCISE_GIFS = {
   'bulgaro com halteres (pe apoiado no step)':   '0410-qx4fgX7',
   'abdominal supra':                             '0274-TFqbd8t',
   'abdominal infra':                             '0620-WhuFnR7',
-  'leg press 45° (pirâmide)':                    '2287-V07qpXy',
-  'leg press 45 (piramide)':                     '2287-V07qpXy',
+  'leg press 45° (pirâmide)':                    '0739-10Z2DXU',
+  'leg press 45 (piramide)':                     '0739-10Z2DXU',
   'face pull na polia':                          '0233-ZfyAGhK',
-  'puxada alta pegada neutra':                   '0818-rkg41Fb',
+  'puxada alta pegada pronada (barra reta)':     '0197-qdRxqCj',
   'flexão de braço no chão':                     '0662-I4hDWkc',
   'flexao de braco no chao':                     '0662-I4hDWkc',
   'cadeira abdutora':                            '0597-CHpahtl',
   'cadeira adutora':                             '0598-oHsrypV',
-  'remada máquina pegada neutra':                '1350-7I6LNUG',
-  'remada maquina pegada neutra':                '1350-7I6LNUG',
-  'desenvolvimento de ombro máquina':            '0603-67n3r98',
-  'desenvolvimento de ombro maquina':            '0603-67n3r98',
+  'remada máquina pegada neutra':                '0861-fUBheHs',
+  'remada maquina pegada neutra':                '0861-fUBheHs',
+  // 'desenvolvimento de ombro máquina' removida: sem gif equivalente no dataset
+  // (todas as opções "lever shoulder press" são de anilhas, não a máquina de pino/isolada) — usa video_url (YouTube)
 };
 function getExGif(nome) {
   if (!nome) return null;
