@@ -76,6 +76,8 @@ const EXERCISE_GIFS = {
   'supino maquina':                             '0577-T0yTjgW',
   'elevação de anca':                           '0484-196HJGw', // hip raise bent knee (sem barra)
   'elevacao de anca':                           '0484-196HJGw',
+  'elevação de anca no solo':                   '0484-196HJGw',
+  'elevacao de anca no solo':                   '0484-196HJGw',
   'sumo com kettlebell':                        '0534-ZA8b5hc', // kettlebell goblet squat (stance largo)
   'dead bug':                                   '0276-iny3m5y',
   'afundo estático':                            '2368-9E25EOx', // split squats bodyweight
@@ -84,8 +86,8 @@ const EXERCISE_GIFS = {
   'afundo estatico com halteres':               '0381-SSsBDwB',
   'press de peito máquina':                     '0577-T0yTjgW', // lever chest press
   'press de peito maquina':                     '0577-T0yTjgW',
-  'puxada facial na corda':                     '0601-xiHiJcA', // lever seated reverse fly parallel grip (máquina duas hastes)
-  'puxada facial':                              '0601-xiHiJcA',
+  'puxada facial na corda':                     '0203-wqNPGCg', // cable rear delt row with rope (face pull em pé)
+  'puxada facial':                              '0203-wqNPGCg',
   'remada sentada máquina':                     '1350-7I6LNUG', // lever seated row
   'remada sentada maquina':                     '1350-7I6LNUG',
   'leg press (até ~80°)':                       '2287-V07qpXy', // = leg press 45°
