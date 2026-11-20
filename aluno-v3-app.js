@@ -807,6 +807,18 @@ function renderTreino(){
   const exs = exerciciosPorTreino[currentTreinoId] || [];
   if (!t) return;
 
+  // Mostrar obs gerais do aluno (notas clínicas, etc.)
+  const obsBox = document.getElementById('aluno-obs-box');
+  if (obsBox) {
+    const obsText = aluno && aluno.obs;
+    if (obsText) {
+      obsBox.style.display = '';
+      obsBox.innerHTML = `<div class="aluno-obs-box-title">⚠ Notas clínicas</div><div class="aluno-obs-box-text">${escapeHTML(obsText)}</div>`;
+    } else {
+      obsBox.style.display = 'none';
+    }
+  }
+
   const now = new Date();
   const kicker = LANG==='pt'
     ? `Hoje · ${now.getDate()} ${T('months')[now.getMonth()]}`
@@ -831,6 +843,13 @@ function renderTreino(){
   exs.forEach((ex, i) => {
     const series  = parseInt(ex.series) || 3;
     const reps    = ex.reps || '10-12';
+
+    // Extrair etiqueta de intensidade do campo obs (prefixo "CONTROLO | " ou "LIMITE | ")
+    let obsRaw = ex.obs || '';
+    let intensidade = null;
+    if (obsRaw.startsWith('CONTROLO | ')) { intensidade = 'CONTROLO'; obsRaw = obsRaw.slice(11); }
+    else if (obsRaw.startsWith('LIMITE | '))  { intensidade = 'LIMITE';   obsRaw = obsRaw.slice(9);  }
+
     const c       = cargas[ex.id] || 0;
     const prev    = lastCargaFor(ex.id);
     const d       = (prev != null && c) ? +(c - prev).toFixed(1) : 0;
@@ -856,7 +875,8 @@ function renderTreino(){
         <div class="ex-info">
           <div class="ex-name">${escapeHTML(ex.nome || '')}</div>
           <div class="ex-meta">${series} ${LANG==='pt'?'séries':'sets'} · ${reps} reps</div>
-          ${ex.obs ? `<div class="ex-obs">${escapeHTML(ex.obs)}</div>` : ''}
+          ${intensidade ? `<span class="ex-intensity ${intensidade.toLowerCase()}">${intensidade}</span>` : ''}
+          ${obsRaw ? `<div class="ex-obs">${escapeHTML(obsRaw)}</div>` : ''}
         </div>
         ${(ex.video_url || getExGif(ex.nome)) ? `<button class="ex-video-btn" data-video="${ex.id}" title="Ver demonstração">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
