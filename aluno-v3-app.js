@@ -67,6 +67,25 @@ const EXERCISE_GIFS = {
   'remada maquina pegada neutra':                '0861-fUBheHs',
   // 'desenvolvimento de ombro máquina' removida: sem gif equivalente no dataset
   // (todas as opções "lever shoulder press" são de anilhas, não a máquina de pino/isolada) — usa video_url (YouTube)
+
+  // ── Sandra Costa (e genérico) ──────────────────────────────
+  'mesa flexora':                               '0586-17lJ1kr', // lever lying leg curl
+  'prancha':                                    '2135-VBAWRPG', // weighted front plank
+  'puxada frontal':                             '0150-eYnzaCm', // = puxada pronada barra larga
+  'supino máquina':                             '0576-DOoWcnA', // lever chest press
+  'supino maquina':                             '0576-DOoWcnA',
+  'elevação de anca':                           '1409-qKBpF7I', // barbell glute bridge
+  'elevacao de anca':                           '1409-qKBpF7I',
+  'dead bug':                                   '0276-iny3m5y',
+  'afundo estático':                            '2368-9E25EOx', // split squats
+  'afundo estatico':                            '2368-9E25EOx',
+  'press de peito máquina':                     '0577-T0yTjgW', // lever chest press
+  'press de peito maquina':                     '0577-T0yTjgW',
+  'puxada facial na corda':                     '0233-ZfyAGhK', // = face pull
+  'remada sentada máquina':                     '1350-7I6LNUG', // lever seated row
+  'remada sentada maquina':                     '1350-7I6LNUG',
+  'leg press (até ~80°)':                       '2287-V07qpXy', // = leg press 45°
+  'cadeira extensora (90°→45°)':               '0585-my33uHU', // = cadeira extensora
 };
 function getExGif(nome) {
   if (!nome) return null;
