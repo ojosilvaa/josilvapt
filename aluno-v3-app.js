@@ -74,8 +74,9 @@ const EXERCISE_GIFS = {
   'puxada frontal':                             '0579-7F1DVzn', // lever front pulldown (máquina articulada, dois braços fixos)
   'supino máquina':                             '0577-T0yTjgW', // lever chest press dual arm (Hammer Strength)
   'supino maquina':                             '0577-T0yTjgW',
-  'elevação de anca':                           '1409-qKBpF7I', // barbell glute bridge
-  'elevacao de anca':                           '1409-qKBpF7I',
+  'elevação de anca':                           '0484-196HJGw', // hip raise bent knee (sem barra)
+  'elevacao de anca':                           '0484-196HJGw',
+  'sumo com kettlebell':                        '0534-ZA8b5hc', // kettlebell goblet squat (stance largo)
   'dead bug':                                   '0276-iny3m5y',
   'afundo estático':                            '2368-9E25EOx', // split squats bodyweight
   'afundo estatico':                            '2368-9E25EOx',
