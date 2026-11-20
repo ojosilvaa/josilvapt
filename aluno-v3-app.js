@@ -79,8 +79,8 @@ const EXERCISE_GIFS = {
   'dead bug':                                   '0276-iny3m5y',
   'afundo estático':                            '2368-9E25EOx', // split squats bodyweight
   'afundo estatico':                            '2368-9E25EOx',
-  'afundo estático com halteres':               '0410-qx4fgX7', // dumbbell split squat
-  'afundo estatico com halteres':               '0410-qx4fgX7',
+  'afundo estático com halteres':               '0381-SSsBDwB', // dumbbell rear lunge (pés no chão)
+  'afundo estatico com halteres':               '0381-SSsBDwB',
   'press de peito máquina':                     '0577-T0yTjgW', // lever chest press
   'press de peito maquina':                     '0577-T0yTjgW',
   'puxada facial na corda':                     '0601-xiHiJcA', // lever seated reverse fly parallel grip (máquina duas hastes)
