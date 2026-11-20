@@ -71,7 +71,7 @@ const EXERCISE_GIFS = {
   // ── Sandra Costa (e genérico) ──────────────────────────────
   'mesa flexora':                               '0586-17lJ1kr', // lever lying leg curl
   'prancha':                                    '2135-VBAWRPG', // weighted front plank
-  'puxada frontal':                             '0150-eYnzaCm', // = puxada pronada barra larga
+  'puxada frontal':                             '0818-rkg41Fb', // twin handle parallel grip (duas pegas, sem barra)
   'supino máquina':                             '0576-DOoWcnA', // lever chest press
   'supino maquina':                             '0576-DOoWcnA',
   'elevação de anca':                           '1409-qKBpF7I', // barbell glute bridge
