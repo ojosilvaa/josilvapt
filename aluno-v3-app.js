@@ -78,7 +78,7 @@ const EXERCISE_GIFS = {
   'elevacao de anca':                           '0484-196HJGw',
   'elevação de anca no solo':                   '0484-196HJGw',
   'elevacao de anca no solo':                   '0484-196HJGw',
-  'sumo com kettlebell':                        '0534-ZA8b5hc', // kettlebell goblet squat (stance largo)
+  'sumo com kettlebell':                        '0117-KgI0tqW', // barbell sumo deadlift (mesma postura; usar kettlebell)
   'dead bug':                                   '0276-iny3m5y',
   'afundo estático':                            '2368-9E25EOx', // split squats bodyweight
   'afundo estatico':                            '2368-9E25EOx',
