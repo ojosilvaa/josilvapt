@@ -72,8 +72,8 @@ const EXERCISE_GIFS = {
   'mesa flexora':                               '0586-17lJ1kr', // lever lying leg curl
   'prancha':                                    'https://media.tenor.com/Ww5Ytjlx4QwAAAAM/prancha-treino-mestre.gif',
   'puxada frontal':                             '0579-7F1DVzn', // lever front pulldown (máquina articulada, dois braços fixos)
-  'supino máquina':                             '0576-DOoWcnA', // lever chest press
-  'supino maquina':                             '0576-DOoWcnA',
+  'supino máquina':                             '0577-T0yTjgW', // lever chest press dual arm (Hammer Strength)
+  'supino maquina':                             '0577-T0yTjgW',
   'elevação de anca':                           '1409-qKBpF7I', // barbell glute bridge
   'elevacao de anca':                           '1409-qKBpF7I',
   'dead bug':                                   '0276-iny3m5y',
