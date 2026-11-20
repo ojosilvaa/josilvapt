@@ -70,7 +70,7 @@ const EXERCISE_GIFS = {
 
   // ── Sandra Costa (e genérico) ──────────────────────────────
   'mesa flexora':                               '0586-17lJ1kr', // lever lying leg curl
-  'prancha':                                    '2135-VBAWRPG', // weighted front plank
+  'prancha':                                    'https://media.tenor.com/Ww5Ytjlx4QwAAAAM/prancha-treino-mestre.gif',
   'puxada frontal':                             '0818-rkg41Fb', // twin handle parallel grip (duas pegas, sem barra)
   'supino máquina':                             '0576-DOoWcnA', // lever chest press
   'supino maquina':                             '0576-DOoWcnA',
@@ -91,7 +91,8 @@ function getExGif(nome) {
   if (!nome) return null;
   const key = nome.toLowerCase().trim();
   const id = EXERCISE_GIFS[key];
-  return id ? _GIF_BASE + id + '.gif' : null;
+  if (!id) return null;
+  return id.startsWith('http') ? id : _GIF_BASE + id + '.gif';
 }
 // ── Observabilidade: "caixa preta" de erros (sem PII — nunca nome/email/dados de saúde) ──
 const __RID = (self.crypto && crypto.randomUUID ? crypto.randomUUID() : 'r' + Date.now() + Math.random().toString(16).slice(2)).slice(0, 40);
