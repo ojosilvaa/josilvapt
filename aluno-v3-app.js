@@ -77,8 +77,10 @@ const EXERCISE_GIFS = {
   'elevação de anca':                           '1409-qKBpF7I', // barbell glute bridge
   'elevacao de anca':                           '1409-qKBpF7I',
   'dead bug':                                   '0276-iny3m5y',
-  'afundo estático':                            '2368-9E25EOx', // split squats
+  'afundo estático':                            '2368-9E25EOx', // split squats bodyweight
   'afundo estatico':                            '2368-9E25EOx',
+  'afundo estático com halteres':               '0410-qx4fgX7', // dumbbell split squat
+  'afundo estatico com halteres':               '0410-qx4fgX7',
   'press de peito máquina':                     '0577-T0yTjgW', // lever chest press
   'press de peito maquina':                     '0577-T0yTjgW',
   'puxada facial na corda':                     '0601-xiHiJcA', // lever seated reverse fly parallel grip (máquina duas hastes)
