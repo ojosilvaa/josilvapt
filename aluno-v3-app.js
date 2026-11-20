@@ -1805,7 +1805,7 @@ function renderBiometria(container){
   const gordura    = parseFloat(p.gordura)     || 0;
   const massaMagra = parseFloat(p.massa_magra) || 0;
   const massaGorda = +(peso * gordura / 100).toFixed(1);
-  const altura     = an.altura_cm || m.altura_cm || 0;
+  const altura     = an.altura_cm || m.altura_cm || m.altura || 0;
   const imc        = m.bio_imc || m.imc || an.imc || (altura ? +(peso/((altura/100)**2)).toFixed(1) : 0);
   const tmb        = m.bio_tmb || m.tmb_kcal || m.taxa_metabolica_basal_kcal || 0;
   const gordVisc   = m.bio_gord_visc || m.gordura_visceral_nivel || an.gordura_visceral || 0;
