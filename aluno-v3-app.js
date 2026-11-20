@@ -81,7 +81,8 @@ const EXERCISE_GIFS = {
   'afundo estatico':                            '2368-9E25EOx',
   'press de peito máquina':                     '0577-T0yTjgW', // lever chest press
   'press de peito maquina':                     '0577-T0yTjgW',
-  'puxada facial na corda':                     '0233-ZfyAGhK', // = face pull
+  'puxada facial na corda':                     '0601-xiHiJcA', // lever seated reverse fly parallel grip (máquina duas hastes)
+  'puxada facial':                              '0601-xiHiJcA',
   'remada sentada máquina':                     '1350-7I6LNUG', // lever seated row
   'remada sentada maquina':                     '1350-7I6LNUG',
   'leg press (até ~80°)':                       '2287-V07qpXy', // = leg press 45°
