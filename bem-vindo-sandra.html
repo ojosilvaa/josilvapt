@@ -1,11 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Jo Silva PT · Sandra Costa</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0 }
 /* Layout: single-column mobile-first, centered up to 480px */
 /* Dark-first: charcoal black, warm gold #C8A96E accent (Jo Silva PT brand) */
 :root {
@@ -43,7 +48,7 @@
   color-scheme: light;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+*::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
 
 body {
   background: var(--bg);
@@ -272,6 +277,8 @@ h1 {
 }
 .footer strong { color: var(--fg-2); font-weight: 500; }
 </style>
+</head>
+<body>
 
 <div class="header">
   <div class="logo-wrap">
@@ -446,4 +453,7 @@ function showTab(id, el) {
   document.getElementById('panel-' + id).classList.add('active');
 }
 </script>
+
+</body>
+</html>
 
